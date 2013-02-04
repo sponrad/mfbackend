@@ -1,7 +1,7 @@
 import webapp2
 from google.appengine.api import users
-from models import *
-import jsonhandlers
+from _app.models import *
+from _app.handlers import *
 
 providers = {
     'Google'   : 'https://www.google.com/accounts/o8/id',
