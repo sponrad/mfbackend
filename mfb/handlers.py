@@ -4,8 +4,8 @@ from geo import geotypes
 from google.appengine.api import users
 from google.appengine.ext.webapp import template
 from google.appengine.ext import db
-use_library('django', '1.4')
-from django.utils import simplejson
+from google.appengine.dist import use_library
+use_library('django', '1.3')
 
 templatepath = '_templates/'
 
