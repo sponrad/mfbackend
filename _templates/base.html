@@ -1,10 +1,39 @@
+<!DOCTYPE html>
 <html>
-
   <head>
+    <link rel="stylesheet" type="text/css" href="/_static/stylesheets/foundation.min.css" />
+    {% block head %}{% endblock head %}
   </head>
 
   <body>
-    
+    <div class="row">
+      <div class="twelve-columns">
+	<h1>Menuflick Backend</h1>
+
+	{% if user %}
+	<p>Hi {{ user.nickname }}. <a href="{{ logout }}">Sign Out</a></p>
+	{% if admin %}
+	<h4>Administrative Pages</h4>
+	<p><a href="/restaurants">Restaurants</a><p>
+
+
+	{% endif %}
+
+
+
+	{% else %}
+
+	<p>Sign in with: | 
+	  {% for signin in logins %}
+	  <a href="{{ signin.url }}">{{ signin.name }}</a> | 
+	  {% endfor %}
+
+
+	  {% endif %}
+	{% block body %}{% endblock body %}
+
+      </div>
+    <div
   </body>
 
 </html>

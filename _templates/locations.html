@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h2>{{ restaurant.name }}</h2>
+
+<form method="post">
+<input type="text" name="name" placeholder="Name"/>
+<input type="text" name="address" placeholder="Address"/>
+<input type="text" name="city" placeholder="City"/>
+<input type="text" name="zipcode" placeholder="Zip"/>
+<input type="hidden" name="restaurant" value="{{ restaurant.key.id }}" />
+<input type="submit" value="Add Location" />
+</form>
+
+<p>List of all of the locations for {{ restaurant.name }}</p>
+{% for l in locations %}
+<p>{{ l.name }}<br>{{ l.address }}, {{ l.city }}, {{ l.state }} {{l.zipcode}} | {{ l.location }}</p>  <!-- http://maps.google.com/?q=<lat>,<lng> -->
+{% endfor %}
+
+{% endblock body %}

@@ -1,9 +1,11 @@
-import os, datetime, random, string, urllib, math
+import os, datetime, random, string, urllib, math, globs, json
+
+BINGKEY = globs.BINGKEY
 
 def get_lat_long(query):
     query = urllib.quote_plus(query)
     url ="http://dev.virtualearth.net/REST/v1/Locations?query=" + query + "&key=" + BINGKEY
-    jsondata = simplejson.loads(urllib.urlopen(url).read())
+    jsondata = json.loads(urllib.urlopen(url).read())
 
     #only want one result
     if len(jsondata['resourceSets'][0]['resources']) == 1: 
@@ -14,7 +16,7 @@ def get_lat_long(query):
 def get_lat_long_city_state_address(query):
     query = urllib.quote_plus(query)
     url ="http://dev.virtualearth.net/REST/v1/Locations?query=" + query + "&key=" + BINGKEY
-    jsondata = simplejson.loads(urllib.urlopen(url).read())
+    jsondata = json.loads(urllib.urlopen(url).read())
 
     #check results exist, take first result
     if len(jsondata['resourceSets'][0]['resources']) > 0: 

@@ -3,5 +3,8 @@ from mfb.models import *
 from mfb.handlers import *
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+        ('/restaurants', Restaurants),
+        (r'/restaurant/(.*)', Locations),            
+        (r'/locations/(.*)', Locations),
+        ('/', MainHandler)
 ], debug=True)
