@@ -8,13 +8,18 @@
   <body>
     <div class="row">
       <div class="twelve-columns">
+	<img src="/_static/images/mflogo.JPG" style="float: right;"/>
 	<h1>Menuflick Backend</h1>
 
 	{% if user %}
 	<p>Hi {{ user.nickname }}. <a href="{{ logout }}">Sign Out</a></p>
 	{% if admin %}
 	<h4>Administrative Pages</h4>
-	<p><a href="/restaurants">Restaurants</a><p>
+	<p>
+	  <a href="/">Home</a> 
+	  <a href="/restaurants">Restaurants</a>
+	  <a href="/search">SearchTest</a>
+	<p>
 
 
 	{% endif %}

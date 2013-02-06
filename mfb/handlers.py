@@ -4,8 +4,6 @@ from geo import geotypes
 from google.appengine.api import users
 from google.appengine.ext.webapp import template
 from google.appengine.ext import db
-from google.appengine.dist import use_library
-use_library('django', '1.3')
 
 providers = {
     'Google'   : 'https://www.google.com/accounts/o8/id',
@@ -61,9 +59,14 @@ class Restaurants(webapp2.RequestHandler):
             name = self.request.get("name")
             )
         restaurant.put()
-        self.redirect('/locations/' + str(restaurant.key().id()))
+        defaultmenu = Menu(
+            restaurant = restaurant,
+            name = "Default Menu",
+            )
+        defaultmenu.put()
+        self.redirect('/restaurant/' + str(restaurant.key().id()))
 
-class Locations(webapp2.RequestHandler):
+class RestaurantPage(webapp2.RequestHandler):
     def get(self, restaurantid):
         user = users.get_current_user()
         if not users.is_current_user_admin():
@@ -75,7 +78,7 @@ class Locations(webapp2.RequestHandler):
             "restaurant": restaurant,
             "locations": locations,
             }
-        render(self, "locations.html", values)
+        render(self, "restaurant.html", values)
     def post(self, restaurantid):
         user = users.get_current_user()
         if not users.is_current_user_admin():
@@ -97,5 +100,57 @@ class Locations(webapp2.RequestHandler):
             location.address = latlongcitystate[4]
             location.update_location()
         location.put()
-        self.redirect("/locations/" + str(restaurant.key().id()))
+        self.redirect("/restaurant/" + str(restaurant.key().id()))
         
+class RestaurantItems(webapp2.RequestHandler):
+    def get(self, restaurantid):
+        user = users.get_current_user()
+        if not users.is_current_user_admin():
+            self.redirect("/")
+        values = {
+            "user": user,
+            }
+        restaurant = Restaurant.get_by_id(int(restaurantid))
+        values["restaurant"] = restaurant
+        render(self, "items.html", values)
+
+class Search(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        if not users.is_current_user_admin():
+            self.redirect("/")
+        results = None
+
+        locationstring = self.request.get("location")
+        querystring = self.request.get("query")
+        miles = 5
+
+        if locationstring != "":
+            latlong = helpers.get_lat_long(locationstring)
+            locations = Location.all()
+            if latlong:
+                locations = Location.proximity_fetch(
+                    locations,
+                    geotypes.Point(latlong[0], latlong[1]),
+                    max_results = 100,
+                    max_distance = (1609 * int(miles)), #1609 meters in a mile
+                    )
+        else:
+            locationstring = None
+
+        if querystring != "":
+            pass
+        else:
+            querystring = None
+
+
+        results = locations
+
+        values = {
+            "user": user,
+            "results": results,
+            "locationstring": locationstring,
+            "querystring": querystring,
+            "miles": str(miles),
+            }
+        render(self, "search.html", values)

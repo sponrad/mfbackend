@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h2>{{ restaurant.name }} Menu's and Item's</h2> 
+<a href="/restaurant/{{ restaurant.key.id }}">Restaurant Page</a>
+
+<p>Add Menu</p>
+<form method="post" >
+<input type="hidden" name="action" value="addmenu" />
+<input type="text" name="name" placeholder="Menu Name" />
+<input type="submit" value="Add Menu NEED TO MAKE HANDLER" />
+</form>
+
+<p>List of current Items (will probably be a table long run, plus menus</p>
+
+{% for menu in restaurant.menu_set %}
+<p><b>{{ menu.name }}</b></p>
+<form method="post">
+<input type="hidden" name="action" value="additem" />
+<input type="hidden" name="menu" value="{{ menu.key.id }}" />
+<input name="name" placeholder="Item Name" />
+<input type="text" name="description" placeholder="Description" />
+<input type="submit" value="Add Item to {{ menu.name }} NEED TO MAKE HANDLER" />
+</form>
+{% for item in menu.item_set %}
+<p>{{ item.name }}</p>
+{% endfor %}
+{% endfor %}
+
+{% endblock body %}

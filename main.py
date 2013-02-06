@@ -4,7 +4,8 @@ from mfb.handlers import *
 
 app = webapp2.WSGIApplication([
         ('/restaurants', Restaurants),
-        (r'/restaurant/(.*)', Locations),            
-        (r'/locations/(.*)', Locations),
+        (r'/restaurant/(.*)', RestaurantPage),
+        (r'/items/(.*)', RestaurantItems),
+        ('/search', Search),
         ('/', MainHandler)
 ], debug=True)

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block body %}
+<h2>Test Search</h2>
+
+<form method="get">
+<input type="text" name="location" placeholder="Where are you?" {% if locationstring %}value="{{ locationstring }}"{% endif %}>
+<input type="text" name="query" placeholder="Search Query" {% if querystring %}value="{{ querystring %}"{% endif %}>
+<input type="submit" value="Search" />
+
+</form>
+
+{% if results %}
+<h3>Results within {{ miles }} mile radius:</h3>
+
+{% for result in results %}
+<p>{{ result.name }}</p>
+{% endfor %}
+
+{% endif %}
+
+{% endblock body %}
