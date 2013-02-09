@@ -8,7 +8,7 @@
 <form method="post" >
 <input type="hidden" name="action" value="addmenu" />
 <input type="text" name="name" placeholder="Menu Name" />
-<input type="submit" value="Add Menu NEED TO MAKE HANDLER" />
+<input type="submit" value="Add Menu" />
 </form>
 
 <p>List of current Items (will probably be a table long run, plus menus</p>
@@ -20,10 +20,10 @@
 <input type="hidden" name="menu" value="{{ menu.key.id }}" />
 <input name="name" placeholder="Item Name" />
 <input type="text" name="description" placeholder="Description" />
-<input type="submit" value="Add Item to {{ menu.name }} NEED TO MAKE HANDLER" />
+<input type="submit" value="Add Item to {{ menu.name }}" />
 </form>
 {% for item in menu.item_set %}
-<p>{{ item.name }}</p>
+<p>{{ item.name }} - {{ item.key.id }}</p>
 {% endfor %}
 {% endfor %}
 

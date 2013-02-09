@@ -61,7 +61,7 @@ class Restaurants(webapp2.RequestHandler):
         restaurant.put()
         defaultmenu = Menu(
             restaurant = restaurant,
-            name = "Default Menu",
+            name = str(restaurant.name).title() + " Default Menu",
             )
         defaultmenu.put()
         self.redirect('/restaurant/' + str(restaurant.key().id()))
@@ -113,8 +113,31 @@ class RestaurantItems(webapp2.RequestHandler):
         restaurant = Restaurant.get_by_id(int(restaurantid))
         values["restaurant"] = restaurant
         render(self, "items.html", values)
+    def post(self, restaurantid):
+        user = users.get_current_user()
+        if not users.is_current_user_admin():
+            self.redirect("/")
+        restaurant = Restaurant.get_by_id(int(restaurantid))
+        if self.request.get("action") == "addmenu":
+            menu = Menu(
+                name = self.request.get("name"),
+                restaurant = restaurant,
+                )
+            menu.put()
+        if self.request.get("action") == "additem":
+            menu = Menu.get_by_id(int(self.request.get("menu")))
+            item = Item(
+                name = self.request.get("name"),
+                description = self.request.get("description"),
+                menu = menu
+                )
+            item.put()
+        values = {
+            "user": user,
+            }
+        self.redirect("/items/" + str(restaurant.key().id()))
 
-class Search(webapp2.RequestHandler):
+class SearchLocation(webapp2.RequestHandler):
     def get(self):
         user = users.get_current_user()
         if not users.is_current_user_admin():
@@ -122,12 +145,23 @@ class Search(webapp2.RequestHandler):
         results = None
 
         locationstring = self.request.get("location")
+        locationlatlong = None
         querystring = self.request.get("query")
         miles = 5
 
+        #start our query
+        if locationstring != "":
+            locations = Location.all()
+        else:
+            locations = None
+
+        if querystring != "":
+            pass
+        else:
+            querystring = None
+
         if locationstring != "":
             latlong = helpers.get_lat_long(locationstring)
-            locations = Location.all()
             if latlong:
                 locations = Location.proximity_fetch(
                     locations,
@@ -135,14 +169,9 @@ class Search(webapp2.RequestHandler):
                     max_results = 100,
                     max_distance = (1609 * int(miles)), #1609 meters in a mile
                     )
+                locationlatlong = latlong
         else:
             locationstring = None
-
-        if querystring != "":
-            pass
-        else:
-            querystring = None
-
 
         results = locations
 
@@ -150,7 +179,26 @@ class Search(webapp2.RequestHandler):
             "user": user,
             "results": results,
             "locationstring": locationstring,
+            "locationlatlong": locationlatlong,
             "querystring": querystring,
             "miles": str(miles),
+            "message": "Locations",
             }
         render(self, "search.html", values)
+
+class SearchItem(webapp2.RequestHandler):
+    def get(self):
+        user = users.get_current_user()
+        if not users.is_current_user_admin():
+            self.redirect("/")
+        results = None
+
+        values = {
+            "user": user,
+            "results": results,
+            "locationstring": None,
+            "querystring": None,
+            "miles": 0,
+            "message": "Item search not working yet, also make a different template."
+            }
+        render(self, "search.html", values)        

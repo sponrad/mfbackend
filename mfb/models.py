@@ -26,6 +26,7 @@ class Menu(db.Model):
     date_created = db.DateTimeProperty(auto_now_add = True)
     date_edited = db.DateTimeProperty(auto_now = True)
     slug = db.StringProperty(required = False)
+    order = db.IntegerProperty(required = False)
 
 class Item(db.Model):
     name = db.StringProperty(required = True)
@@ -34,6 +35,7 @@ class Item(db.Model):
     date_created = db.DateTimeProperty(auto_now_add = True)
     date_edited = db.DateTimeProperty(auto_now = True)
     slug = db.StringProperty(required = False)
+    order = db.IntegerProperty(required = False)
 
 class Tag(db.Model):
     name = db.StringProperty(required = False)

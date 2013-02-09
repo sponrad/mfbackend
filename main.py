@@ -6,6 +6,7 @@ app = webapp2.WSGIApplication([
         ('/restaurants', Restaurants),
         (r'/restaurant/(.*)', RestaurantPage),
         (r'/items/(.*)', RestaurantItems),
-        ('/search', Search),
+        ('/searchlocations', SearchLocation),
+        ('/searchitems', SearchItem),
         ('/', MainHandler)
 ], debug=True)
