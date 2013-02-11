@@ -15,6 +15,11 @@
 
 {% for menu in restaurant.menu_set %}
 <p><b>{{ menu.name }}</b></p>
+<p>
+{% for item in menu.item_set %}
+{{ item.name }} <br>
+{% endfor %}
+</p>
 <form method="post">
 <input type="hidden" name="action" value="additem" />
 <input type="hidden" name="menu" value="{{ menu.key.id }}" />
@@ -22,9 +27,6 @@
 <input type="text" name="description" placeholder="Description" />
 <input type="submit" value="Add Item to {{ menu.name }}" />
 </form>
-{% for item in menu.item_set %}
-<p>{{ item.name }} - {{ item.key.id }}</p>
-{% endfor %}
 {% endfor %}
 
 {% endblock body %}

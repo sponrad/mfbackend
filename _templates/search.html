@@ -14,8 +14,8 @@
 
 </form>
 
-{% if results %}
 {% if locationlatlong %}<span style="color: gray">{{ locationlatlong }}</span>{% endif %}
+{% if results %}
 <h3>Results within {{ miles }} mile radius:</h3>
 
 {% for result in results %}

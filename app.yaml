@@ -12,6 +12,9 @@ handlers:
 - url: /_static
   static_dir: _static
 
+- url: /json.*
+  script: jsonapp.app
+
 - url: .*
   script: main.app
 
