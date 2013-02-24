@@ -91,14 +91,7 @@ class RestaurantPage(webapp2.RequestHandler):
             zipcode = self.request.get("zipcode"),
             restaurant = restaurant,
             )
-        locationstring = helpers.get_location_string(address = location.address, zipcode = location.zipcode)
-        latlongcitystate = helpers.get_lat_long_city_state_address(locationstring)
-        if latlongcitystate: 
-            location.location = db.GeoPt(latlongcitystate[0], latlongcitystate[1])
-            location.city = latlongcitystate[2]
-            location.state = latlongcitystate[3]
-            location.address = latlongcitystate[4]
-            location.update_location()
+        location.updatelocation()
         location.put()
         self.redirect("/restaurant/" + str(restaurant.key().id()))
         

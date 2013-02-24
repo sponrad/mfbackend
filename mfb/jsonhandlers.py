@@ -45,6 +45,26 @@ class LocationsSearch(webapp2.RequestHandler):
     def get(self):
         pass
 
+class CreateRestaurant(webapp2.RequestHandler):
+#given restaurant name 
+#returns id
+    def get(self):
+        pass
+
+class CreateLocation(webapp2.RequestHandler):
+#given name, address, city, state, zipcode
+#returns location id
+    def get(self):
+        pass
+
+class CreateMenu(webapp2.RequestHandler):
+    def get(self):
+        pass
+
+class CreateItem(webapp2.RequestHandler):
+    def get(self):
+        pass
+
 class Test(webapp2.RequestHandler):
     def get(self):
         self.response.out.write("Success")
