@@ -116,6 +116,7 @@ class RestaurantItems(webapp2.RequestHandler):
                 name = self.request.get("name"),
                 restaurant = restaurant,
                 )
+            menu.initialorder()
             menu.put()
         if self.request.get("action") == "additem":
             menu = Menu.get_by_id(int(self.request.get("menu")))

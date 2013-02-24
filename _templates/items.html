@@ -14,10 +14,10 @@
 <p>List of current Items (will probably be a table long run, plus menus</p>
 
 {% for menu in restaurant.menu_set %}
-<p><b>{{ menu.name }}</b></p>
+<p><b>{{ menu.name }}</b> {{ menu.order }}</p>
 <p>
 {% for item in menu.item_set %}
-{{ item.name }} <br>
+{{ item.name }}, {{ item.description }}, ${{ item.cost|floatformat:"-2" }} <br>
 {% endfor %}
 </p>
 <form method="post">

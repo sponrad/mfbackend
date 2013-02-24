@@ -5,6 +5,10 @@ from google.appengine.api import users
 from google.appengine.ext.webapp import template
 from google.appengine.ext import db
 
+def renderjson(self, values):
+        self.response.headers['Content-Type'] = "application/json"
+        self.response.out.write(json.dumps(values))
+
 ''' given a lat long, returns a single location for the flip screen '''
 class LocationSearch(webapp2.RequestHandler):
     def get(self):
@@ -35,9 +39,7 @@ class LocationSearch(webapp2.RequestHandler):
             locations = None
             values = "No matches"
 
-
-        self.response.headers['Content-Type'] = "application/json"
-        self.response.out.write(json.dumps(values))
+        renderjson(self, values)
         
 
 ''' given a lat long, returns nearby locations '''
@@ -47,23 +49,74 @@ class LocationsSearch(webapp2.RequestHandler):
 
 class CreateRestaurant(webapp2.RequestHandler):
 #given restaurant name 
-#returns id
+#return id
     def get(self):
-        pass
+        if self.request.get("name") == "":
+            renderjson(self, "Error, supply a name in the request")
+        restaurant = Restaurant(
+            name = self.request.get("name")
+            )
+        restaurant.put()
+        if restaurant.key():
+            values = restaurant.key().id()
+            renderjson(self, values)
+        else:
+            renderjson(self, "Error on save, check data")
 
 class CreateLocation(webapp2.RequestHandler):
-#given name, address, city, state, zipcode
-#returns location id
+#given restaurantid, name, address, city, state, zipcode
+#return location id
     def get(self):
-        pass
+        restaurant = Restaurant.get_by_id(int(self.request.get("restaurantid")))
+        location = Location(
+            name = self.request.get("name"),
+            address = self.request.get("address"),
+            city = self.request.get("city"),
+            zipcode = self.request.get("zipcode"),
+            restaurant = restaurant,
+            )
+        location.updatelocation()
+        location.put()
+        if location.key():
+            values = location.key().id()
+            renderjson(self, values)
+        else:
+            renderjson(self, "Error on save")
 
 class CreateMenu(webapp2.RequestHandler):
+#given restaurantid, name
+#return menu id
     def get(self):
-        pass
+        restaurant = Restaurant.get_by_id(int(self.request.get("restaurantid")))
+        menu = Menu(
+            name = self.request.get("name"),
+            restaurant = restaurant,
+            )
+        menu.initialorder()
+        menu.put()
+        if menu.key():
+            values = menu.key().id()
+            renderjson(self, values)
+        else:
+            renderjson(self, "Error")
 
 class CreateItem(webapp2.RequestHandler):
+#given menuid, name, description, cost
+#return item id
     def get(self):
-        pass
+        menu = Menu.get_by_id(int(self.request.get("menuid")))
+        item = Item(
+            name = self.request.get("name"),
+            description = self.request.get("description"),
+            cost = self.request.get("cost"),
+            menu = menu
+            )
+        item.put()
+        if item.key():
+            values = item.key().id()
+            renderjson(self, values)
+        else:
+            renderjson(self, "Error on item add")
 
 class Test(webapp2.RequestHandler):
     def get(self):
