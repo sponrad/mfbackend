@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h2>{{ restaurant.name }} Menu's and Item's</h2> 
+<h2>{{ restaurant.name }} - Menu's and Item's</h2> 
 <a href="/restaurant/{{ restaurant.key.id }}">Restaurant Page</a>
 
 <p>Add Menu</p>
@@ -17,7 +17,7 @@
 <p><b>{{ menu.name }}</b> {{ menu.order }}</p>
 <p>
 {% for item in menu.item_set %}
-{{ item.name }}, {{ item.description }}, ${{ item.cost|floatformat:"-2" }} <br>
+{{ item.name }}, {{ item.description }}, ${{ item.price|floatformat:"-2" }} <br>
 {% endfor %}
 </p>
 <form method="post">
