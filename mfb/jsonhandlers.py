@@ -101,14 +101,14 @@ class CreateMenu(webapp2.RequestHandler):
             renderjson(self, "Error")
 
 class CreateItem(webapp2.RequestHandler):
-#given menuid, name, description, cost
+#given menuid, name, description, price
 #return item id
     def get(self):
         menu = Menu.get_by_id(int(self.request.get("menuid")))
         item = Item(
             name = self.request.get("name"),
             description = self.request.get("description"),
-            cost = self.request.get("cost"),
+            price = self.request.get("price"),
             menu = menu
             )
         item.put()

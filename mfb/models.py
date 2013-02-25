@@ -50,7 +50,7 @@ class Item(db.Model):
     date_edited = db.DateTimeProperty(auto_now = True)
     slug = db.StringProperty(required = False)
     order = db.IntegerProperty(required = False)
-    cost = db.StringProperty(required = False)
+    price = db.StringProperty(required = False)
 
 class Tag(db.Model):
     name = db.StringProperty(required = False)
