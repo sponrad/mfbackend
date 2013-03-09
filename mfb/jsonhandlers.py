@@ -6,6 +6,7 @@ from google.appengine.ext.webapp import template
 from google.appengine.ext import db
 
 def renderjson(self, values):
+	self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.headers['Content-Type'] = "application/json"
         self.response.out.write(json.dumps(values))
 
@@ -28,6 +29,7 @@ class LocationSearch(webapp2.RequestHandler):
                     "locationname": str(location.name),
                     "location": [location.location.lat, location.location.lon],
                     "restaurant": str(location.restaurant.name),
+		    "restaurantid": str(location.restaurant.key().id()),
                     "address": str(location.address),
                     "city": str(location.city),
                     }
@@ -65,6 +67,7 @@ class LocationsSearch(webapp2.RequestHandler):
 				    "locationname": str(l.name),
 				    "location": [l.location.lat, l.location.lon],
 				    "restaurant": str(l.restaurant.name),
+				    "restaurantid": str(l.restaurant.key().id()),
 				    "address": str(l.address),
 				    "city": str(l.city),
 				    }
@@ -78,6 +81,13 @@ class LocationsSearch(webapp2.RequestHandler):
             values['response'] = 0
 
         renderjson(self, values)
+
+class GetMenu(webapp2.RequestHandler):
+	def get(self):
+		restaurantid = self.request.get("restaurnatid")
+		restaurant = Restaurant.get_by_id(int(restaurantid))
+		data.menus = []
+		#get each item in a menu
 
 class CreateRestaurant(webapp2.RequestHandler):
 #given restaurant name 
