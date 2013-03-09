@@ -141,7 +141,7 @@ class SearchLocation(webapp2.RequestHandler):
         locationstring = self.request.get("location")
         locationlatlong = None
         querystring = self.request.get("query")
-        miles = 5
+        radius = self.request.get("radius")
 
         #start our query
         if locationstring != "":
@@ -161,7 +161,7 @@ class SearchLocation(webapp2.RequestHandler):
                     locations,
                     geotypes.Point(latlong[0], latlong[1]),
                     max_results = 100,
-                    max_distance = (1609 * int(miles)), #1609 meters in a mile
+                    max_distance = (0.3048 * float(radius)),
                     )
                 locationlatlong = latlong
         else:
@@ -175,7 +175,8 @@ class SearchLocation(webapp2.RequestHandler):
             "locationstring": locationstring,
             "locationlatlong": locationlatlong,
             "querystring": querystring,
-            "miles": str(miles),
+            "feetstring": str(radius),
+            "milestring": str(float(radius) / 5280),
             "message": "Locations",
             }
         render(self, "search.html", values)

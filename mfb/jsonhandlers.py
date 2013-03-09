@@ -20,7 +20,7 @@ class LocationSearch(webapp2.RequestHandler):
                 locations,
                 geotypes.Point(float(latitude), float(longitude)),
                 max_results = 1,
-                max_distance = 20,  #meters
+                max_distance = 16,  #meters, this is ~50 feet
                 )
             if locations: 
                 location = locations[0]
@@ -42,10 +42,42 @@ class LocationSearch(webapp2.RequestHandler):
         renderjson(self, values)
         
 
-''' given a lat long, returns nearby locations '''
+''' given a lat long and radius, returns nearby locations '''
 class LocationsSearch(webapp2.RequestHandler):
     def get(self):
-        pass
+        values = {}
+        latitude = self.request.get("latitude")
+        longitude = self.request.get("longitude")
+	radius = self.request.get("radius")
+        if latitude != "" and longitude != "":
+            locations = Location.all()
+            locations = Location.proximity_fetch(
+		    locations,
+		    geotypes.Point(float(latitude), float(longitude)),
+		    max_results = 30,
+		    max_distance = int(float(radius)*0.3048),  #ft to meters
+		    )
+	    if len(locations) > 0: 
+		    values['locations'] = []
+		    values['response'] = 1
+		    for l in locations:
+			    locationdata = {
+				    "locationname": str(l.name),
+				    "location": [l.location.lat, l.location.lon],
+				    "restaurant": str(l.restaurant.name),
+				    "address": str(l.address),
+				    "city": str(l.city),
+				    }
+			    values['locations'].append(locationdata)
+            else:
+		    location = None
+		    values['response'] = 0
+
+        else:
+            locations = None
+            values['response'] = 0
+
+        renderjson(self, values)
 
 class CreateRestaurant(webapp2.RequestHandler):
 #given restaurant name 
