@@ -154,6 +154,9 @@ class SearchLocation(webapp2.RequestHandler):
         else:
             querystring = None
 
+        if radius == "":
+            radius = 0
+
         if locationstring != "":
             latlong = helpers.get_lat_long(locationstring)
             if latlong:
