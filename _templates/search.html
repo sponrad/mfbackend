@@ -10,14 +10,14 @@
 <form method="get">
 <input type="text" name="location" placeholder="Where are you?" {% if locationstring %}value="{{ locationstring }}"{% endif %}>
 <input type="text" name="query" placeholder="Search Query (Restaurant name, Item name, Decription, etc)" {% if querystring %}value="{{ querystring }}"{% endif %}>
-<input type="text" name="radius" placeholder="Radius (feet)" {% if feetstring %}value="{{ feetstring }}"{% else %}value="5280"{% endif %}>
+<input type="text" name="radius" placeholder="Radius (feet)" {% if feetstring != "0" %}value="{{ feetstring }}"{% else %}{% endif %}>
 <input type="submit" value="Search" />
 
 </form>
 
 {% if locationlatlong %}<span style="color: gray">{{ locationlatlong }}</span>{% endif %}
 {% if results %}
-<h3>Results within {{ feetstring }} ft ({{milestring}} mi) radius:</h3>
+<h3>Results within {{ feetstring }} ft ({{milestring|floatformat:"-2"}} mi) radius:</h3>
 
 {% for result in results %}
 <p>
