@@ -84,11 +84,28 @@ class LocationsSearch(webapp2.RequestHandler):
 
 class GetMenu(webapp2.RequestHandler):
 	def get(self):
-		restaurantid = self.request.get("restaurnatid")
+		restaurantid = self.request.get("restaurantid")
 		restaurant = Restaurant.get_by_id(int(restaurantid))
-		data.menus = []
-		#get each item in a menu
-
+		values = {}
+		menus = []
+		for menu in restaurant.menu_set:
+			m = {}
+			m['name'] = menu.name
+			items = []		
+			for item in menu.item_set:
+				i = {}
+				i['name'] = item.name
+				i['description'] = item.description
+				i['price'] = item.price
+				i['itemid'] = item.key().id()
+				items.append(i)
+			m['items'] = items
+			menus.append(m)
+		values['menus'] = menus
+			
+		values['response'] = 1
+		renderjson(self, values)
+		
 class CreateRestaurant(webapp2.RequestHandler):
 #given restaurant name 
 #return id
