@@ -21,7 +21,7 @@ class LocationSearch(webapp2.RequestHandler):
                 locations,
                 geotypes.Point(float(latitude), float(longitude)),
                 max_results = 1,
-                max_distance = 16,  #meters, this is ~50 feet
+                max_distance = 48,  #meters, this is ~50 feet
                 )
             if locations: 
                 location = locations[0]
