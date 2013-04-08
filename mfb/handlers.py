@@ -7,9 +7,9 @@ from google.appengine.ext import db
 
 providers = {
     'Google'   : 'https://www.google.com/accounts/o8/id',
-    'Yahoo'    : 'yahoo.com',
-    'MySpace'  : 'myspace.com',
-    'AOL'      : 'aol.com',
+#    'Yahoo'    : 'yahoo.com',
+#    'MySpace'  : 'myspace.com',
+#    'AOL'      : 'aol.com',
     'MyOpenID' : 'myopenid.com'
     # add more here
 }
