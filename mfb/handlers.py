@@ -3,7 +3,13 @@ from models import *
 from geo import geotypes
 from google.appengine.api import users
 from google.appengine.ext.webapp import template
-from google.appengine.ext import db
+
+from webapp2_extras import auth
+from webapp2_extras import sessions
+from webapp2_extras.auth import InvalidAuthIdError
+from webapp2_extras.auth import InvalidPasswordError
+
+from handlerhelpers import *
 
 providers = {
     'Google'   : 'https://www.google.com/accounts/o8/id',
@@ -34,9 +40,53 @@ def render(self, t, values):
 
 ######################## HANDLERS
 
-class MainHandler(webapp2.RequestHandler):
+class Signup(BaseHandler):
+    def post(self):
+        user_name = self.request.get('username')
+        email_address = self.request.get('email')
+        password = self.request.get('password')
+        unique_properties = ['email_address']
+        user_data = self.user_model.create_user(
+            user_name,
+            unique_properties,
+            email_address=email_address, 
+            admin=False,
+            password_raw=password,
+            verified=False)
+        if not user_data[0]: #user_data is a tuple
+            #self.display_message('Unable to create user for email %s because of duplicate keys %s' % (user_name, user_data[1]))
+            return self.redirect('/?not unique')
+    
+        user = user_data[1]
+        user_id = user.get_id()
+        token = self.user_model.create_signup_token(user_id)
+        user.put()
+        #verification_url = self.uri_for('verification', type='v', user_id=user_id, signup_token=token, _full=True)
+        #msg = 'Send an email to user in order to verify their address. They will be able to do so by visiting <a href="{url}">{url}</a>'
+        #self.display_message(msg.format(url=verification_url))
+        self.redirect(self.uri_for('home'))
+
+class Login(BaseHandler):
+    def post(self):
+        username = self.request.get('username')
+        password = self.request.get('password')
+        try:
+            u = self.auth.get_user_by_password(username, password, remember=True,
+                                               save_session=True)
+            self.redirect("/?message=Logged IN")
+        except (InvalidAuthIdError, InvalidPasswordError) as e:
+            #logging.info('Login failed for user %s because of %s', username, type(e))
+            self.redirect("/?message=Username or Password Incorrect")
+
+class Logout(BaseHandler):
+  def get(self):
+    self.auth.unset_session()
+    self.redirect(self.uri_for('home'))
+
+class MainHandler(BaseHandler):
     def get(self):
-        user = users.get_current_user()
+        #user = users.get_current_user()
+        user = self.auth.get_user_by_session()
         values = {"user": user}
         render(self, 'home.html', values)
 
