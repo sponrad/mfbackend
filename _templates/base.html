@@ -23,15 +23,14 @@
 	<h4>Administrative Pages</h4>
 	<p>
 	  <a href="/">Home</a>
-	  <a href="/_ah/admin">LocalAdmin</a>
 	  <a href="/restaurants">Restaurants</a>
 	  <a href="/searchlocations">TestLocationSearch</a>
 	  <a href="/searchitems">TestItemSearch</a>
+	  <a href="/_ah/admin">LocalAdmin</a>	  
 	<p>
+     	{% endif %}
       </div>
     </div>
-	{% endif %}
-
 
     {% else %}
     <form action="/login" method="post">

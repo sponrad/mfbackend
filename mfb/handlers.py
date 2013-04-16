@@ -21,7 +21,7 @@ providers = {
 }
 
 #render(self, 'account.html', values)
-def render(self, t, values):
+def render(self, t, values = {}):
     try: values['user']
     except:
         values['user'] = self.auth.get_user_by_session()
@@ -80,9 +80,7 @@ class Logout(BaseHandler):
 
 class MainHandler(BaseHandler):
     def get(self):
-        user = self.auth.get_user_by_session()
-        values = {"user": user}
-        render(self, 'home.html', values)
+        render(self, 'home.html')
 
 class Restaurants(BaseHandler):
     @admin_required
@@ -105,7 +103,7 @@ class Restaurants(BaseHandler):
         defaultmenu.put()
         self.redirect('/restaurant/' + str(restaurant.key().id()))
 
-class RestaurantPage(webapp2.RequestHandler):
+class RestaurantPage(BaseHandler):
     @admin_required
     def get(self, restaurantid):
         restaurant = Restaurant.get_by_id(int(restaurantid))
@@ -129,13 +127,13 @@ class RestaurantPage(webapp2.RequestHandler):
         location.put()
         self.redirect("/restaurant/" + str(restaurant.key().id()))
         
-class RestaurantItems(webapp2.RequestHandler):
+class RestaurantItems(BaseHandler):
     @admin_required
     def get(self, restaurantid):
-        values = {
-            }
         restaurant = Restaurant.get_by_id(int(restaurantid))
-        values["restaurant"] = restaurant
+        values = {
+            "restaurant": restaurant,
+            }
         render(self, "items.html", values)
     @admin_required
     def post(self, restaurantid):
@@ -155,11 +153,9 @@ class RestaurantItems(webapp2.RequestHandler):
                 menu = menu
                 )
             item.put()
-        values = {
-            }
         self.redirect("/items/" + str(restaurant.key().id()))
 
-class SearchLocation(webapp2.RequestHandler):
+class SearchLocation(BaseHandler):
     @admin_required
     def get(self):
         results = None
@@ -209,7 +205,7 @@ class SearchLocation(webapp2.RequestHandler):
             }
         render(self, "search.html", values)
 
-class SearchItem(webapp2.RequestHandler):
+class SearchItem(BaseHandler):
     @admin_required
     def get(self):
         results = None
