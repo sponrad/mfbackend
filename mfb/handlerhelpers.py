@@ -18,6 +18,20 @@ def user_required(handler):
 
   return check_login
 
+def admin_required(handler):
+  """
+    Decorator that checks if there's a user associated with the current session.
+    Will also fail if there's no session present.
+  """
+  def check_admin(self, *args, **kwargs):
+    auth = self.auth
+    if not auth.get_user_by_session()['admin']:
+      self.redirect(self.uri_for('home'))
+    else:
+      return handler(self, *args, **kwargs)
+
+  return check_admin
+
 class BaseHandler(webapp2.RequestHandler):
   @webapp2.cached_property
   def auth(self):

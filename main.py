@@ -4,7 +4,7 @@ from mfb.handlers import *
 config = {
   'webapp2_extras.auth': {
     'user_model': 'mfb.models.User',
-    'user_attributes': ['auth_ids'],
+    'user_attributes': ['auth_ids', 'admin'],
   },
   'webapp2_extras.sessions': {
     'secret_key': 'THISKEYISSUCHASECRET'

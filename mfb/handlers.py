@@ -22,14 +22,9 @@ providers = {
 
 #render(self, 'account.html', values)
 def render(self, t, values):
-    if values["user"]:  # signed in already
-        values["logout"] = users.create_logout_url(self.request.uri)
-    else:     # let user choose authenticator
-        values["logins"] = []
-        for name, uri in providers.items():
-            url = users.create_login_url(federated_identity=uri)
-            temp = {"name": name, "url": url }
-            values["logins"].append(temp)
+    try: values['user']
+    except:
+        values['user'] = self.auth.get_user_by_session()
     try: values['referer'] = self.request.headers['Referer']
     except: values['referer'] = "/"
     if users.is_current_user_admin():
@@ -73,7 +68,7 @@ class Login(BaseHandler):
         try:
             u = self.auth.get_user_by_password(username, password, remember=True,
                                                save_session=True)
-            self.redirect("/?message=Logged IN")
+            self.redirect("/")
         except (InvalidAuthIdError, InvalidPasswordError) as e:
             #logging.info('Login failed for user %s because of %s', username, type(e))
             self.redirect("/?message=Username or Password Incorrect")
@@ -85,26 +80,20 @@ class Logout(BaseHandler):
 
 class MainHandler(BaseHandler):
     def get(self):
-        #user = users.get_current_user()
         user = self.auth.get_user_by_session()
         values = {"user": user}
         render(self, 'home.html', values)
 
-class Restaurants(webapp2.RequestHandler):
+class Restaurants(BaseHandler):
+    @admin_required
     def get(self):
-        user = users.get_current_user()
-        if not users.is_current_user_admin():
-            self.redirect("/")
         restaurants = Restaurant.all().run()
         values = {
-            "user": user,
             "restaurants": restaurants,
             }
         render(self, "restaurants.html", values)
+    @admin_required
     def post(self):
-        user = users.get_current_user()
-        if not users.is_current_user_admin():
-            self.redirect("/")
         restaurant = Restaurant(
             name = self.request.get("name")
             )
@@ -117,22 +106,17 @@ class Restaurants(webapp2.RequestHandler):
         self.redirect('/restaurant/' + str(restaurant.key().id()))
 
 class RestaurantPage(webapp2.RequestHandler):
+    @admin_required
     def get(self, restaurantid):
-        user = users.get_current_user()
-        if not users.is_current_user_admin():
-            self.redirect("/")
         restaurant = Restaurant.get_by_id(int(restaurantid))
         locations = Location.all().filter("restaurant =", restaurant).run()
         values = {
-            "user": user,
             "restaurant": restaurant,
             "locations": locations,
             }
         render(self, "restaurant.html", values)
+    @admin_required
     def post(self, restaurantid):
-        user = users.get_current_user()
-        if not users.is_current_user_admin():
-            self.redirect("/")
         restaurant = Restaurant.get_by_id(int(restaurantid))
         location = Location(
             name = self.request.get("name"),
@@ -146,20 +130,15 @@ class RestaurantPage(webapp2.RequestHandler):
         self.redirect("/restaurant/" + str(restaurant.key().id()))
         
 class RestaurantItems(webapp2.RequestHandler):
+    @admin_required
     def get(self, restaurantid):
-        user = users.get_current_user()
-        if not users.is_current_user_admin():
-            self.redirect("/")
         values = {
-            "user": user,
             }
         restaurant = Restaurant.get_by_id(int(restaurantid))
         values["restaurant"] = restaurant
         render(self, "items.html", values)
+    @admin_required
     def post(self, restaurantid):
-        user = users.get_current_user()
-        if not users.is_current_user_admin():
-            self.redirect("/")
         restaurant = Restaurant.get_by_id(int(restaurantid))
         if self.request.get("action") == "addmenu":
             menu = Menu(
@@ -177,15 +156,12 @@ class RestaurantItems(webapp2.RequestHandler):
                 )
             item.put()
         values = {
-            "user": user,
             }
         self.redirect("/items/" + str(restaurant.key().id()))
 
 class SearchLocation(webapp2.RequestHandler):
+    @admin_required
     def get(self):
-        user = users.get_current_user()
-        if not users.is_current_user_admin():
-            self.redirect("/")
         results = None
 
         locationstring = self.request.get("location")
@@ -223,7 +199,6 @@ class SearchLocation(webapp2.RequestHandler):
         results = locations
 
         values = {
-            "user": user,
             "results": results,
             "locationstring": locationstring,
             "locationlatlong": locationlatlong,
@@ -235,14 +210,11 @@ class SearchLocation(webapp2.RequestHandler):
         render(self, "search.html", values)
 
 class SearchItem(webapp2.RequestHandler):
+    @admin_required
     def get(self):
-        user = users.get_current_user()
-        if not users.is_current_user_admin():
-            self.redirect("/")
         results = None
 
         values = {
-            "user": user,
             "results": results,
             "locationstring": None,
             "querystring": None,

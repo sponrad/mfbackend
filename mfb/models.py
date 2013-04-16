@@ -33,6 +33,8 @@ class User(webapp2_extras.appengine.auth.models.User):
             return user, timestamp
         return None, None    
 
+    def is_admin():
+        return self.admin
 
 class Restaurant(db.Model):
     name = db.StringProperty(required = True)
