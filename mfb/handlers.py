@@ -1,86 +1,66 @@
-import os, webapp2, helpers, globs, json
+from helpers import *
 from models import *
 from geo import geotypes
-from google.appengine.api import users
-from google.appengine.ext.webapp import template
-
-from webapp2_extras import auth
-from webapp2_extras import sessions
-from webapp2_extras.auth import InvalidAuthIdError
-from webapp2_extras.auth import InvalidPasswordError
-
-from handlerhelpers import *
 
 providers = {
     'Google'   : 'https://www.google.com/accounts/o8/id',
 #    'Yahoo'    : 'yahoo.com',
-#    'MySpace'  : 'myspace.com',
-#    'AOL'      : 'aol.com',
-    'MyOpenID' : 'myopenid.com'
-    # add more here
+#    'MyOpenID' : 'myopenid.com'
 }
 
-#render(self, 'account.html', values)
-def render(self, t, values = {}):
-    try: values['user']
-    except:
-        values['user'] = self.auth.get_user_by_session()
-    try: values['referer'] = self.request.headers['Referer']
-    except: values['referer'] = "/"
-    if users.is_current_user_admin():
-        values['admin'] = True
-    templatefile = '_templates/' + t
-    path = os.path.join(os.path.dirname(os.path.dirname(__file__)), templatefile)
-    self.response.out.write(template.render(path, values))
-
 ######################## HANDLERS
+class SignupHandler(BaseHandler):
+  def post(self):
+    user_name = self.request.get('username')
+    email = self.request.get('email')
+    name = self.request.get('name')
+    password = self.request.get('password')
+    last_name = self.request.get('lastname')
 
-class Signup(BaseHandler):
-    def post(self):
-        user_name = self.request.get('username')
-        email_address = self.request.get('email')
-        password = self.request.get('password')
-        unique_properties = ['email_address']
-        user_data = self.user_model.create_user(
-            user_name,
-            unique_properties,
-            email_address=email_address, 
-            admin=False,
-            password_raw=password,
-            verified=False)
-        if not user_data[0]: #user_data is a tuple
-            #self.display_message('Unable to create user for email %s because of duplicate keys %s' % (user_name, user_data[1]))
-            return self.redirect('/?not unique')
+    unique_properties = ['email_address']
+    user_data = self.user_model.create_user(user_name,
+      unique_properties,
+      email_address=email, name=name, password_raw=password,
+      last_name=last_name, verified=False)
+    if not user_data[0]: #user_data is a tuple
+      self.display_message('Unable to create user for email %s because of \
+        duplicate keys %s' % (user_name, user_data[1]))
+      return
     
-        user = user_data[1]
-        user_id = user.get_id()
-        token = self.user_model.create_signup_token(user_id)
-        user.put()
-        #verification_url = self.uri_for('verification', type='v', user_id=user_id, signup_token=token, _full=True)
-        #msg = 'Send an email to user in order to verify their address. They will be able to do so by visiting <a href="{url}">{url}</a>'
-        #self.display_message(msg.format(url=verification_url))
-        self.redirect(self.uri_for('home'))
+    user = user_data[1]
+    user_id = user.get_id()
+    user.put()
+    #token = self.user_model.create_signup_token(user_id)
 
-class Login(BaseHandler):
+    #verification_url = self.uri_for('verification', type='v', user_id=user_id, signup_token=token, _full=True)
+
+      #msg = 'Send an email to user in order to verify their address. \They will be able to do so by visiting <a href="{url}">{url}</a>'
+
+    #self.display_message(msg.format(url=verification_url))
+    self.redirect(self.uri_for('home'))
+
+class LoginHandler(BaseHandler):
     def post(self):
         username = self.request.get('username')
         password = self.request.get('password')
         try:
             u = self.auth.get_user_by_password(username, password, remember=True,
                                                save_session=True)
-            self.redirect("/")
+            self.redirect(self.uri_for('home'))
         except (InvalidAuthIdError, InvalidPasswordError) as e:
-            #logging.info('Login failed for user %s because of %s', username, type(e))
-            self.redirect("/?message=Username or Password Incorrect")
-
-class Logout(BaseHandler):
-  def get(self):
-    self.auth.unset_session()
-    self.redirect(self.uri_for('home'))
+            self.redirect(self.uri_for('home'))
+            
+class LogoutHandler(BaseHandler):
+    def get(self):
+        self.auth.unset_session()
+        self.redirect(self.uri_for('home'))
 
 class MainHandler(BaseHandler):
     def get(self):
-        render(self, 'home.html')
+        user = self.auth.get_user_by_session()
+        values = {
+            }
+        render(self, 'home.html', values)
 
 class Restaurants(BaseHandler):
     @admin_required
@@ -180,7 +160,7 @@ class SearchLocation(BaseHandler):
             radius = 0
 
         if locationstring != "":
-            latlong = helpers.get_lat_long(locationstring)
+            latlong = get_lat_long(locationstring)
             if latlong:
                 locations = Location.proximity_fetch(
                     locations,

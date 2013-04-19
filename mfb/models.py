@@ -16,6 +16,7 @@ class User(webapp2_extras.appengine.auth.models.User):
     @classmethod
     def get_by_auth_token(cls, user_id, token, subject='auth'):
         """Returns a user object based on a user ID and token.
+
         :param user_id:
         The user_id of the requesting user.
         :param token:
@@ -31,10 +32,8 @@ class User(webapp2_extras.appengine.auth.models.User):
         if valid_token and user:
             timestamp = int(time.mktime(valid_token.created.timetuple()))
             return user, timestamp
-        return None, None    
 
-    def is_admin():
-        return self.admin
+        return None, None
 
 class Restaurant(db.Model):
     name = db.StringProperty(required = True)

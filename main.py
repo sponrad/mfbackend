@@ -2,14 +2,14 @@ import webapp2
 from mfb.handlers import *
 
 config = {
-  'webapp2_extras.auth': {
-    'user_model': 'mfb.models.User',
-    'user_attributes': ['auth_ids', 'admin'],
-  },
-  'webapp2_extras.sessions': {
-    'secret_key': 'THISKEYISSUCHASECRET'
-  }
-}
+    'webapp2_extras.auth': {
+        'user_model': 'mfb.models.User',
+        'user_attributes': ['auth_ids', 'admin'],
+        },
+    'webapp2_extras.sessions': {
+        'secret_key': 'THISKEYISSUCHASECRET',
+        }
+    }
 
 app = webapp2.WSGIApplication([
         ('/restaurants', Restaurants),
@@ -17,8 +17,8 @@ app = webapp2.WSGIApplication([
         (r'/items/(.*)', RestaurantItems),
         ('/searchlocations', SearchLocation),
         ('/searchitems', SearchItem),
-        ('/signup', Signup),
-        ('/login', Login),
-        ('/logout', Logout),
+        ('/signup', SignupHandler),
+        ('/login', LoginHandler),
+        ('/logout', LogoutHandler),
          webapp2.Route('/', MainHandler, name="home")
 ], debug=True, config=config)
