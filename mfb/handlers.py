@@ -198,3 +198,18 @@ class SearchItem(BaseHandler):
             "message": "Item search not working yet, also make a different template."
             }
         render(self, "search.html", values)        
+
+class Maintain(BaseHandler):
+  @admin_required
+  def get(self):
+    action = self.request.get("a")
+    if action == "ryanandpat":
+      pat = User.get_by_auth_id('psdower')
+      pat.admin = True
+      pat.put()
+      ryan = User.get_by_auth_id('ryanmunger')
+      ryan.admin = True
+      ryan.put()
+      return self.response.out.write("done, ryan and pat are admin")
+    if action == "":
+      return self.repsonse.out.write("no action specfifed")
