@@ -21,7 +21,7 @@ class SignupHandler(BaseHandler):
     user_data = self.user_model.create_user(user_name,
       unique_properties,
       email_address=email, name=name, password_raw=password,
-      last_name=last_name, verified=False)
+      last_name=last_name, verified=False, admin=False)
     if not user_data[0]: #user_data is a tuple
       self.display_message('Unable to create user for email %s because of \
         duplicate keys %s' % (user_name, user_data[1]))
