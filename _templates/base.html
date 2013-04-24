@@ -54,6 +54,14 @@
 	<p>{{ user }}</p>
       </div>
     </div>
+    <script>
+      $(document).ready(function(){
+      $('.edit').editable('/editable', {
+      tooltip : "Click to edit, save with ENTER",
+      style : "inherit",
+      });
+      });
+    </script>
     {% block bodyend %}{% endblock bodyend %}
   </body>
 
