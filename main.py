@@ -20,6 +20,7 @@ app = webapp2.WSGIApplication([
         ('/signup', SignupHandler),
         ('/login', LoginHandler),
         ('/logout', LogoutHandler),
+        ('/editable', Editable),
         ('/maintain', Maintain),
          webapp2.Route('/', MainHandler, name="home")
 ], debug=True, config=config)

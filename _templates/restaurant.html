@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 
+
+{% block head %}
+{% endblock head %}
+
 {% block body %}
-<h2>{{ restaurant.name }}</h2>
+<h2 class="edit" id="{{ restaurant.key.id }}.restaurant_name">{{ restaurant.name }}</h2>
 
 <p><a href="/items/{{ restaurant.key.id }}">Menus and Items</a></p>
 
@@ -16,7 +20,19 @@
 
 <p>List of all of the locations for {{ restaurant.name }}</p>
 {% for l in locations %}
-<p>{{ l.name }}<br>{{ l.address }}, {{ l.city }}, {{ l.state }} {{l.zipcode}} | {{ l.location }}</p>  <!-- http://maps.google.com/?q=<lat>,<lng> -->
+<p><span id="{{ l.key.id }}.location_name" class="edit">{{ l.name }}</span><br>
+<span id="{{ l.key.id }}.location_address" class="edit">{{ l.address }}, {{ l.city }}, {{ l.state }} {{ l.zipcode }} </span> | {{ l.location }}</p>  <!-- http://maps.google.com/?q=<lat>,<lng> -->
 {% endfor %}
 
 {% endblock body %}
+
+{% block bodyend %}
+<script>
+  $(document).ready(function(){
+  $('.edit').editable('/editable', {
+  tooltip : "Click to edit, save with ENTER",
+  style : "inherit",
+  });
+  });
+</script>
+{% endblock bodyend %}

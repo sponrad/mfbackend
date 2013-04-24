@@ -202,6 +202,28 @@ class SearchItem(BaseHandler):
             }
         render(self, "search.html", values)        
 
+class Editable(BaseHandler):
+  @admin_required
+  def get(self):
+    self.response.out.write("there you are")
+  @admin_required
+  def post(self):
+    id, action = self.request.get('id').split(".")
+    value = self.request.get('value')
+    if action == "restaurant_name":
+      restaurant = Restaurant.get_by_id(int(id))
+      restaurant.name = value
+      restaurant.put()
+      self.response.out.write(value)
+    if action == "location_name":
+      location = Location.get_by_id(int(id))
+      location.name = value
+      location.put()
+      self.response.out.write(value)
+    if action ==  "location_address":
+      #set the location, recalc the geohash
+      self.response.out.write("wip")
+
 class Maintain(BaseHandler):
   @admin_required
   def get(self):
