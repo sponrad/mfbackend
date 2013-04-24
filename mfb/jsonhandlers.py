@@ -5,10 +5,41 @@ from google.appengine.api import users
 from google.appengine.ext.webapp import template
 from google.appengine.ext import db
 
+from helpers import *
+
+from webapp2_extras.auth import InvalidAuthIdError
+from webapp2_extras.auth import InvalidPasswordError
+
 def renderjson(self, values):
 	self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.headers['Content-Type'] = "application/json"
         self.response.out.write(json.dumps(values))
+
+class Login(BaseHandler):
+	def get(self):
+		username = self.request.get('username')
+		password = self.request.get('password')
+		try:
+			u = self.auth.get_user_by_password(username, password, remember=False, save_session=False)
+			auth_token = self.user_model.create_auth_token(u['user_id'])
+			values = {
+				"response": 1,
+				"user_dict": u,
+				"auth_token": auth_token,
+				}
+			renderjson(self, values)			
+		except (InvalidAuthIdError, InvalidPasswordError) as e:
+			self.response.out.write("exception")
+		
+class Logout(BaseHandler):
+	def get(self):
+		user_id = self.request.get('user_id')
+		auth_token = self.request.get('auth_token')
+		self.user_model.delete_auth_token(user_id, auth_token)
+		values = {
+			"response": 1,
+			}
+		renderjson(self, values)
 
 ''' given a lat long, returns a single location for the flip screen '''
 class LocationSearch(webapp2.RequestHandler):

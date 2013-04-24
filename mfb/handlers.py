@@ -2,6 +2,9 @@ from helpers import *
 from models import *
 from geo import geotypes
 
+from webapp2_extras.auth import InvalidAuthIdError
+from webapp2_extras.auth import InvalidPasswordError
+
 providers = {
     'Google'   : 'https://www.google.com/accounts/o8/id',
 #    'Yahoo'    : 'yahoo.com',
