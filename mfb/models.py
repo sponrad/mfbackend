@@ -50,6 +50,11 @@ class Restaurant(db.Model):
     date_created = db.DateTimeProperty(auto_now_add = True)
     date_edited = db.DateTimeProperty(auto_now = True)
     slug = db.StringProperty()
+    
+    def delete(self):
+        for menu in self.menu_set:
+            menu.delete()
+        db.delete(self.key())
 
 class Location(GeoModel):
     name =  db.StringProperty()
@@ -72,7 +77,10 @@ class Location(GeoModel):
             self.city = latlongcitystate[2]
             self.state = latlongcitystate[3]
             self.address = latlongcitystate[4]
-            self.update_location()        
+            self.update_location()
+
+    def delete(self):
+        db.delete(self.key())
 
 class Menu(db.Model):
     name = db.StringProperty() 
@@ -84,6 +92,11 @@ class Menu(db.Model):
 
     def initialorder(self):
         self.order = self.restaurant.menu_set.count() + 1
+        
+    def delete(self):
+        for item in self.item_set:
+            item.delete()
+        db.delete(self.key())
 
 class Item(db.Model):
     name = db.StringProperty(required = True)
@@ -95,3 +108,6 @@ class Item(db.Model):
     order = db.IntegerProperty()
     price = db.StringProperty()
     tags = db.StringListProperty()
+
+    def delete(self):
+        db.delete(self.key())
