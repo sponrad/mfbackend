@@ -11,7 +11,7 @@
 
   <p>List of Restaurants:</p>
   {% for r in restaurants %}
-  <p><a href="/restaurant/{{ r.key.id }}">{{ r.name }}</a> </p>
+  <p><a href="/restaurant/{{ r.key.id }}">{{ r.name }}</a> <a href="/delete?action=restaurant&id={{ r.key.id }}" class="delete" data-confirm="Are you sure?">Delete</a></p>
   {% endfor %}
 </div>
 {% endblock body %}

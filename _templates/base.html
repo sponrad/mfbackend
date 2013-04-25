@@ -14,6 +14,13 @@
       .edit {
       border-bottom: 1px #9c9 solid;
       }
+      .delete {
+      color: red;
+      font-size: 75%;
+      background: #ccc;
+      padding: 3px;
+      border-radius: 3px;
+      }
     </style>
     {% block head %}{% endblock head %}
   </head>
@@ -71,6 +78,10 @@
       tooltip : "Click to edit, save with ENTER",
       style : "inherit",
       });
+      });
+      $('body').on('click', '[data-confirm]', function(){
+      var msg = $(this).attr('data-confirm');
+      return confirm(msg);
       });
     </script>
     {% block bodyend %}{% endblock bodyend %}

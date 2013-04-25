@@ -83,6 +83,7 @@ class Restaurants(BaseHandler):
             restaurant = restaurant,
             name = str(restaurant.name).title() + " Default Menu",
             )
+        defaultmenu.initialorder()
         defaultmenu.put()
         self.redirect('/restaurant/' + str(restaurant.key().id()))
 
@@ -209,7 +210,12 @@ class Editable(BaseHandler):
       self.response.out.write(value)
     if action ==  "location_address":
       #set the location, recalc the geohash
-      self.response.out.write("wip")
+      location = Location.get_by_id(int(id))
+      location.address = value.split(",").replace(" ", "")[0]
+      location.city = value.split(",").replace(" ", "")[1]
+      location.zipcode = value.split(",").replace(" ", "")[2]
+      location.updatelocation()
+      self.response.out.write(value)
     if action == "menu_name":
       menu = Menu.get_by_id(int(id))
       menu.name = value
@@ -230,6 +236,31 @@ class Editable(BaseHandler):
       item.price = value
       item.put()
       self.response.out.write(value)
+
+class Delete(BaseHandler):
+  @admin_required
+  def get(self):
+    action = self.request.get("action")
+    id = self.request.get("id")
+    if action == "restaurant":
+      restaurant = Restaurant.get_by_id(int(id))
+      restaurant.delete()
+      self.redirect("/restaurants")
+    if action == "location":
+      location = Location.get_by_id(int(id))
+      restaurant = location.restaurant
+      location.delete()
+      self.redirect("/restaurant/" + str(restaurant.key().id()))
+    if action == "menu":
+      menu = Menu.get_by_id(int(id))
+      restaurant = menu.restaurant
+      menu.delete()
+      self.redirect("/items/" + str(restaurant.key().id()))
+    if action == "item":
+      item = Item.get_by_id(int(id))
+      restaurant = item.menu.restaurant
+      item.delete()
+      self.redirect("/items/" + str(restaurant.key().id()))    
 
 class Maintain(BaseHandler):
   @admin_required
