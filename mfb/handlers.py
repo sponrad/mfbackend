@@ -188,20 +188,6 @@ class SearchLocation(BaseHandler):
             }
         render(self, "search.html", values)
 
-class SearchItem(BaseHandler):
-    @admin_required
-    def get(self):
-        results = None
-
-        values = {
-            "results": results,
-            "locationstring": None,
-            "querystring": None,
-            "miles": 0,
-            "message": "Item search not working yet, also make a different template."
-            }
-        render(self, "search.html", values)        
-
 class Editable(BaseHandler):
   @admin_required
   def get(self):

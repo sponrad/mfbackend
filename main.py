@@ -16,7 +16,6 @@ app = webapp2.WSGIApplication([
         (r'/restaurant/(.*)', RestaurantPage),
         (r'/items/(.*)', RestaurantItems),
         ('/searchlocations', SearchLocation),
-        ('/searchitems', SearchItem),
         ('/signup', SignupHandler),
         ('/login', LoginHandler),
         ('/logout', LogoutHandler),

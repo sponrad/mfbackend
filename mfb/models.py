@@ -6,6 +6,16 @@ from geo.geomodel import GeoModel
 import helpers, time
 
 class User(webapp2_extras.appengine.auth.models.User):
+    '''
+    admin
+    auth_ids
+    email_address
+    password (hash)
+    name
+    last_name
+    '''
+    friends = db.StringListProperty()
+    
     def set_password(self, raw_password):
         """Sets the password for the current user
         :param raw_password:
@@ -39,18 +49,20 @@ class Restaurant(db.Model):
     name = db.StringProperty(required = True)
     date_created = db.DateTimeProperty(auto_now_add = True)
     date_edited = db.DateTimeProperty(auto_now = True)
-    slug = db.StringProperty(required = False)
+    slug = db.StringProperty()
 
 class Location(GeoModel):
-    name =  db.StringProperty(required = False)
+    name =  db.StringProperty()
     restaurant = db.ReferenceProperty(Restaurant)
     date_created = db.DateTimeProperty(auto_now_add = True)
     date_edited = db.DateTimeProperty(auto_now = True)
-    slug = db.StringProperty(required = False)
-    address = db.StringProperty(required = False)
-    city = db.StringProperty(required = False)
-    state = db.StringProperty(required = False)
-    zipcode = db.StringProperty(required = False)
+    slug = db.StringProperty()
+    address = db.StringProperty()
+    city = db.StringProperty()
+    state = db.StringProperty()
+    zipcode = db.StringProperty()
+    phonenumber = db.StringProperty()
+    tags = db.StringListProperty()
     
     def updatelocation(self):
         locationstring = helpers.get_location_string(address = self.address, zipcode = self.zipcode)
@@ -63,12 +75,12 @@ class Location(GeoModel):
             self.update_location()        
 
 class Menu(db.Model):
-    name = db.StringProperty(required = False) 
+    name = db.StringProperty() 
     restaurant = db.ReferenceProperty(Restaurant)
     date_created = db.DateTimeProperty(auto_now_add = True)
     date_edited = db.DateTimeProperty(auto_now = True)
-    slug = db.StringProperty(required = False)
-    order = db.IntegerProperty(required = False)
+    slug = db.StringProperty()
+    order = db.IntegerProperty()
 
     def initialorder(self):
         self.order = self.restaurant.menu_set.count() + 1
@@ -76,21 +88,10 @@ class Menu(db.Model):
 class Item(db.Model):
     name = db.StringProperty(required = True)
     menu = db.ReferenceProperty(Menu)
-    description = db.TextProperty(required = False)
+    description = db.TextProperty()
     date_created = db.DateTimeProperty(auto_now_add = True)
     date_edited = db.DateTimeProperty(auto_now = True)
-    slug = db.StringProperty(required = False)
-    order = db.IntegerProperty(required = False)
-    price = db.StringProperty(required = False)
-
-class Tag(db.Model):
-    name = db.StringProperty(required = False)
-    date_created = db.DateTimeProperty(auto_now_add = True)
-    date_edited = db.DateTimeProperty(auto_now = True)
-    
-class Account(db.Model):
-    user = db.UserProperty()
-    email = db.StringProperty()
-    passwordhash = db.StringProperty()
-    date_created = db.DateTimeProperty(auto_now_add = True)
-    date_edited = db.DateTimeProperty(auto_now = True)
+    slug = db.StringProperty()
+    order = db.IntegerProperty()
+    price = db.StringProperty()
+    tags = db.StringListProperty()

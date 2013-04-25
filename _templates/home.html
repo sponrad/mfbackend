@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 
 {% block body %}
-<br>
-<br>
+<div class="twelve-columns">
+
+<p>Admin news:</p>
+<p>Everything underlined in GREEN is editable. ENTER to save.</p>
+
 <p>Example locations search, returns JSON values for the nearest restaurants from the point entered: <br>
 <a href="/json/locations?latitude=33.1225852966&longitude=-117.324203491&radius=500">/json/locations?latitude=33.1225852966&longitude=-117.324203491&radius=500</a>
 </p>
@@ -19,5 +22,5 @@
 <input type="submit" value="Signup" />
 </form>
 {% endif %}
-
+</div>
 {% endblock body %}

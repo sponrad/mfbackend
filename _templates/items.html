@@ -1,32 +1,32 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h2>{{ restaurant.name }} - Menu's and Item's</h2> 
-<a href="/restaurant/{{ restaurant.key.id }}">Restaurant Page</a>
+<div class="twelve-columns">
+  <h2>{{ restaurant.name }} - Menu's and Item's</h2> 
+  <a href="/restaurant/{{ restaurant.key.id }}">Back to Restaurant Page</a>
 
-<p>Add Menu</p>
-<form method="post" >
-<input type="hidden" name="action" value="addmenu" />
-<input type="text" name="name" placeholder="Menu Name" />
-<input type="submit" value="Add Menu" />
-</form>
+  <form method="post" style="float: right; background: #eee; padding: 10px;">
+    <input type="hidden" name="action" value="addmenu" />
+    <input type="text" name="name" placeholder="Menu Name" />
+    <input type="submit" value="Add Menu" />
+  </form>
 
-<p>List of current Items (will probably be a table long run, plus menus</p>
-
-{% for menu in restaurant.menu_set %}
-<p><b>{{ menu.name }}</b> {{ menu.order }}</p>
-<p>
-{% for item in menu.item_set %}
-{{ item.name }}, {{ item.description }}, ${{ item.price|floatformat:"-2" }} <br>
-{% endfor %}
-</p>
-<form method="post">
-<input type="hidden" name="action" value="additem" />
-<input type="hidden" name="menu" value="{{ menu.key.id }}" />
-<input name="name" placeholder="Item Name" />
-<input type="text" name="description" placeholder="Description" />
-<input type="submit" value="Add Item to {{ menu.name }}" />
-</form>
-{% endfor %}
-
+  {% for menu in restaurant.menu_set %}
+  <div style="clear: both;"></div>
+  <p><b>{{ menu.name }}</b> {{ menu.order }}</p>
+  <p>
+    {% for item in menu.item_set %}
+    {{ item.name }}, {{ item.description }}, ${{ item.price|floatformat:"-2" }} <br>
+    {% endfor %}
+  </p>
+  <form method="post" style="float: right; background: #eee; padding: 10px;">
+    <input type="hidden" name="action" value="additem" />
+    <input type="hidden" name="menu" value="{{ menu.key.id }}" />
+    <input type="text" name="name" placeholder="Item Name" />
+    <input type="text" name="description" placeholder="Description" />
+    <input type="text" name="price" placeholder="Price" />    
+    <input type="submit" value="Add Item to {{ menu.name }}" />
+  </form>
+  {% endfor %}
+</div>
 {% endblock body %}
