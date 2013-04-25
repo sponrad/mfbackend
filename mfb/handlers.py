@@ -133,6 +133,7 @@ class RestaurantItems(BaseHandler):
             item = Item(
                 name = self.request.get("name"),
                 description = self.request.get("description"),
+                price = self.request.get("price"),
                 menu = menu
                 )
             item.put()
@@ -209,6 +210,26 @@ class Editable(BaseHandler):
     if action ==  "location_address":
       #set the location, recalc the geohash
       self.response.out.write("wip")
+    if action == "menu_name":
+      menu = Menu.get_by_id(int(id))
+      menu.name = value
+      menu.put()
+      self.response.out.write(value)
+    if action == "item_name":
+      item = Item.get_by_id(int(id))
+      item.name = value
+      item.put()
+      self.response.out.write(value)
+    if action == "item_description":
+      item = Item.get_by_id(int(id))
+      item.description = value
+      item.put()
+      self.response.out.write(value)
+    if action == "item_price":
+      item = Item.get_by_id(int(id))
+      item.price = value
+      item.put()
+      self.response.out.write(value)
 
 class Maintain(BaseHandler):
   @admin_required

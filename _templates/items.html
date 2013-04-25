@@ -13,10 +13,12 @@
 
   {% for menu in restaurant.menu_set %}
   <div style="clear: both;"></div>
-  <p><b>{{ menu.name }}</b> {{ menu.order }}</p>
+  <p><b class="edit" id="{{ menu.key.id }}.menu_name" >{{ menu.name }}</b> {{ menu.order }}</p>
   <p>
     {% for item in menu.item_set %}
-    {{ item.name }}, {{ item.description }}, ${{ item.price|floatformat:"-2" }} <br>
+    <p>
+    <span class="edit" id="{{ item.key.id }}.item_name">{{ item.name }}</span> - $<span class="edit" id="{{ item.key.id }}.item_price">{{ item.price|floatformat:"-2" }}</span> <br> <span class="edit" id="{{ item.key.id }}.item_description">{{ item.description }}</span>
+    </p>
     {% endfor %}
   </p>
   <form method="post" style="float: right; background: #eee; padding: 10px;">
