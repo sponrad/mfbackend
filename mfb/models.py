@@ -111,3 +111,7 @@ class Item(db.Model):
 
     def delete(self):
         db.delete(self.key())
+
+class Review(db.Model):
+    user = db.ReferenceProperty(User)
+    item = db.ReferenceProperty(Item)
