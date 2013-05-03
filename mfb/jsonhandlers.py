@@ -130,6 +130,8 @@ class LocationsSearch(webapp2.RequestHandler):
 				    "restaurantid": str(l.restaurant.key().id()),
 				    "address": str(l.address),
 				    "city": str(l.city),
+				    "state": str(l.state),
+				    "zip": str(l.zipcode),
 				    }
 			    values['locations'].append(locationdata)
             else:
