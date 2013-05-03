@@ -90,6 +90,8 @@ class LocationSearch(webapp2.RequestHandler):
 		    "restaurantid": str(location.restaurant.key().id()),
                     "address": str(location.address),
                     "city": str(location.city),
+		    "zip": str(location.zipcode),
+		    "state": str(location.state),
                     }
             else:
                 location = None
