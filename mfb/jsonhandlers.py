@@ -172,9 +172,18 @@ class GetItem(webapp2.RequestHandler):
 	def get(self):
 		itemid = self.request.get("itemid")
 		item = Item.get_by_id(int(itemid))
+		#get reviews for this item
 		values = {
-			"respnose": 1
-			"item": item
+			"respnose": 1,
+			"restaurant": item.menu.restaurant.name,
+			"restaurantid": item.menu.restaurant.key().id(),
+			"menu": item.menu.name,
+			"menuid": item.menu.key().id(),
+			"itemid": itemid,
+			"name": item.name,
+			"description": item.description,
+			"price": item.price,
+			"tags": item.tags,			
 			}
 		renderjson(self, values)
 		
