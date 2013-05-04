@@ -113,5 +113,5 @@ class Item(db.Model):
         db.delete(self.key())
 
 class Review(db.Model):
-    user = db.ReferenceProperty(User)
+    user = db.IntegerProperty()
     item = db.ReferenceProperty(Item)

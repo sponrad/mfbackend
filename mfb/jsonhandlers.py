@@ -167,6 +167,16 @@ class GetMenu(webapp2.RequestHandler):
 			
 		values['response'] = 1
 		renderjson(self, values)
+
+class GetItem(webapp2.RequestHandler):
+	def get(self):
+		itemid = self.request.get("itemid")
+		item = Item.get_by_id(int(itemid))
+		values = {
+			"respnose": 1
+			"item": item
+			}
+		renderjson(self, values)
 		
 class CreateRestaurant(webapp2.RequestHandler):
 #given restaurant name 
