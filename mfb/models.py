@@ -109,9 +109,25 @@ class Item(db.Model):
     price = db.StringProperty()
     tags = db.StringListProperty()
 
+    def rating(self):
+        total = 0
+        count = 0
+        for rating in self.review_set:
+            total += rating.rating
+            count += 1
+        try:
+            rating = int(round(total/count)*100)
+        except:
+            rating = 0
+        return rating
+            
     def delete(self):
+        for review in self.review_set:
+            review.delete()
         db.delete(self.key())
 
 class Review(db.Model):
-    user = db.IntegerProperty()
+    userid = db.IntegerProperty()
     item = db.ReferenceProperty(Item)
+    rating = db.IntegerProperty() #0 bad 100 good?
+    description = db.TextProperty()

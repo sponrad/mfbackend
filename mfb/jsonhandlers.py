@@ -33,9 +33,9 @@ class Login(BaseHandler):
 		
 class Logout(BaseHandler):
 	def get(self):
-		user_id = self.request.get('user_id')
-		auth_token = self.request.get('auth_token')
-		self.user_model.delete_auth_token(user_id, auth_token)
+		userid = self.request.get('userid')
+		authtoken = self.request.get('authtoken')
+		self.user_model.delete_auth_token(userid, authtoken)
 		values = {
 			"response": 1,
 			}
@@ -172,7 +172,6 @@ class GetItem(webapp2.RequestHandler):
 	def get(self):
 		itemid = self.request.get("itemid")
 		item = Item.get_by_id(int(itemid))
-		#get reviews for this item
 		values = {
 			"respnose": 1,
 			"restaurant": item.menu.restaurant.name,
@@ -184,6 +183,29 @@ class GetItem(webapp2.RequestHandler):
 			"description": item.description,
 			"price": item.price,
 			"tags": item.tags,			
+			"rating": item.rating(),
+			}
+		renderjson(self, values)
+
+class ReviewItem(Basehandler):
+	def post(self):
+		userid = self.request.get("userid")
+		authtoken = self.request.get("authtoken")
+		itemid = self.request.get("itemid")
+		rating = self.request.get("rating")
+		description = self.request.get("description")
+
+		user = self.auth.get_user_by_tokent(userid, authtoken)
+		item = Item.get_by_id(int(itemid))
+		review = Review(
+			userid = user.key().id(),
+			item = item,
+			rating = int(rating),
+			description = description,
+			)
+		review.put()
+		values = {
+			"response": 1,
 			}
 		renderjson(self, values)
 		
