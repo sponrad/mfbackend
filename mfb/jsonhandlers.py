@@ -197,7 +197,7 @@ class ReviewItem(BaseHandler):
 
 		if rating == "1":
 			rating = 100
-		else if rating == "0":
+		elif rating == "0":
 			rating = 0
 
 		user = self.auth.get_user_by_tokent(userid, authtoken)
