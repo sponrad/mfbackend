@@ -24,5 +24,6 @@ app = webapp2.WSGIApplication([
         ('/json/login', Login),
         ('/json/logout', Logout),
         ('/json/signup', SignupHandler),
+        ('/json/', Test),
         ('/json', Test),
 ], debug=True, config=config)
