@@ -195,12 +195,17 @@ class ReviewItem(BaseHandler):
 		rating = self.request.get("rating")
 		description = self.request.get("description")
 
+		if rating == "1":
+			rating = 100
+		else if rating == "0":
+			rating = 0
+
 		user = self.auth.get_user_by_tokent(userid, authtoken)
 		item = Item.get_by_id(int(itemid))
 		review = Review(
 			userid = user.key().id(),
 			item = item,
-			rating = int(rating),
+			rating = rating,
 			description = description,
 			)
 		review.put()
