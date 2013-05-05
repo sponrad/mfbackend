@@ -187,7 +187,7 @@ class GetItem(webapp2.RequestHandler):
 			}
 		renderjson(self, values)
 
-class ReviewItem(Basehandler):
+class ReviewItem(BaseHandler):
 	def post(self):
 		userid = self.request.get("userid")
 		authtoken = self.request.get("authtoken")
