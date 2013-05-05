@@ -12,8 +12,8 @@ config = {
     }
 
 app = webapp2.WSGIApplication([
-        ('/json/location', LocationSearch),
-        ('/json/locations', LocationsSearch),
+        ('/json/location', GetLocation),
+        ('/json/locations', GetLocations),
         ('/json/getmenu', GetMenu),
         ('/json/getitem', GetItem),
         ('/json/reviewitem', ReviewItem),

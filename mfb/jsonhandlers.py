@@ -69,7 +69,7 @@ class SignupHandler(BaseHandler):
     renderjson(self, values)
 
 ''' given a lat long, returns a single location for the flip screen '''
-class LocationSearch(webapp2.RequestHandler):
+class GetLocation(webapp2.RequestHandler):
     def get(self):
         latitude = self.request.get("latitude")
         longitude = self.request.get("longitude")
@@ -92,20 +92,21 @@ class LocationSearch(webapp2.RequestHandler):
                     "city": str(location.city),
 		    "zip": str(location.zipcode),
 		    "state": str(location.state),
+		    "response": 1,
                     }
             else:
                 location = None
-                values = "No Matches"
+                values = {'response': 0}
 
         else:
             locations = None
-            values = "No matches"
+	    values = {'response': 0}
 
         renderjson(self, values)
         
 
 ''' given a lat long and radius, returns nearby locations '''
-class LocationsSearch(webapp2.RequestHandler):
+class GetLocations(webapp2.RequestHandler):
     def get(self):
         values = {}
         latitude = self.request.get("latitude")
