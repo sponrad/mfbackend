@@ -86,6 +86,7 @@ class GetLocation(webapp2.RequestHandler):
                 values = {
                     "locationname": str(location.name),
                     "location": [location.location.lat, location.location.lon],
+		    "locationid": location.key().id(),
                     "restaurant": str(location.restaurant.name),
 		    "restaurantid": str(location.restaurant.key().id()),
                     "address": str(location.address),
@@ -127,6 +128,7 @@ class GetLocations(webapp2.RequestHandler):
 			    locationdata = {
 				    "locationname": str(l.name),
 				    "location": [l.location.lat, l.location.lon],
+				    "locationid": l.key().id(),
 				    "restaurant": str(l.restaurant.name),
 				    "restaurantid": str(l.restaurant.key().id()),
 				    "address": str(l.address),
@@ -147,8 +149,9 @@ class GetLocations(webapp2.RequestHandler):
 
 class GetMenu(webapp2.RequestHandler):
 	def get(self):
-		restaurantid = self.request.get("restaurantid")
-		restaurant = Restaurant.get_by_id(int(restaurantid))
+		locationid = self.request.get("locationid")
+		location = Location.get_by_id(int(locationid))
+		restaurant = location.restaurant
 		values = {}
 		menus = []
 		for menu in restaurant.menu_set:
@@ -165,7 +168,13 @@ class GetMenu(webapp2.RequestHandler):
 			m['items'] = items
 			menus.append(m)
 		values['menus'] = menus
-			
+		values['restaurantid'] = restaurant.key().id(),
+		values['restaurantname'] = restaurant.name
+		values['phonenumber'] = location.phonenumber
+		values['city'] = location.city
+		values['address'] = location.address
+		values['zipcode'] = location.zipcode
+		values['state'] = location.state			
 		values['response'] = 1
 		renderjson(self, values)
 

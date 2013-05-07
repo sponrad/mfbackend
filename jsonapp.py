@@ -12,11 +12,11 @@ config = {
     }
 
 app = webapp2.WSGIApplication([
-        ('/json/location', GetLocation),
-        ('/json/locations', GetLocations),
-        ('/json/getmenu', GetMenu),
-        ('/json/getitem', GetItem),
-        ('/json/reviewitem', ReviewItem),
+        ('/json/location', GetLocation),    #latlong
+        ('/json/locations', GetLocations),  #latlongradius
+        ('/json/getmenu', GetMenu),         #locationid
+        ('/json/getitem', GetItem),         #menuid
+        ('/json/reviewitem', ReviewItem),   #userid, authtoken, itemid, rating, description
         ('/json/createrestaurant', CreateRestaurant),
         ('/json/createlocation', CreateLocation),
         ('/json/createmenu', CreateMenu),
