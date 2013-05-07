@@ -87,11 +87,11 @@ class GetLocation(webapp2.RequestHandler):
                     "locationname": str(location.name),
                     "location": [location.location.lat, location.location.lon],
 		    "locationid": location.key().id(),
-                    "restaurant": str(location.restaurant.name),
+                    "restaurantname": str(location.restaurant.name),
 		    "restaurantid": str(location.restaurant.key().id()),
                     "address": str(location.address),
                     "city": str(location.city),
-		    "zip": str(location.zipcode),
+		    "zipcode": str(location.zipcode),
 		    "state": str(location.state),
 		    "response": 1,
                     }
@@ -129,12 +129,12 @@ class GetLocations(webapp2.RequestHandler):
 				    "locationname": str(l.name),
 				    "location": [l.location.lat, l.location.lon],
 				    "locationid": l.key().id(),
-				    "restaurant": str(l.restaurant.name),
+				    "restaurantname": str(l.restaurant.name),
 				    "restaurantid": str(l.restaurant.key().id()),
 				    "address": str(l.address),
 				    "city": str(l.city),
 				    "state": str(l.state),
-				    "zip": str(l.zipcode),
+				    "zipcode": str(l.zipcode),
 				    }
 			    values['locations'].append(locationdata)
             else:
@@ -164,6 +164,7 @@ class GetMenu(webapp2.RequestHandler):
 				i['description'] = item.description
 				i['price'] = item.price
 				i['itemid'] = item.key().id()
+				i['rating'] = item.rating()
 				items.append(i)
 			m['items'] = items
 			menus.append(m)
@@ -183,8 +184,8 @@ class GetItem(webapp2.RequestHandler):
 		itemid = self.request.get("itemid")
 		item = Item.get_by_id(int(itemid))
 		values = {
-			"respnose": 1,
-			"restaurant": item.menu.restaurant.name,
+			"response": 1,
+			"restaurantname": item.menu.restaurant.name,
 			"restaurantid": item.menu.restaurant.key().id(),
 			"menu": item.menu.name,
 			"menuid": item.menu.key().id(),
@@ -195,6 +196,14 @@ class GetItem(webapp2.RequestHandler):
 			"tags": item.tags,			
 			"rating": item.rating(),
 			}
+		locationid = self.request.get("locationid")
+		if locationid != "":
+			location = Location.get_by_id(int(locationid))
+			values['phonenumber'] = location.phonenumber
+			values['city'] = location.city
+			values['address'] = location.address
+			values['zipcode'] = location.zipcode
+			values['state'] = location.state
 		renderjson(self, values)
 
 class ReviewItem(BaseHandler):
