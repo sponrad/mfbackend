@@ -116,7 +116,7 @@ class Item(db.Model):
             total += rating.rating
             count += 1
         try:
-            rating = int(round(total/count)*100)
+            rating = int(round(total/count))
         except:
             rating = 0
         return rating
@@ -129,5 +129,5 @@ class Item(db.Model):
 class Review(db.Model):
     userid = db.IntegerProperty()
     item = db.ReferenceProperty(Item)
-    rating = db.IntegerProperty() #0 bad 100 good?
+    rating = db.IntegerProperty() #0 bad 100 good
     description = db.TextProperty()

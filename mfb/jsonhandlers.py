@@ -149,6 +149,9 @@ class GetLocations(webapp2.RequestHandler):
 
 class GetMenu(webapp2.RequestHandler):
 	def get(self):
+		userid = self.request.get("userid")
+		authtoken = self.request.get("authtoken")
+
 		locationid = self.request.get("locationid")
 		location = Location.get_by_id(int(locationid))
 		restaurant = location.restaurant
@@ -214,22 +217,32 @@ class ReviewItem(BaseHandler):
 		rating = self.request.get("rating")
 		description = self.request.get("description")
 
+		if description == "":
+			description = None
+
 		if rating == "1":
 			rating = 100
 		elif rating == "0":
 			rating = 0
 
-		user = self.auth.get_user_by_tokent(userid, authtoken)
+		user = self.auth.get_user_by_token(userid, authtoken)
 		item = Item.get_by_id(int(itemid))
-		review = Review(
-			userid = user.key().id(),
-			item = item,
-			rating = rating,
-			description = description,
-			)
+		review = Review.all().filter("userid =", int(userid)).filter("item =", item).get()
+		if not review:
+			review = Review(
+				userid = int(userid),
+				item = item,
+				rating = int(rating),
+				description = description,
+				)
+		else:
+			review.rating = int(rating)
+			review.description = description
 		review.put()
+		item = Item.get_by_id(int(itemid))
 		values = {
 			"response": 1,
+			"rating": item.rating(),
 			}
 		renderjson(self, values)
 		
