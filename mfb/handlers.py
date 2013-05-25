@@ -76,7 +76,8 @@ class Restaurants(BaseHandler):
     @admin_required
     def post(self):
         restaurant = Restaurant(
-            name = self.request.get("name")
+            name = self.request.get("name"),
+            numberofitems = 0
             )
         restaurant.put()
         defaultmenu = Menu(
@@ -138,6 +139,8 @@ class RestaurantItems(BaseHandler):
                 menu = menu
                 )
             item.put()
+            restaurant.numberofitems += 1
+            restaurant.put()
         self.redirect("/items/" + str(restaurant.key().id()))
 
 class SearchLocation(BaseHandler):
@@ -274,5 +277,14 @@ class Maintain(BaseHandler):
       ryan.admin = True
       ryan.put()
       return self.response.out.write("done, ryan and pat are admin")
+    if action == "itemcounts":
+      restaurants = Restaurant.all().run()
+      for r in restaurants:
+        total = 0
+        for m in r.menu_set:
+          total += m.item_set.count()
+        r.numberofitems = total
+        r.put()
+      return self.response.out.write("done")
     if action == "":
-      return self.repsonse.out.write("no action specfifed")
+      return self.response.out.write("no action specfifed")

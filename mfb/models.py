@@ -50,6 +50,7 @@ class Restaurant(db.Model):
     date_created = db.DateTimeProperty(auto_now_add = True)
     date_edited = db.DateTimeProperty(auto_now = True)
     slug = db.StringProperty()
+    numberofitems = db.IntegerProperty(default=0)
     
     def delete(self):
         for menu in self.menu_set:
@@ -124,6 +125,8 @@ class Item(db.Model):
     def delete(self):
         for review in self.review_set:
             review.delete()
+        self.menu.restaurant.numberofitems -= 1
+        self.menu.restaurant.put()
         db.delete(self.key())
 
 class Review(db.Model):
