@@ -83,6 +83,11 @@ class Location(GeoModel):
     def delete(self):
         db.delete(self.key())
 
+class State(db.Model):
+    name = db.StringProperty()
+    abb = db.StringProperty()
+    cities = db.StringListProperty(default = [])
+
 class Menu(db.Model):
     name = db.StringProperty() 
     restaurant = db.ReferenceProperty(Restaurant)

@@ -1,6 +1,7 @@
 from helpers import *
 from models import *
 from geo import geotypes
+import globs
 
 from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
@@ -143,6 +144,35 @@ class RestaurantItems(BaseHandler):
             restaurant.put()
         self.redirect("/items/" + str(restaurant.key().id()))
 
+class Locations(BaseHandler):
+  @admin_required
+  def get(self):
+    state = self.request.get("state")
+    city = self.request.get("city")
+    cities = None
+    states = sorted(globs.states.keys())
+
+    locations = Location.all()
+
+    if state == "" and city == "":
+      locations = None
+    elif city == "":
+      #get list of cities from results in the state
+      cities = State.all().filter("abb =", state).get().cities
+      locations = None
+    else:
+      #get specific locations
+      locations = locations.filter("state =", state).filter("city =", city).run()      
+
+    values = {
+      "locations": locations,
+      "states": states,
+      "cities": cities,
+      "state": state,
+      "city": city
+      }
+    render(self, "locations.html", values)
+  
 class SearchLocation(BaseHandler):
     @admin_required
     def get(self):
@@ -286,5 +316,23 @@ class Maintain(BaseHandler):
         r.numberofitems = total
         r.put()
       return self.response.out.write("done")
+    if action == "setstates":
+      states = globs.states
+      for abb in globs.states.keys():
+        state = State(
+          abb = abb,
+          name = globs.states[abb],
+          cities = []
+          )
+        state.put()
+      return self.response.out.write("states added")
+    if action == "setcities": #need to run this when adding new cities
+      locations = Location.all().run()
+      for l in locations:
+        state = State.all().filter("abb =", l.state).get()
+        if l.city not in state.cities:
+          state.cities.append(l.city)
+          state.put()
+      return self.response.out.write("added all cities")
     if action == "":
       return self.response.out.write("no action specfifed")

@@ -1,20 +1,32 @@
 {% extends "base.html" %}
 
 {% block body %}
-<h2>{{ restaurant.name }}</h2>
+<h3>Locations</h3>
+<p>{% if city %}{{ city }}, {% endif %}{% if state %}{{ state }}{% endif %}</p>
 
-<form method="post">
-<input type="text" name="name" placeholder="Name"/>
-<input type="text" name="address" placeholder="Address"/>
-<input type="text" name="city" placeholder="City"/>
-<input type="text" name="zipcode" placeholder="Zip"/>
-<input type="hidden" name="restaurant" value="{{ restaurant.key.id }}" />
-<input type="submit" value="Add Location" />
-</form>
+{% if locations %}
 
-<p>List of all of the locations for {{ restaurant.name }}</p>
-{% for l in locations %}
-<p>{{ l.name }}<br>{{ l.address }}, {{ l.city }}, {{ l.state }} {{l.zipcode}} | {{ l.location }}</p>  <!-- http://maps.google.com/?q=<lat>,<lng> -->
+{% for location in locations %}
+<a href="/restaurant/{{ location.restaurant.key.id }}">{{ location.restaurant.name }}</a>
 {% endfor %}
 
+{% else %}
+
+{% if cities %}
+
+{% for city in cities %}
+<a href="/locations?state={{state}}&city={{ city }}">{{ city }}</a>
+{% endfor %}
+
+{% else %}
+{% for state in states %}
+<a href="/locations?state={{ state }}">{{ state }}</a>
+{% endfor %}
+
+{% endif %}
+
+{% endif %}
+<br>
+<br>
+<br>
 {% endblock body %}
