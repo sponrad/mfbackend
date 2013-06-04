@@ -53,6 +53,8 @@ class Restaurant(db.Model):
     numberofitems = db.IntegerProperty(default=0)
     
     def delete(self):
+        for location in self.location_set:
+            location.delete()
         for menu in self.menu_set:
             menu.delete()
         db.delete(self.key())

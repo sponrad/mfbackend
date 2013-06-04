@@ -162,7 +162,7 @@ class Locations(BaseHandler):
       locations = None
     else:
       #get specific locations
-      locations = locations.filter("state =", state).filter("city =", city).run()      
+      locations = locations.filter("state =", state).filter("city =", city).run()
 
     values = {
       "locations": locations,
