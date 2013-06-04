@@ -2,12 +2,12 @@
 
 {% block body %}
 <h3>Locations</h3>
-<p>{% if city %}{{ city }}, {% endif %}{% if state %}{{ state }}{% endif %}</p>
+<p>{% if city %}{{ city }}, {% endif %}{% if state %}{{ state }}{% else %}Need a state{% endif %}</p>
 
 {% if locations %}
 
 {% for location in locations %}
-<a href="/restaurant/{{ location.restaurant.key.id }}">{{ location.restaurant.name }}</a>
+<p><a href="/restaurant/{{ location.restaurant.key.id }}">{{ location.restaurant.name }} </a> <a href="/delete?action=location&id={{ location.key.id }}" class="delete" data-confirm="Are you sure?">Delete</a> {{ location.restaurant.numberofitems }}</p>
 {% endfor %}
 
 {% else %}

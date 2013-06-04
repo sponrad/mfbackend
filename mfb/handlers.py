@@ -160,6 +160,8 @@ class Locations(BaseHandler):
       #get list of cities from results in the state
       cities = State.all().filter("abb =", state).get().cities
       locations = None
+    elif state == "":
+      locations = None      
     else:
       #get specific locations
       locations = locations.filter("state =", state).filter("city =", city).run()
@@ -281,9 +283,11 @@ class Delete(BaseHandler):
       self.redirect("/restaurants")
     if action == "location":
       location = Location.get_by_id(int(id))
+      city = location.city
+      state = location.state
       restaurant = location.restaurant
       location.delete()
-      self.redirect("/restaurant/" + str(restaurant.key().id()))
+      self.redirect("/locations?state=" + state + "&city=" + city )
     if action == "menu":
       menu = Menu.get_by_id(int(id))
       restaurant = menu.restaurant
