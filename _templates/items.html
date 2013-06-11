@@ -13,12 +13,12 @@
 
   {% for menu in menus %}
   <div style="clear: both;"></div>
-  <p><span class="edit" style="width: 13px; display:inline-block;" id="{{ menu.key.id }}.menu_order">{{ menu.order }}</span> <b class="edit" id="{{ menu.key.id }}.menu_name" >{{ menu.name }}</b> <a href="/delete?action=menu&id={{ menu.key.id }}" class="delete" data-confirm="Are you sure?">Delete</a></p>
+  <p><span class="edit" style="width: 13px; display:inline-block;" id="{{ menu.key.id }}.menu_order">{{ menu.order }}</span> <b class="edit" id="{{ menu.key.id }}.menu_name" >{{ menu.name }}</b> <a href="/delete?action=menu&id={{ menu.key.id }}" class="delete" data-confirm="Delete this Menu, and all Items. Are you sure?">Delete</a></p>
   <p>
     {% for item in menu.item_set %}
     <div style="padding: 0px 0px 15px 0px;">
       <span class="edit" id="{{ item.key.id }}.item_name">{{ item.name }}</span> - $<span class="edit" id="{{ item.key.id }}.item_price">{{ item.price|floatformat:"-2" }}</span> 
-      <a href="/delete?action=item&id={{ item.key.id }}" class="delete" data-confirm="Are you sure?">Delete</a> 
+      <a href="/delete?action=item&id={{ item.key.id }}" class="delete" data-confirm="Delete this Item. Are you sure?">Delete</a> 
       <form method="post" style="display: inline;">
 	<select style="display: inline; width: auto;" name="tomenu">
 	  {% for menu in menus %}

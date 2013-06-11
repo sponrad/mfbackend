@@ -10,6 +10,16 @@ from helpers import *
 from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
 
+DEFAULTMENUS = [
+  'Meals', 
+  'Entrees', 
+  'Alcohol',
+  'Drinks',
+  'Kids',
+  'Desserts',
+  'Sides',
+  ]
+
 def renderjson(self, values):
 	self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.headers['Content-Type'] = "application/json"
@@ -256,6 +266,13 @@ class CreateRestaurant(webapp2.RequestHandler):
             name = self.request.get("name")
             )
         restaurant.put()
+        for i in range(len(DEFAULTMENUS)):
+          menu = Menu(
+            restaurant = restaurant,
+            name = DEFAULTMENUS[i],
+            order = i+1,
+            )
+          menu.put()
         if restaurant.key():
             values = restaurant.key().id()
             renderjson(self, values)
