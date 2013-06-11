@@ -290,6 +290,11 @@ class Editable(BaseHandler):
       item.price = value
       item.put()
       self.response.out.write(value)
+    if action == "menu_order":
+      menu = Menu.get_by_id(int(id))
+      menu.order = int(value)
+      menu.put()
+      self.response.out.write(value)
 
 class Delete(BaseHandler):
   @admin_required
