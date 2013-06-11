@@ -7,7 +7,7 @@
 {% block body %}
 <div class="twelve-columns">
   <h2 class="edit" id="{{ restaurant.key.id }}.restaurant_name">{{ restaurant.name }}</h2>
-
+  <a style="float: right;" class="delete" href="/delete?action=restaurant&id={{ restaurant.key.id }}" data-confirm="Delete Entire Restaurant, Locations, Items. Are you sure?">Delete Restaurant</a>
   <p><a href="/items/{{ restaurant.key.id }}">Menus and Items</a></p>
 
   <form method="post" style="float: right; background: #eee; padding: 10px;">
