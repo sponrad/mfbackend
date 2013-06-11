@@ -13,7 +13,7 @@
 
   {% for menu in menus %}
   <div style="clear: both;"></div>
-  <p><b class="edit" id="{{ menu.key.id }}.menu_name" >{{ menu.name }}</b> {{ menu.order }} <a href="/delete?action=menu&id={{ menu.key.id }}" class="delete" data-confirm="Are you sure?">Delete</a></p>
+  <p>{{ menu.order }} <b class="edit" id="{{ menu.key.id }}.menu_name" >{{ menu.name }}</b> <a href="/delete?action=menu&id={{ menu.key.id }}" class="delete" data-confirm="Are you sure?">Delete</a></p>
   <p>
     {% for item in menu.item_set %}
     <div style="padding: 0px 0px 15px 0px;">

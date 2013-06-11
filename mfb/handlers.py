@@ -91,12 +91,12 @@ class Restaurants(BaseHandler):
             numberofitems = 0
             )
         restaurant.put()
-        for name in DEFAULTMENUS:
+        for i in range(len(DEFAULTMENUS)):
           menu = Menu(
             restaurant = restaurant,
-            name = name
+            name = DEFAULTMENUS[i],
+            order = i+1,
             )
-          menu.initialorder()
           menu.put()
         self.redirect('/restaurant/' + str(restaurant.key().id()))
 
@@ -130,7 +130,7 @@ class RestaurantItems(BaseHandler):
         restaurant = Restaurant.get_by_id(int(restaurantid))
         values = {
             "restaurant": restaurant,
-            "menus": restaurant.menu_set
+            "menus": restaurant.menu_set.order('order')
             }
         render(self, "items.html", values)
     @admin_required
