@@ -11,14 +11,27 @@
     <input type="submit" value="Add Menu" />
   </form>
 
-  {% for menu in restaurant.menu_set %}
+  {% for menu in menus %}
   <div style="clear: both;"></div>
   <p><b class="edit" id="{{ menu.key.id }}.menu_name" >{{ menu.name }}</b> {{ menu.order }} <a href="/delete?action=menu&id={{ menu.key.id }}" class="delete" data-confirm="Are you sure?">Delete</a></p>
   <p>
     {% for item in menu.item_set %}
-    <p>
-    <span class="edit" id="{{ item.key.id }}.item_name">{{ item.name }}</span> - $<span class="edit" id="{{ item.key.id }}.item_price">{{ item.price|floatformat:"-2" }}</span> <a href="/delete?action=item&id={{ item.key.id }}" class="delete" data-confirm="Are you sure?">Delete</a> <br> <span class="edit" id="{{ item.key.id }}.item_description">{{ item.description }}</span>
-    </p>
+    <div style="padding: 0px 0px 15px 0px;">
+      <span class="edit" id="{{ item.key.id }}.item_name">{{ item.name }}</span> - $<span class="edit" id="{{ item.key.id }}.item_price">{{ item.price|floatformat:"-2" }}</span> 
+      <a href="/delete?action=item&id={{ item.key.id }}" class="delete" data-confirm="Are you sure?">Delete</a> 
+      <form method="post" style="display: inline;">
+	<select style="display: inline; width: auto;" name="tomenu">
+	  {% for menu in menus %}
+	  <option style="display: inline;" value="{{ menu.key.id }}" >{{ menu.name }}</option>
+	  {% endfor %}
+	</select>
+	<input type="hidden" name="action" value="moveitem">
+	<input type="hidden" name="itemid" value="{{ item.key.id }}" />
+	<input style="display: inline;" type="submit" value="Move" />
+      </form>
+      <br> 
+      <span class="edit" id="{{ item.key.id }}.item_description">{{ item.description }}</span>
+    </div>
     {% endfor %}
   </p>
   <form method="post" style="float: right; background: #eee; padding: 10px;">

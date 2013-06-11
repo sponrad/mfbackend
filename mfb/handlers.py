@@ -12,6 +12,16 @@ providers = {
 #    'MyOpenID' : 'myopenid.com'
 }
 
+DEFAULTMENUS = [
+  'Meals', 
+  'Entrees', 
+  'Alcohol',
+  'Drinks',
+  'Kids',
+  'Desserts',
+  'Sides',
+  ]
+
 ######################## HANDLERS
 class SignupHandler(BaseHandler):
   def post(self):
@@ -81,12 +91,13 @@ class Restaurants(BaseHandler):
             numberofitems = 0
             )
         restaurant.put()
-        defaultmenu = Menu(
+        for name in DEFAULTMENUS:
+          menu = Menu(
             restaurant = restaurant,
-            name = str(restaurant.name).title() + " Default Menu",
+            name = name
             )
-        defaultmenu.initialorder()
-        defaultmenu.put()
+          menu.initialorder()
+          menu.put()
         self.redirect('/restaurant/' + str(restaurant.key().id()))
 
 class RestaurantPage(BaseHandler):
@@ -119,6 +130,7 @@ class RestaurantItems(BaseHandler):
         restaurant = Restaurant.get_by_id(int(restaurantid))
         values = {
             "restaurant": restaurant,
+            "menus": restaurant.menu_set
             }
         render(self, "items.html", values)
     @admin_required
@@ -142,6 +154,13 @@ class RestaurantItems(BaseHandler):
             item.put()
             restaurant.numberofitems += 1
             restaurant.put()
+        if self.request.get("action") == "moveitem":
+          itemid = self.request.get("itemid")
+          item = Item.get_by_id(int(itemid))
+          menu = Menu.get_by_id(int(self.request.get("tomenu")))
+          item.menu = menu
+          item.put()
+          menu.put()
         self.redirect("/items/" + str(restaurant.key().id()))
 
 class Locations(BaseHandler):
