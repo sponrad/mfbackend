@@ -12,15 +12,7 @@ providers = {
 #    'MyOpenID' : 'myopenid.com'
 }
 
-DEFAULTMENUS = [
-  'Meals', 
-  'Entrees', 
-  'Alcohol',
-  'Drinks',
-  'Kids',
-  'Desserts',
-  'Sides',
-  ]
+DEFAULTMENUS = globs.DEFAULT_MENUS
 
 ######################## HANDLERS
 class SignupHandler(BaseHandler):

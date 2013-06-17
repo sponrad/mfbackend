@@ -10,15 +10,7 @@ from helpers import *
 from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
 
-DEFAULTMENUS = [
-  'Meals', 
-  'Entrees', 
-  'Alcohol',
-  'Drinks',
-  'Kids',
-  'Desserts',
-  'Sides',
-  ]
+DEFAULTMENUS = globs.DEFAULT_MENUS
 
 def renderjson(self, values):
 	self.response.headers['Access-Control-Allow-Origin'] = '*'
