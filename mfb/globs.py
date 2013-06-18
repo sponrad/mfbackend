@@ -63,9 +63,10 @@ states = {
 DEFAULT_MENUS = [
     'Meals', 
     'Entrees', 
-    'Alcohol',
-    'Drinks',
-    'Kids',
-    'Desserts',
     'Sides',
+    'Appetizers',
+    'Drinks',
+    'Alcohol',    
+    'Desserts',
+    'Kids',    
 ]
