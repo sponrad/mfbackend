@@ -115,6 +115,8 @@ class GetLocations(webapp2.RequestHandler):
         latitude = self.request.get("latitude")
         longitude = self.request.get("longitude")
 	radius = self.request.get("radius")
+	offset = self.request.get("offset")
+	limit = self.request.get("limit")
         if latitude != "" and longitude != "":
             locations = Location.all()
             locations = Location.proximity_fetch(
@@ -139,6 +141,8 @@ class GetLocations(webapp2.RequestHandler):
 				    "zipcode": str(l.zipcode),
 				    }
 			    values['locations'].append(locationdata)
+		    if offset != "" and limit != "":
+			    locations = locations[int(offset):int(offset+limit)]
             else:
 		    location = None
 		    values['response'] = 0
