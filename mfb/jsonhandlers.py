@@ -141,8 +141,13 @@ class GetLocations(webapp2.RequestHandler):
 				    "zipcode": str(l.zipcode),
 				    }
 			    values['locations'].append(locationdata)
-		    if offset != "" and limit != "":
-			    locations = locations[int(offset):int(offset+limit)]
+		    if offset == limit == "":
+			    pass #none provided! dont bother
+		    else:
+			    offset = int(offset) if offset != "" else 0
+			    limit = int(limit) if limit != "" else 50
+			    values['locations'] = values['locations'][offset:offset+limit]
+
             else:
 		    location = None
 		    values['response'] = 0
