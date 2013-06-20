@@ -1,6 +1,7 @@
 import os, datetime, random, string, urllib, math, globs, json
 import webapp2
 import os.path
+from math import radians, cos, sin, asin, sqrt
 
 from webapp2_extras import auth
 from webapp2_extras import sessions
@@ -148,3 +149,19 @@ def queryfunctionfactory(min_price, max_price, min_sqft, max_sqft):
             if sqft > max_sqft: return False
         return True
     return queryfunction
+
+def haversine(lon1, lat1, lon2, lat2):
+  """
+  Calculate the great circle distance between two points 
+  on the earth (specified in decimal degrees)
+  """
+  # convert decimal degrees to radians 
+  lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+  # haversine formula 
+  dlon = lon2 - lon1 
+  dlat = lat2 - lat1 
+  a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+  c = 2 * asin(sqrt(a)) 
+  #km = 6367 * c
+  miles = 10086 * c
+  return str(round(miles, 2))

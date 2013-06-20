@@ -139,6 +139,12 @@ class GetLocations(webapp2.RequestHandler):
 				    "city": str(l.city),
 				    "state": str(l.state),
 				    "zipcode": str(l.zipcode),
+				    "distance": haversine(
+					    float(longitude), 
+					    float(latitude),
+					    float(l.location.lon),
+					    float(l.location.lat)
+					    )
 				    }
 			    values['locations'].append(locationdata)
 		    if offset == limit == "":
