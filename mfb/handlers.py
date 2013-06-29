@@ -163,7 +163,9 @@ class Locations(BaseHandler):
   def get(self):
     state = self.request.get("state")
     city = self.request.get("city")
-    
+    itemfilter = self.request.get("itemfilter")
+    if itemfilter != "":
+      itemfilter = True
     cities = None
     states = sorted(globs.states.keys())
 
@@ -180,6 +182,8 @@ class Locations(BaseHandler):
     else:
       #get specific locations
       locations = locations.filter("state =", state).filter("city =", city).run()
+      if itemfilter:
+        locations = [l for l in locations if l.restaurant.numberofitems == 0]
 
     values = {
       "locations": locations,

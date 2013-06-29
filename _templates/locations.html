@@ -6,6 +6,12 @@
 
 {% if locations %}
 
+<form method="get">
+{% if city %}<input type="hidden" name="city" value="{{ city }}" />{% endif %}
+{% if state %}<input type="hidden" name="state" value="{{ state }}" />{% endif %}
+<input type="submit" value="Filter out restaurants with Items" name="itemfilter" />
+</form>
+
 {% for location in locations %}
 <p><a href="/restaurant/{{ location.restaurant.key.id }}">{{ location.restaurant.name }} </a> {{ location.restaurant.numberofitems }} <a href="/items/{{ location.restaurant.key.id }}">Menu</a> Last Edited: {{ location.restaurant.date_edited }}</p>
 {% endfor %}
