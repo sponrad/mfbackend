@@ -7,7 +7,7 @@
 {% if locations %}
 
 {% for location in locations %}
-<p><a href="/restaurant/{{ location.restaurant.key.id }}">{{ location.restaurant.name }} </a> {{ location.restaurant.numberofitems }} <a href="/items/{{ location.restaurant.key.id }}">Menu</a></p>
+<p><a href="/restaurant/{{ location.restaurant.key.id }}">{{ location.restaurant.name }} </a> {{ location.restaurant.numberofitems }} <a href="/items/{{ location.restaurant.key.id }}">Menu</a> Last Edited: {{ location.restaurant.date_edited }}</p>
 {% endfor %}
 
 {% else %}

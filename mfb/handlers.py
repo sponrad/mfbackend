@@ -114,6 +114,7 @@ class RestaurantPage(BaseHandler):
             )
         location.updatelocation()
         location.put()
+        restaurant.put()
         self.redirect("/restaurant/" + str(restaurant.key().id()))
         
 class RestaurantItems(BaseHandler):
@@ -135,6 +136,7 @@ class RestaurantItems(BaseHandler):
                 )
             menu.initialorder()
             menu.put()
+            restaurant.put()
         if self.request.get("action") == "additem":
             menu = Menu.get_by_id(int(self.request.get("menu")))
             item = Item(
@@ -153,6 +155,7 @@ class RestaurantItems(BaseHandler):
           item.menu = menu
           item.put()
           menu.put()
+          restaurant.put()
         self.redirect("/items/" + str(restaurant.key().id()))
 
 class Locations(BaseHandler):
@@ -160,6 +163,7 @@ class Locations(BaseHandler):
   def get(self):
     state = self.request.get("state")
     city = self.request.get("city")
+    
     cities = None
     states = sorted(globs.states.keys())
 
@@ -253,6 +257,7 @@ class Editable(BaseHandler):
       location = Location.get_by_id(int(id))
       location.name = value
       location.put()
+      location.restaurant.put()
       self.response.out.write(value)
     if action ==  "location_address":
       #set the location, recalc the geohash
@@ -261,31 +266,38 @@ class Editable(BaseHandler):
       location.city = value.split(",").replace(" ", "")[1]
       location.zipcode = value.split(",").replace(" ", "")[2]
       location.updatelocation()
+      location.put()
+      location.restaurant.put()
       self.response.out.write(value)
     if action == "menu_name":
       menu = Menu.get_by_id(int(id))
       menu.name = value
       menu.put()
+      menu.restaurant.put()
       self.response.out.write(value)
     if action == "item_name":
       item = Item.get_by_id(int(id))
       item.name = value
       item.put()
+      item.menu.restaurant.put()
       self.response.out.write(value)
     if action == "item_description":
       item = Item.get_by_id(int(id))
       item.description = value
       item.put()
+      item.menu.restaurant.put()
       self.response.out.write(value)
     if action == "item_price":
       item = Item.get_by_id(int(id))
       item.price = value
       item.put()
+      item.menu.restaurant.put()
       self.response.out.write(value)
     if action == "menu_order":
       menu = Menu.get_by_id(int(id))
       menu.order = int(value)
       menu.put()
+      menu.restaurant.put()
       self.response.out.write(value)
 
 class Delete(BaseHandler):
@@ -303,17 +315,21 @@ class Delete(BaseHandler):
       state = location.state
       restaurant = location.restaurant
       location.delete()
+      restaurant.put()
       self.redirect("/locations?state=" + state + "&city=" + city )
     if action == "menu":
       menu = Menu.get_by_id(int(id))
       restaurant = menu.restaurant
       menu.delete()
+      restaurant.put()
       self.redirect("/items/" + str(restaurant.key().id()))
     if action == "item":
       item = Item.get_by_id(int(id))
       restaurant = item.menu.restaurant
       item.delete()
-      self.redirect("/items/" + str(restaurant.key().id()))    
+      restaurant.numberofitems -= 1
+      restaurant.put()
+      self.redirect("/items/" + str(restaurant.key().id()))
 
 class Maintain(BaseHandler):
   @admin_required
