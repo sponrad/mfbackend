@@ -9,7 +9,9 @@
 <form method="get">
 {% if city %}<input type="hidden" name="city" value="{{ city }}" />{% endif %}
 {% if state %}<input type="hidden" name="state" value="{{ state }}" />{% endif %}
-<input type="submit" value="Filter out restaurants with Items" name="itemfilter" />
+<label style="display: inline;"><input type="checkbox" value="si" name="itemfilter" {% if itemfilter %}checked{% endif %}/>Filter out restaurants with Items</label>
+<label style="display: inline;"><input type="checkbox" value="si" name="completefilter" {% if completefilter %}checked{% endif %}/> Filter out Complete restaurants</label>
+<input type="submit" />
 </form>
 
 {% for location in locations %}

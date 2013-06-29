@@ -164,8 +164,11 @@ class Locations(BaseHandler):
     state = self.request.get("state")
     city = self.request.get("city")
     itemfilter = self.request.get("itemfilter")
+    completefilter = self.request.get("completefilter")
     if itemfilter != "":
       itemfilter = True
+    if completefilter != "":
+      completefilter = True
     cities = None
     states = sorted(globs.states.keys())
 
@@ -184,13 +187,17 @@ class Locations(BaseHandler):
       locations = locations.filter("state =", state).filter("city =", city).run()
       if itemfilter:
         locations = [l for l in locations if l.restaurant.numberofitems == 0]
+      if completefilter:
+        locations = [l for l in locations if l.restaurant.completecheck]
 
     values = {
       "locations": locations,
       "states": states,
       "cities": cities,
       "state": state,
-      "city": city
+      "city": city,
+      "itemfilter": itemfilter,
+      "completefilter": completefilter
       }
     render(self, "locations.html", values)
   
