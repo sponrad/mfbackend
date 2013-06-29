@@ -8,6 +8,21 @@
 <div class="twelve-columns">
   <h2 class="edit" id="{{ restaurant.key.id }}.restaurant_name">{{ restaurant.name }}</h2>
   <a style="float: right;" class="delete" href="/delete?action=restaurant&id={{ restaurant.key.id }}" data-confirm="Delete Entire Restaurant, Locations, Items. Are you sure?">Delete Restaurant</a>
+  <input type="checkbox" name="complete" id="complete_check" {% if restaurant.completecheck %}checked{% endif %}/> Complete?
+  <script>
+    $(document).ready( function(){
+      $("#complete_check").click( function(event){
+       var datatosend = {
+        action: "complete_check", 
+        restaurantid: {{ restaurant.key.id }}
+        };
+       $.post("/ajax", datatosend, function(data){
+        $(event.target).checked = data;
+       });
+    
+      });
+    });
+  </script>
   <p><a href="/items/{{ restaurant.key.id }}">Menus and Items</a></p>
 
   <form method="post" style="float: right; background: #eee; padding: 10px;">

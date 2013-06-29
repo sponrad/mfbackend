@@ -304,6 +304,18 @@ class Editable(BaseHandler):
       menu.restaurant.put()
       self.response.out.write(value)
 
+class AjaxHandler(BaseHandler):
+  @admin_required
+  def post(self):
+    action = self.request.get("action")
+    if action == "complete_check":
+      restaurantid = self.request.get("restaurantid")
+      restaurant = Restaurant.get_by_id(int(restaurantid))
+      restaurant.completecheck = True if not restaurant.completecheck else False
+      restaurant.put()
+      value = "true" if restaurant.completecheck else "false"
+    self.response.out.write(value)
+
 class Delete(BaseHandler):
   @admin_required
   def get(self):

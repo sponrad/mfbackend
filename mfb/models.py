@@ -51,6 +51,7 @@ class Restaurant(db.Model):
     date_edited = db.DateTimeProperty(auto_now = True)
     slug = db.StringProperty()
     numberofitems = db.IntegerProperty(default=0)
+    completecheck = db.BooleanProperty(default = False)
     
     def delete(self):
         for location in self.location_set:
