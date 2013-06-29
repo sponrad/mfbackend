@@ -188,7 +188,7 @@ class Locations(BaseHandler):
       if itemfilter:
         locations = [l for l in locations if l.restaurant.numberofitems == 0]
       if completefilter:
-        locations = [l for l in locations if l.restaurant.completecheck]
+        locations = [l for l in locations if not l.restaurant.completecheck]
 
     values = {
       "locations": locations,
