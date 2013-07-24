@@ -164,6 +164,67 @@ class GetLocations(webapp2.RequestHandler):
 
         renderjson(self, values)
 
+''' given a lat long and radius, returns nearby Items '''
+class GetItems(webapp2.RequestHandler):
+    def get(self):
+        values = {}
+        latitude = self.request.get("latitude")
+        longitude = self.request.get("longitude")
+	radius = self.request.get("radius")
+	offset = self.request.get("offset")
+	limit = self.request.get("limit")
+        if latitude != "" and longitude != "":
+            locations = Location.all()
+            locations = Location.proximity_fetch(
+		    locations,
+		    geotypes.Point(float(latitude), float(longitude)),
+		    max_results = 30,
+		    max_distance = int(float(radius)*0.3048),  #ft to meters
+		    )
+	    if len(locations) > 0: 
+		    values['items'] = []
+		    values['response'] = 1
+		    for l in locations:
+			    for m in l.restaurant.menu_set:
+				    for i in m.item_set:
+					    itemdata = {
+						    "name": str(i.name),
+						    "rating": str(i.rating),
+						    "locationname": str(l.name),
+						    "location": [l.location.lat, l.location.lon],
+						    "locationid": l.key().id(),
+						    "restaurantname": str(l.restaurant.name),
+						    "restaurantid": str(l.restaurant.key().id()),
+						    "address": str(l.address),
+						    "city": str(l.city),
+						    "state": str(l.state),
+						    "zipcode": str(l.zipcode),
+						    "phonenumber": str(l.phonenumber),
+						    "distance": haversine(
+							    float(longitude), 
+							    float(latitude),
+							    float(l.location.lon),
+							    float(l.location.lat)
+							    )
+						    }
+			    values['items'].append(itemdata)
+		    if offset == limit == "":
+			    pass #none provided! dont bother
+		    else:
+			    offset = int(offset) if offset != "" else 0
+			    limit = int(limit) if limit != "" else 50
+			    values['items'] = values['items'][offset:offset+limit]
+
+            else:
+		    locations = None
+		    values['response'] = 0
+
+        else:
+            items = None
+            values['response'] = 0
+
+        renderjson(self, values)
+
 class GetMenu(webapp2.RequestHandler):
 	def get(self):
 		userid = self.request.get("userid")

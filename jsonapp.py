@@ -14,6 +14,7 @@ config = {
 app = webapp2.WSGIApplication([
         ('/json/location', GetLocation),    #latlong
         ('/json/locations', GetLocations),  #latlongradius
+        ('/json/items', GetItems),
         ('/json/getmenu', GetMenu),         #locationid
         ('/json/getitem', GetItem),         #menuid, optional:locationid
         ('/json/reviewitem', ReviewItem),   #userid, authtoken, itemid, rating, description
