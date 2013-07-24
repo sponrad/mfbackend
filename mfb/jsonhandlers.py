@@ -185,27 +185,38 @@ class GetItems(webapp2.RequestHandler):
 		    values['items'] = []
 		    values['response'] = 1
 		    for l in locations:
+			    locationname =  str(l.name)
+			    location = [l.location.lat, l.location.lon]
+			    locationid = l.key().id(),
+			    restaurantname = str(l.restaurant.name)
+			    restaurantid = str(l.restaurant.key().id())
+			    address = str(l.address)
+			    city = str(l.city)
+			    state = str(l.state)
+			    zipcode = str(l.zipcode)
+			    phonenumber = str(l.phonenumber)
+			    distance = haversine(
+				    float(longitude), 
+				    float(latitude),
+				    float(l.location.lon),
+				    float(l.location.lat)
+				    )
 			    for m in l.restaurant.menu_set:
 				    for i in m.item_set:
 					    itemdata = {
 						    "name": str(i.name),
-						    "rating": str(i.rating),
-						    "locationname": str(l.name),
-						    "location": [l.location.lat, l.location.lon],
-						    "locationid": l.key().id(),
-						    "restaurantname": str(l.restaurant.name),
-						    "restaurantid": str(l.restaurant.key().id()),
-						    "address": str(l.address),
-						    "city": str(l.city),
-						    "state": str(l.state),
-						    "zipcode": str(l.zipcode),
-						    "phonenumber": str(l.phonenumber),
-						    "distance": haversine(
-							    float(longitude), 
-							    float(latitude),
-							    float(l.location.lon),
-							    float(l.location.lat)
-							    )
+						    "rating": str(i.rating()),
+						    "locationname": locationname,
+						    "location": location,
+						    "locationid": locationid,
+						    "restaurantname": restaurantname,
+						    "restaurantid": restaurantid,
+						    "address": address,
+						    "city": city,
+						    "state": state,
+						    "zipcode": zipcode,
+						    "phonenumber": phonenumber,
+						    "distance": distance
 						    }
 			    values['items'].append(itemdata)
 		    if offset == limit == "":
