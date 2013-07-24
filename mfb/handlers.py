@@ -68,6 +68,26 @@ class MainHandler(BaseHandler):
             }
         render(self, 'home.html', values)
 
+class Password(BaseHandler):
+  def get(self):
+    user = self.auth.get_user_by_session()
+    message = self.request.get("m")
+    values = {
+      "message": message if message else None
+      }
+    render(self, 'password.html', values)
+  def post(self):
+    username = self.request.get("username")
+    rawpassword = self.request.get("password")
+    rawpasswordcheck = self.request.get("password2")
+    if not rawpassword == rawpasswordcheck:
+      return self.redirect("/password")
+    user = User.get_by_auth_id(username)
+    user.password = security.generate_password_hash(rawpassword)
+    user.put()
+    self.redirect("/password?m=done")
+
+
 class Restaurants(BaseHandler):
     @admin_required
     def get(self):
