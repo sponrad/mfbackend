@@ -18,7 +18,7 @@ def renderjson(self, values):
         self.response.out.write(json.dumps(values))
 
 class Login(BaseHandler):
-	def get(self):
+	def post(self):
 		username = self.request.get('username')
 		password = self.request.get('password')
 		try:
@@ -44,7 +44,7 @@ class Logout(BaseHandler):
 		renderjson(self, values)
 
 class SignupHandler(BaseHandler):
-  def get(self):
+  def post(self):
     user_name = self.request.get('username')
     email = self.request.get('email')
     name = self.request.get('name')
@@ -185,6 +185,7 @@ class GetItems(webapp2.RequestHandler):
 		    values['items'] = []
 		    values['response'] = 1
 		    for l in locations:
+			    itemdata = None
 			    locationname =  str(l.name)
 			    location = [l.location.lat, l.location.lon]
 			    locationid = l.key().id(),
@@ -209,6 +210,7 @@ class GetItems(webapp2.RequestHandler):
 						    "locationname": locationname,
 						    "location": location,
 						    "locationid": locationid,
+						    "itemid": str(i.key().id()),
 						    "restaurantname": restaurantname,
 						    "restaurantid": restaurantid,
 						    "address": address,
@@ -218,7 +220,8 @@ class GetItems(webapp2.RequestHandler):
 						    "phonenumber": phonenumber,
 						    "distance": distance
 						    }
-			    values['items'].append(itemdata)
+			    if itemdata:
+				    values['items'].append(itemdata)
 		    if offset == limit == "":
 			    pass #none provided! dont bother
 		    else:
@@ -416,3 +419,8 @@ class CreateItem(webapp2.RequestHandler):
 class Test(webapp2.RequestHandler):
     def get(self):
         self.response.out.write("Success")
+    def post(self):
+	    values = {
+		    "success": 1
+		    }
+	    renderjson(self, values)
