@@ -22,6 +22,7 @@ app = webapp2.WSGIApplication([
         ('/json/createlocation', CreateLocation),
         ('/json/createmenu', CreateMenu),
         ('/json/createitem', CreateItem),
+        ('/json/signup', Signup),
         ('/json/login', Login),
         ('/json/logout', Logout),
         ('/json/signup', SignupHandler),

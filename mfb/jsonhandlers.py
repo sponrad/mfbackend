@@ -1,4 +1,4 @@
-import os, webapp2, helpers, globs, json
+import os, webapp2, helpers, globs, json, re
 from models import *
 from geo import geotypes
 from google.appengine.api import users
@@ -16,6 +16,58 @@ def renderjson(self, values):
 	self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.headers['Content-Type'] = "application/json"
         self.response.out.write(json.dumps(values))
+
+class Signup(BaseHandler):
+	def post(self):
+		user_name = self.request.get('username')
+		email = self.request.get('email')
+		password = self.request.get('password')
+		passwordtwo = self.request.get('passwordtwo')
+
+		if password != passwordtwo:
+			values = {
+				"response": 0,
+				"message": "Passwords do not match",
+				}		
+			return renderjson(self, values)		
+
+		if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+			values = {
+				"response": 0,
+				"message": "Bad email format",
+				}		
+			return renderjson(self, values)	
+
+		unique_properties = ['email_address']
+		user_data = self.user_model.create_user(
+			user_name,
+			unique_properties,
+			email_address=email,
+			password_raw=password,
+			verified=False, 
+			admin=False
+			)
+		if not user_data[0]: #user_data is a tuple
+			values = {
+				"response": 0,
+				"message": "Username or email already exists",
+				}
+			return renderjson(self, values)	
+
+		user = user_data[1]
+		user_id = user.get_id()
+		user.put()
+    #token = self.user_model.create_signup_token(user_id)
+
+    #verification_url = self.uri_for('verification', type='v', user_id=user_id, signup_token=token, _full=True)
+
+      #msg = 'Send an email to user in order to verify their address. \They will be able to do so by visiting <a href="{url}">{url}</a>'
+
+    #self.display_message(msg.format(url=verification_url))
+		values = {
+			"response": 1,
+			}
+		renderjson(self, values)			
 
 class Login(BaseHandler):
 	def post(self):
