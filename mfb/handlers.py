@@ -1,18 +1,22 @@
 from helpers import *
 from models import *
 from geo import geotypes
+from google.appengine.api import search
 import globs
 
 from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
 
-providers = {
-    'Google'   : 'https://www.google.com/accounts/o8/id',
-#    'Yahoo'    : 'yahoo.com',
-#    'MyOpenID' : 'myopenid.com'
-}
-
 DEFAULTMENUS = globs.DEFAULT_MENUS
+
+_INDEX_NAME = "item"
+
+def createitemdocument(nickname, content):
+  return search.Document(
+    fields=[search.TextField(name='author', value=nickname),
+            search.HtmlField(name='comment', value=content),
+            search.DateField(name='date', value=datetime.now().date())])
+
 
 ######################## HANDLERS
 class SignupHandler(BaseHandler):
@@ -415,3 +419,24 @@ class Maintain(BaseHandler):
       return self.response.out.write("added all cities")
     if action == "":
       return self.response.out.write("no action specfifed")
+    if action == "builditemsearch":
+      #get all items
+      items = Item.all()
+      #build each document for all items
+      document = search.Document(
+        fields = [
+          
+          ])
+      #insert each document into the index "item"
+      search.Index(name=_INDEX_NAME).put(document)
+      return self.response.out.write("items all added!")
+
+'''
+item fields to search / store
+location
+itemid    shread with teh document id i think
+name
+restaurant
+restaurantid
+description
+'''

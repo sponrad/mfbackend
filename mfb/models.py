@@ -142,3 +142,4 @@ class Review(db.Model):
     item = db.ReferenceProperty(Item)
     rating = db.IntegerProperty() #0 bad 100 good
     description = db.TextProperty()
+    image = db.BlobProperty()

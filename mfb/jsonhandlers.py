@@ -19,6 +19,7 @@ def renderjson(self, values):
 
 class Login(BaseHandler):
 	def post(self):
+		self.response.headers['Access-Control-Allow-Origin'] = '*'
 		username = self.request.get('username')
 		password = self.request.get('password')
 		try:
@@ -35,6 +36,7 @@ class Login(BaseHandler):
 		
 class Logout(BaseHandler):
 	def get(self):
+		self.response.headers['Access-Control-Allow-Origin'] = '*'
 		userid = self.request.get('userid')
 		authtoken = self.request.get('authtoken')
 		self.user_model.delete_auth_token(userid, authtoken)
@@ -45,6 +47,7 @@ class Logout(BaseHandler):
 
 class SignupHandler(BaseHandler):
   def post(self):
+    self.response.headers['Access-Control-Allow-Origin'] = '*'
     user_name = self.request.get('username')
     email = self.request.get('email')
     name = self.request.get('name')
@@ -303,6 +306,7 @@ class GetItem(webapp2.RequestHandler):
 
 class ReviewItem(BaseHandler):
 	def post(self):
+		self.response.headers['Access-Control-Allow-Origin'] = '*'
 		userid = self.request.get("userid")
 		authtoken = self.request.get("authtoken")
 		itemid = self.request.get("itemid")
