@@ -39,7 +39,7 @@ class Logout(BaseHandler):
 		self.response.headers['Access-Control-Allow-Origin'] = '*'
 		userid = self.request.get('userid')
 		authtoken = self.request.get('authtoken')
-		self.user_model.delete_auth_token(userid, authtoken)
+		self.user_model.delete_auth_token(int(userid), authtoken)
 		values = {
 			"response": 1,
 			}
@@ -305,6 +305,10 @@ class GetItem(webapp2.RequestHandler):
 		renderjson(self, values)
 
 class ReviewItem(BaseHandler):
+	def options(self):
+		self.response.headers['Access-Control-Allow-Origin'] = '*'
+		self.response.headers['Access-Control-Allow-Headers'] = "Origin, X-Requested-With, Content-Type, Accept"
+
 	def post(self):
 		self.response.headers['Access-Control-Allow-Origin'] = '*'
 		userid = self.request.get("userid")
@@ -321,7 +325,7 @@ class ReviewItem(BaseHandler):
 		elif rating == "0":
 			rating = 0
 
-		user = self.auth.get_user_by_token(userid, authtoken)
+		user = self.auth.get_user_by_token(int(userid), authtoken)
 		item = Item.get_by_id(int(itemid))
 		review = Review.all().filter("userid =", int(userid)).filter("item =", item).get()
 		if not review:
