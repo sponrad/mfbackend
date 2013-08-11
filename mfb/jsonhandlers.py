@@ -369,14 +369,6 @@ class ReviewItem(BaseHandler):
 		rating = self.request.get("rating")
 		description = self.request.get("description")
 		
-		test = {
-			"userid": userid,
-			"authtoken": authtoken,
-			"itemid": itemid,
-			"rating": rating
-			}
-		return renderjson(self, test)
-
 		if description == "":
 			description = None
 
