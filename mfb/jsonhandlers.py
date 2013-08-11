@@ -362,12 +362,20 @@ class ReviewItem(BaseHandler):
 		self.response.headers['Access-Control-Allow-Headers'] = "Origin, X-Requested-With, Content-Type, Accept"
 
 	def post(self):
-		self.response.headers['Access-Control-Allow-Origin'] = '*'
+		#self.response.headers['Access-Control-Allow-Origin'] = '*'
 		userid = self.request.get("userid")
 		authtoken = self.request.get("authtoken")
 		itemid = self.request.get("itemid")
 		rating = self.request.get("rating")
 		description = self.request.get("description")
+		
+		test = {
+			"userid": userid,
+			"authtoken": authtoken,
+			"itemid": itemid,
+			"rating": rating
+			}
+		return renderjson(self, test)
 
 		if description == "":
 			description = None
