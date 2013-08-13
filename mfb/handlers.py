@@ -438,7 +438,11 @@ class Maintain(BaseHandler):
       return self.response.out.write("items all added!")
     if action == "testsearch":
       index = search.Index(name=_ITEM_INDEX)
-      doc = index.search("item")
+      query_string = "distance(location, geopoint(33.08,-117.25)) < 5000"
+      query = search.Query(query_string=query_string)
+      doc = index.search(query)
+      #doc = index.search("burger")
+
       self.response.out.write(doc)
 
 '''
