@@ -1,7 +1,7 @@
 import os, webapp2, helpers, globs, json, re
 from models import *
 from geo import geotypes
-from google.appengine.api import users
+from google.appengine.api import users, search
 from google.appengine.ext.webapp import template
 from google.appengine.ext import db
 
@@ -11,6 +11,8 @@ from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
 
 DEFAULTMENUS = globs.DEFAULT_MENUS
+
+_ITEM_INDEX = "items"
 
 def renderjson(self, values):
 	self.response.headers['Access-Control-Allow-Origin'] = '*'

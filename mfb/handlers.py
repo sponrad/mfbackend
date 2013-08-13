@@ -9,13 +9,20 @@ from webapp2_extras.auth import InvalidPasswordError
 
 DEFAULTMENUS = globs.DEFAULT_MENUS
 
-_INDEX_NAME = "item"
+_ITEM_INDEX = "items"
 
-def createitemdocument(nickname, content):
-  return search.Document(
-    fields=[search.TextField(name='author', value=nickname),
-            search.HtmlField(name='comment', value=content),
-            search.DateField(name='date', value=datetime.now().date())])
+def createitemdocument(item, location):
+  lat = location.location.lat
+  lon = location.location.lon
+  return search.Document(doc_id=str(item.key().id()),
+    fields=[
+      search.TextField(name='name', value=item.name),
+      search.TextField(name='price', value=item.price),
+      search.TextField(name='description', value=item.description),
+      search.NumberField(name='rating', value=item.rating()),
+      search.GeoField(name='location', value=search.GeoPoint(lat, lon)),
+      ]
+    )
 
 
 ######################## HANDLERS
@@ -420,16 +427,19 @@ class Maintain(BaseHandler):
     if action == "":
       return self.response.out.write("no action specfifed")
     if action == "builditemsearch":
-      #get all items
-      items = Item.all()
-      #build each document for all items
-      document = search.Document(
-        fields = [
-          
-          ])
-      #insert each document into the index "item"
-      search.Index(name=_INDEX_NAME).put(document)
+      #get all locations
+      locations = Location.all()
+      for location in locations:
+        for m in location.restaurant.menu_set:
+          for i in m.item_set:
+            document = createitemdocument(i, location)
+            #insert each document into the index "item"
+            search.Index(name=_ITEM_INDEX).put(document)
       return self.response.out.write("items all added!")
+    if action == "testsearch":
+      index = search.Index(name=_ITEM_INDEX)
+      doc = index.search("item")
+      self.response.out.write(doc)
 
 '''
 item fields to search / store
