@@ -2,18 +2,17 @@ from helpers import *
 from models import *
 from geo import geotypes
 from google.appengine.api import search
-import globs
+from google.appengine.ext import deferred
+import globs, logging
 
 from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
 
-DEFAULTMENUS = globs.DEFAULT_MENUS
-
 _ITEM_INDEX = "items"
 
-def createitemdocument(item, location):
-  lat = location.location.lat
-  lon = location.location.lon
+def createitemdocument(item, restaurant):
+  lat = restaurant.location.lat
+  lon = restaurant.location.lon
   return search.Document(doc_id=str(item.key().id()),
     fields=[
       search.TextField(name='name', value=item.name),
@@ -21,8 +20,18 @@ def createitemdocument(item, location):
       search.TextField(name='description', value=item.description),
       search.NumberField(name='rating', value=item.rating()),
       search.GeoField(name='location', value=search.GeoPoint(lat, lon)),
+      search.TextField(name='restaurantname', value=restaurant.name),
       ]
     )
+
+def something_expensive(a,b,c):
+  logging.info("Doing something expensive")
+  restaurants = Restaurant.all(keys_only=True)
+  items = Item.all(keys_only=True)
+  reviews = Review.all(keys_only=True)
+  db.delete(restaurants)
+  db.delete(items)
+  db.delete(reviews)
 
 
 ######################## HANDLERS
@@ -40,8 +49,7 @@ class SignupHandler(BaseHandler):
       email_address=email, name=name, password_raw=password,
       last_name=last_name, verified=False, admin=False)
     if not user_data[0]: #user_data is a tuple
-      self.display_message('Unable to create user for email %s because of \
-        duplicate keys %s' % (user_name, user_data[1]))
+      self.display_message('Unable to create user for email %s because of \        duplicate keys %s' % (user_name, user_data[1]))
       return
     
     user = user_data[1]
@@ -114,37 +122,19 @@ class Restaurants(BaseHandler):
             numberofitems = 0
             )
         restaurant.put()
-        for i in range(len(DEFAULTMENUS)):
-          menu = Menu(
-            restaurant = restaurant,
-            name = DEFAULTMENUS[i],
-            order = i+1,
-            )
-          menu.put()
         self.redirect('/restaurant/' + str(restaurant.key().id()))
 
 class RestaurantPage(BaseHandler):
     @admin_required
     def get(self, restaurantid):
-        restaurant = Restaurant.get_by_id(int(restaurantid))
-        locations = Location.all().filter("restaurant =", restaurant).run()
-        values = {
-            "restaurant": restaurant,
-            "locations": locations,
-            }
-        render(self, "restaurant.html", values)
+      restaurant = Restaurant.get_by_id(int(restaurantid))
+      values = {
+        "restaurant": restaurant,
+        }
+      render(self, "restaurant.html", values)
     @admin_required
     def post(self, restaurantid):
         restaurant = Restaurant.get_by_id(int(restaurantid))
-        location = Location(
-            name = self.request.get("name"),
-            address = self.request.get("address"),
-            city = self.request.get("city"),
-            zipcode = self.request.get("zipcode"),
-            restaurant = restaurant,
-            )
-        location.updatelocation()
-        location.put()
         restaurant.put()
         self.redirect("/restaurant/" + str(restaurant.key().id()))
         
@@ -154,20 +144,11 @@ class RestaurantItems(BaseHandler):
         restaurant = Restaurant.get_by_id(int(restaurantid))
         values = {
             "restaurant": restaurant,
-            "menus": restaurant.menu_set.order('order')
             }
         render(self, "items.html", values)
     @admin_required
     def post(self, restaurantid):
         restaurant = Restaurant.get_by_id(int(restaurantid))
-        if self.request.get("action") == "addmenu":
-            menu = Menu(
-                name = self.request.get("name"),
-                restaurant = restaurant,
-                )
-            menu.initialorder()
-            menu.put()
-            restaurant.put()
         if self.request.get("action") == "additem":
             menu = Menu.get_by_id(int(self.request.get("menu")))
             item = Item(
@@ -182,105 +163,9 @@ class RestaurantItems(BaseHandler):
         if self.request.get("action") == "moveitem":
           itemid = self.request.get("itemid")
           item = Item.get_by_id(int(itemid))
-          menu = Menu.get_by_id(int(self.request.get("tomenu")))
-          item.menu = menu
           item.put()
-          menu.put()
           restaurant.put()
         self.redirect("/items/" + str(restaurant.key().id()))
-
-class Locations(BaseHandler):
-  @admin_required
-  def get(self):
-    state = self.request.get("state")
-    city = self.request.get("city")
-    itemfilter = self.request.get("itemfilter")
-    completefilter = self.request.get("completefilter")
-    if itemfilter != "":
-      itemfilter = True
-    if completefilter != "":
-      completefilter = True
-    cities = None
-    states = sorted(globs.states.keys())
-
-    locations = Location.all()
-
-    if state == "" and city == "":
-      locations = None
-    elif city == "":
-      #get list of cities from results in the state
-      cities = State.all().filter("abb =", state).get().cities
-      locations = None
-    elif state == "":
-      locations = None      
-    else:
-      #get specific locations
-      locations = locations.filter("state =", state).filter("city =", city).run()
-      if itemfilter:
-        locations = [l for l in locations if l.restaurant.numberofitems == 0]
-      if completefilter:
-        locations = [l for l in locations if not l.restaurant.completecheck]
-
-    values = {
-      "locations": locations,
-      "states": states,
-      "cities": cities,
-      "state": state,
-      "city": city,
-      "itemfilter": itemfilter,
-      "completefilter": completefilter
-      }
-    render(self, "locations.html", values)
-  
-class SearchLocation(BaseHandler):
-    @admin_required
-    def get(self):
-        results = None
-
-        locationstring = self.request.get("location")
-        locationlatlong = None
-        querystring = self.request.get("query")
-        radius = self.request.get("radius")
-
-        #start our query
-        if locationstring != "":
-            locations = Location.all()
-        else:
-            locations = None
-
-        if querystring != "":
-            pass
-        else:
-            querystring = None
-
-        if radius == "":
-            radius = 0
-
-        if locationstring != "":
-            latlong = get_lat_long(locationstring)
-            if latlong:
-                locations = Location.proximity_fetch(
-                    locations,
-                    geotypes.Point(latlong[0], latlong[1]),
-                    max_results = 100,
-                    max_distance = (0.3048 * float(radius)),
-                    )
-                locationlatlong = latlong
-        else:
-            locationstring = None
-
-        results = locations
-
-        values = {
-            "results": results,
-            "locationstring": locationstring,
-            "locationlatlong": locationlatlong,
-            "querystring": querystring,
-            "feetstring": str(radius),
-            "milestring": str(float(radius) / 5280),
-            "message": "Locations",
-            }
-        render(self, "search.html", values)
 
 class Editable(BaseHandler):
   @admin_required
@@ -295,12 +180,6 @@ class Editable(BaseHandler):
       restaurant.name = value
       restaurant.put()
       self.response.out.write(value)
-    if action == "location_name":
-      location = Location.get_by_id(int(id))
-      location.name = value
-      location.put()
-      location.restaurant.put()
-      self.response.out.write(value)
     if action ==  "location_address":
       #set the location, recalc the geohash
       location = Location.get_by_id(int(id))
@@ -311,35 +190,23 @@ class Editable(BaseHandler):
       location.put()
       location.restaurant.put()
       self.response.out.write(value)
-    if action == "menu_name":
-      menu = Menu.get_by_id(int(id))
-      menu.name = value
-      menu.put()
-      menu.restaurant.put()
-      self.response.out.write(value)
     if action == "item_name":
       item = Item.get_by_id(int(id))
       item.name = value
       item.put()
-      item.menu.restaurant.put()
+      item.restaurant.put()
       self.response.out.write(value)
     if action == "item_description":
       item = Item.get_by_id(int(id))
       item.description = value
       item.put()
-      item.menu.restaurant.put()
+      item.restaurant.put()
       self.response.out.write(value)
     if action == "item_price":
       item = Item.get_by_id(int(id))
       item.price = value
       item.put()
-      item.menu.restaurant.put()
-      self.response.out.write(value)
-    if action == "menu_order":
-      menu = Menu.get_by_id(int(id))
-      menu.order = int(value)
-      menu.put()
-      menu.restaurant.put()
+      item.restaurant.put()
       self.response.out.write(value)
 
 class AjaxHandler(BaseHandler):
@@ -363,23 +230,9 @@ class Delete(BaseHandler):
       restaurant = Restaurant.get_by_id(int(id))
       restaurant.delete()
       self.redirect("/restaurants")
-    if action == "location":
-      location = Location.get_by_id(int(id))
-      city = location.city
-      state = location.state
-      restaurant = location.restaurant
-      location.delete()
-      restaurant.put()
-      self.redirect("/locations?state=" + state + "&city=" + city )
-    if action == "menu":
-      menu = Menu.get_by_id(int(id))
-      restaurant = menu.restaurant
-      menu.delete()
-      restaurant.put()
-      self.redirect("/items/" + str(restaurant.key().id()))
     if action == "item":
       item = Item.get_by_id(int(id))
-      restaurant = item.menu.restaurant
+      restaurant = item.restaurant
       item.delete()
       restaurant.numberofitems -= 1
       restaurant.put()
@@ -389,68 +242,23 @@ class Maintain(BaseHandler):
   @admin_required
   def get(self):
     action = self.request.get("a")
-    if action == "ryanandpat":
-      pat = User.get_by_auth_id('psdower')
-      pat.admin = True
-      pat.put()
-      ryan = User.get_by_auth_id('ryanmunger')
-      ryan.admin = True
-      ryan.put()
-      return self.response.out.write("done, ryan and pat are admin")
-    if action == "itemcounts":
-      restaurants = Restaurant.all().run()
-      for r in restaurants:
-        total = 0
-        for m in r.menu_set:
-          total += m.item_set.count()
-        r.numberofitems = total
-        r.put()
-      return self.response.out.write("done")
-    if action == "setstates":
-      states = globs.states
-      for abb in globs.states.keys():
-        state = State(
-          abb = abb,
-          name = globs.states[abb],
-          cities = []
-          )
-        state.put()
-      return self.response.out.write("states added")
-    if action == "setcities": #need to run this when adding new cities
-      locations = Location.all().run()
-      for l in locations:
-        state = State.all().filter("abb =", l.state).get()
-        if l.city not in state.cities:
-          state.cities.append(l.city)
-          state.put()
-      return self.response.out.write("added all cities")
     if action == "":
       return self.response.out.write("no action specfifed")
-    if action == "builditemsearch":
-      #get all locations
-      locations = Location.all()
-      for location in locations:
-        for m in location.restaurant.menu_set:
-          for i in m.item_set:
-            document = createitemdocument(i, location)
-            #insert each document into the index "item"
-            search.Index(name=_ITEM_INDEX).put(document)
-      return self.response.out.write("items all added!")
     if action == "testsearch":
       index = search.Index(name=_ITEM_INDEX)
       query_string = "distance(location, geopoint(33.08,-117.25)) < 5000"
       query = search.Query(query_string=query_string)
       doc = index.search(query)
       #doc = index.search("burger")
-
       self.response.out.write(doc)
-
-'''
-item fields to search / store
-location
-itemid    shread with teh document id i think
-name
-restaurant
-restaurantid
-description
-'''
+    if action == "deferred":
+      deferred.defer(something_expensive,"a","b","c")
+      return self.response.out.write("added to queue")
+    if action == "removedocuments":
+      doc_index = search.Index(name=_ITEM_INDEX)
+      while True:
+        document_ids = [document.doc_id for document in doc_index.get_range(ids_only=True)]
+        if not document_ids:
+            break
+        doc_index.delete(document_ids)
+      self.response.out.write("ok")

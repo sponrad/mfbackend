@@ -13,8 +13,8 @@ class User(webapp2_extras.appengine.auth.models.User):
     password (hash)
     name
     last_name
+    numberofratings
     '''
-    friends = db.StringListProperty()
     
     def set_password(self, raw_password):
         """Sets the password for the current user
@@ -45,35 +45,27 @@ class User(webapp2_extras.appengine.auth.models.User):
 
         return None, None
 
+class State(db.Model):
+    name = db.StringProperty()
+    abb = db.StringProperty()
+    cities = db.StringListProperty(default = [])
+
 class Restaurant(db.Model):
     name = db.StringProperty(required = True)
     date_created = db.DateTimeProperty(auto_now_add = True)
     date_edited = db.DateTimeProperty(auto_now = True)
     slug = db.StringProperty()
     numberofitems = db.IntegerProperty(default=0)
+    numberofreviews = db.IntegerProperty(default=0)
     completecheck = db.BooleanProperty(default = False)
-    
-    def delete(self):
-        for location in self.location_set:
-            location.delete()
-        for menu in self.menu_set:
-            menu.delete()
-        db.delete(self.key())
-
-class Location(GeoModel):
-    name =  db.StringProperty()
-    restaurant = db.ReferenceProperty(Restaurant)
-    date_created = db.DateTimeProperty(auto_now_add = True)
-    date_edited = db.DateTimeProperty(auto_now = True)
-    slug = db.StringProperty()
+    location = db.GeoPtProperty() #location.lat, location.lon
     address = db.StringProperty()
     city = db.StringProperty()
-    state = db.StringProperty()
     zipcode = db.StringProperty()
     phonenumber = db.StringProperty()
     tags = db.StringListProperty()
-    
-    def updatelocation(self):
+
+    def updatelocation(self, locationstring):
         locationstring = helpers.get_location_string(address = self.address, zipcode = self.zipcode)
         latlongcitystate = helpers.get_lat_long_city_state_address(locationstring)
         if latlongcitystate: 
@@ -81,27 +73,8 @@ class Location(GeoModel):
             self.city = latlongcitystate[2]
             self.state = latlongcitystate[3]
             self.address = latlongcitystate[4]
-            self.update_location()
-
-    def delete(self):
-        db.delete(self.key())
-
-class State(db.Model):
-    name = db.StringProperty()
-    abb = db.StringProperty()
-    cities = db.StringListProperty(default = [])
-
-class Menu(db.Model):
-    name = db.StringProperty() 
-    restaurant = db.ReferenceProperty(Restaurant)
-    date_created = db.DateTimeProperty(auto_now_add = True)
-    date_edited = db.DateTimeProperty(auto_now = True)
-    slug = db.StringProperty()
-    order = db.IntegerProperty()
-
-    def initialorder(self):
-        self.order = self.restaurant.menu_set.count() + 1
-        
+            self.update_location()    
+            
     def delete(self):
         for item in self.item_set:
             item.delete()
@@ -109,7 +82,7 @@ class Menu(db.Model):
 
 class Item(db.Model):
     name = db.StringProperty(required = True)
-    menu = db.ReferenceProperty(Menu)
+    restaurant = db.ReferenceProperty(Restaurant)
     description = db.TextProperty()
     date_created = db.DateTimeProperty(auto_now_add = True)
     date_edited = db.DateTimeProperty(auto_now = True)
@@ -117,6 +90,7 @@ class Item(db.Model):
     order = db.IntegerProperty()
     price = db.StringProperty()
     tags = db.StringListProperty()
+    numberofreviews = db.IntegerProperty(default=0)
 
     def rating(self):
         total = 0
@@ -133,8 +107,8 @@ class Item(db.Model):
     def delete(self):
         for review in self.review_set:
             review.delete()
-        self.menu.restaurant.numberofitems -= 1
-        self.menu.restaurant.put()
+        self.restaurant.numberofitems -= 1
+        self.restaurant.put()
         db.delete(self.key())
 
 class Review(db.Model):
@@ -143,3 +117,7 @@ class Review(db.Model):
     rating = db.IntegerProperty() #0 bad 100 good
     description = db.TextProperty()
     image = db.BlobProperty()
+
+class Chain(db.Model):
+    name = db.StringProperty(required = True)
+    restaurantids = db.StringListProperty(int)

@@ -128,6 +128,7 @@ class SignupHandler(BaseHandler):
     renderjson(self, values)
 
 ''' given a lat long, returns a single location for the flip screen '''
+#REMOVE
 class GetLocation(webapp2.RequestHandler):
     def get(self):
         latitude = self.request.get("latitude")
@@ -166,6 +167,7 @@ class GetLocation(webapp2.RequestHandler):
         
 
 ''' given a lat long and radius, returns nearby locations '''
+#TODO search api
 class GetLocations(webapp2.RequestHandler):
     def get(self):
         values = {}
@@ -222,6 +224,7 @@ class GetLocations(webapp2.RequestHandler):
         renderjson(self, values)
 
 ''' given a lat long and radius, returns nearby Items '''
+#TODO, search api
 class GetItems(webapp2.RequestHandler):
     def get(self):
         values = {}
@@ -301,33 +304,26 @@ class GetMenu(webapp2.RequestHandler):
 		userid = self.request.get("userid")
 		authtoken = self.request.get("authtoken")
 
-		locationid = self.request.get("locationid")
-		location = Location.get_by_id(int(locationid))
-		restaurant = location.restaurant
+		restaurantid = self.request.get("restaurantid")
+		restaurant = Restaurant.get_by_id(int(restaurantid))
 		values = {}
-		menus = []
-		for menu in restaurant.menu_set:
-			m = {}
-			m['name'] = menu.name
-			items = []		
-			for item in menu.item_set:
-				i = {}
-				i['name'] = item.name
-				i['description'] = item.description
-				i['price'] = item.price
-				i['itemid'] = item.key().id()
-				i['rating'] = item.rating()
-				items.append(i)
-			m['items'] = items
-			menus.append(m)
-		values['menus'] = menus
+		items = []
+		for item in restaurant.item_set:
+			i = {}
+			i['name'] = item.name
+			i['description'] = item.description
+			i['price'] = item.price
+			i['itemid'] = item.key().id()
+			i['rating'] = item.rating()
+			items.append(i)
+		values['items'] = items
 		values['restaurantid'] = restaurant.key().id(),
 		values['restaurantname'] = restaurant.name
-		values['phonenumber'] = location.phonenumber
-		values['city'] = location.city
-		values['address'] = location.address
-		values['zipcode'] = location.zipcode
-		values['state'] = location.state			
+		values['phonenumber'] = restaurant.phonenumber
+		values['city'] = restaurant.city
+		values['address'] = restaurant.address
+		values['zipcode'] = restaurant.zipcode
+		values['state'] = restaurant.state			
 		values['response'] = 1
 		renderjson(self, values)
 
@@ -337,10 +333,8 @@ class GetItem(webapp2.RequestHandler):
 		item = Item.get_by_id(int(itemid))
 		values = {
 			"response": 1,
-			"restaurantname": item.menu.restaurant.name,
-			"restaurantid": item.menu.restaurant.key().id(),
-			"menu": item.menu.name,
-			"menuid": item.menu.key().id(),
+			"restaurantname": item.restaurant.name,
+			"restaurantid": item.restaurant.key().id(),
 			"itemid": itemid,
 			"name": item.name,
 			"description": item.description,
@@ -348,16 +342,23 @@ class GetItem(webapp2.RequestHandler):
 			"tags": item.tags,			
 			"rating": item.rating(),
 			}
-		locationid = self.request.get("locationid")
-		if locationid != "":
-			location = Location.get_by_id(int(locationid))
-			values['phonenumber'] = location.phonenumber
-			values['city'] = location.city
-			values['address'] = location.address
-			values['zipcode'] = location.zipcode
-			values['state'] = location.state
+		values['phonenumber'] = restaurant.phonenumber
+		values['city'] = restaurant.city
+		values['address'] = restaurant.address
+		values['zipcode'] = restaurant.zipcode
+		values['state'] = restaurant.state
 		renderjson(self, values)
 
+class GetItemSuggestions(BaseHandler):
+	def get(self):
+		latitude = self.request.get("latitude")
+		longitude = self.request.get("longitude")
+		querystring = self.request.get("query")
+		doc_index = search.Index(name=_ITEM_INDEX)
+		results = index.search(search.Query(query_string=querystring))
+		
+		
+#TODO add image calls here, find or create
 class ReviewItem(BaseHandler):
 	def options(self):
 		self.response.headers['Access-Control-Allow-Origin'] = '*'
@@ -368,9 +369,20 @@ class ReviewItem(BaseHandler):
 		userid = self.request.get("userid")
 		authtoken = self.request.get("authtoken")
 		itemid = self.request.get("itemid")
+		restaurantid = self.request.get("restaurantid")
+		restaurantname = self.request.get("restaurantname")
+		itemname = self.request.get("itemname")
 		rating = self.request.get("rating")
 		description = self.request.get("description")
-		
+		latitude = self.request.get("latitude")
+		longitude = self.request.get("longitude")
+
+		if restaurantid == "":
+			restaurantid = None
+
+		if itemid == "":
+			itemid = None
+
 		if description == "":
 			description = None
 
@@ -380,8 +392,27 @@ class ReviewItem(BaseHandler):
 			rating = 0
 
 		user = self.auth.get_user_by_token(int(userid), authtoken)
-		item = Item.get_by_id(int(itemid))
+
+		if restaurantid:
+			restaurant = Restaurant.get_by_id(int(restaurantid))
+		else:
+			restaurant = Restaurant(
+				name = restaurantname
+				)
+			locationstring = latitude + ", " + longitude
+			restaurant.updatelocation(locationstring)
+			restaurant.put()
+
+		if itemid:
+			item = Item.get_by_id(int(itemid))
+		else:
+			item = Item(
+				name = itemname,
+				restaurant = restaurant
+				)
+
 		review = Review.all().filter("userid =", int(userid)).filter("item =", item).get()
+
 		if not review:
 			review = Review(
 				userid = int(userid),
@@ -393,7 +424,8 @@ class ReviewItem(BaseHandler):
 			review.rating = int(rating)
 			review.description = description
 		review.put()
-		item = Item.get_by_id(int(itemid))
+		item.numberofreviews += 1
+		item.put()
 		values = {
 			"response": 1,
 			"rating": item.rating(),
@@ -401,82 +433,43 @@ class ReviewItem(BaseHandler):
 		renderjson(self, values)
 		
 class CreateRestaurant(webapp2.RequestHandler):
-#given restaurant name 
-#return id
-    def get(self):
-        if self.request.get("name") == "":
-            renderjson(self, "Error, supply a name in the request")
-        restaurant = Restaurant(
-            name = self.request.get("name")
-            )
-        restaurant.put()
-        for i in range(len(DEFAULTMENUS)):
-          menu = Menu(
-            restaurant = restaurant,
-            name = DEFAULTMENUS[i],
-            order = i+1,
-            )
-          menu.put()
-        if restaurant.key():
-            values = restaurant.key().id()
-            renderjson(self, values)
-        else:
-            renderjson(self, "Error on save, check data")
-
-class CreateLocation(webapp2.RequestHandler):
-#given restaurantid, name, address, city, state, zipcode
-#return location id
-    def get(self):
-        restaurant = Restaurant.get_by_id(int(self.request.get("restaurantid")))
-        location = Location(
-            name = self.request.get("name"),
-            address = self.request.get("address"),
-            city = self.request.get("city"),
-            zipcode = self.request.get("zipcode"),
-            restaurant = restaurant,
-            )
-        location.updatelocation()
-        location.put()
-        if location.key():
-            values = location.key().id()
-            renderjson(self, values)
-        else:
-            renderjson(self, "Error on save")
-
-class CreateMenu(webapp2.RequestHandler):
-#given restaurantid, name
-#return menu id
-    def get(self):
-        restaurant = Restaurant.get_by_id(int(self.request.get("restaurantid")))
-        menu = Menu(
-            name = self.request.get("name"),
-            restaurant = restaurant,
-            )
-        menu.initialorder()
-        menu.put()
-        if menu.key():
-            values = menu.key().id()
-            renderjson(self, values)
-        else:
-            renderjson(self, "Error")
+#given restaurantname, address, city, state, zipcode
+#return restaurant id
+	def get(self):
+		if self.request.get("name") == "":
+			renderjson(self, "Error, supply a name in the request")
+		restaurant = Restaurant(
+			name = self.request.get("name"),
+			address = self.request.get("address"),
+			city = self.request.get("city"),
+			zipcode = self.request.get("zipcode"),
+			restaurant = restaurant,
+			)
+		
+		restaurant.put()
+		if restaurant.key():
+			values = restaurant.key().id()
+			renderjson(self, values)
+		else:
+			renderjson(self, "Error on save")
 
 class CreateItem(webapp2.RequestHandler):
-#given menuid, name, description, price
+#given restaurantid, name, description, price
 #return item id
     def get(self):
-        menu = Menu.get_by_id(int(self.request.get("menuid")))
-        item = Item(
-            name = self.request.get("name"),
-            description = self.request.get("description"),
-            price = self.request.get("price"),
-            menu = menu
-            )
-        item.put()
-        if item.key():
-            values = item.key().id()
-            renderjson(self, values)
-        else:
-            renderjson(self, "Error on item add")
+	    restaurant = Restaurant.get_by_id(int(restaurantid))
+	    item = Item(
+		    name = self.request.get("name"),
+		    description = self.request.get("description"),
+		    price = self.request.get("price"),
+		    restaurant = restaurant
+		    )
+	    item.put()
+	    if item.key():
+		    values = item.key().id()
+		    renderjson(self, values)
+	    else:
+		    renderjson(self, "Error on item add")
 
 class Test(webapp2.RequestHandler):
     def get(self):

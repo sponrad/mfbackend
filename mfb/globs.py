@@ -58,15 +58,3 @@ states = {
     'WV': 'West Virginia',
     'WY': 'Wyoming'
     }
-
-
-DEFAULT_MENUS = [
-    'Meals', 
-    'Entrees', 
-    'Sides',
-    'Appetizers',
-    'Drinks',
-    'Alcohol',    
-    'Desserts',
-    'Kids',    
-]
