@@ -8,7 +8,7 @@ import globs, logging
 from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
 
-_ITEM_INDEX = "items"
+_ITEM_INDEX = globs._ITEM_INDEX
 
 def createitemdocument(item, restaurant):
   lat = restaurant.location.lat

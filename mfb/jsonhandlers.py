@@ -12,12 +12,26 @@ from webapp2_extras.auth import InvalidPasswordError
 
 DEFAULTMENUS = globs.DEFAULT_MENUS
 
-_ITEM_INDEX = "items"
+_ITEM_INDEX = globs._ITEM_INDEX
 
 def renderjson(self, values):
 	self.response.headers['Access-Control-Allow-Origin'] = '*'
         self.response.headers['Content-Type'] = "application/json"
         self.response.out.write(json.dumps(values))
+
+def createitemdocument(item, restaurant):
+  lat = restaurant.location.lat
+  lon = restaurant.location.lon
+  return search.Document(doc_id=str(item.key().id()),
+    fields=[
+      search.TextField(name='name', value=item.name),
+      search.TextField(name='price', value=item.price),
+      search.TextField(name='description', value=item.description),
+      search.NumberField(name='rating', value=item.rating()),
+      search.GeoField(name='location', value=search.GeoPoint(lat, lon)),
+      search.TextField(name='restaurantname', value=restaurant.name),
+      ]
+    )
 
 class Signup(BaseHandler):
 	def post(self):
@@ -228,69 +242,31 @@ class GetLocations(webapp2.RequestHandler):
 class GetItems(webapp2.RequestHandler):
     def get(self):
         values = {}
-        latitude = self.request.get("latitude")
-        longitude = self.request.get("longitude")
+        lat = self.request.get("latitude")
+        lon = self.request.get("longitude")
 	radius = self.request.get("radius")
 	offset = self.request.get("offset")
 	limit = self.request.get("limit")
-        if latitude != "" and longitude != "":
-            locations = Location.all()
-            locations = Location.proximity_fetch(
-		    locations,
-		    geotypes.Point(float(latitude), float(longitude)),
-		    max_results = 30,
-		    max_distance = int(float(radius)*0.3048),  #ft to meters
-		    )
-	    if len(locations) > 0: 
-		    values['items'] = []
-		    values['response'] = 1
-		    for l in locations:
-			    itemdata = None
-			    locationname =  str(l.name)
-			    location = [l.location.lat, l.location.lon]
-			    locationid = l.key().id(),
-			    restaurantname = str(l.restaurant.name)
-			    restaurantid = str(l.restaurant.key().id())
-			    address = str(l.address)
-			    city = str(l.city)
-			    state = str(l.state)
-			    zipcode = str(l.zipcode)
-			    phonenumber = str(l.phonenumber)
-			    distance = haversine(
-				    float(longitude), 
-				    float(latitude),
-				    float(l.location.lon),
-				    float(l.location.lat)
-				    )
-			    for m in l.restaurant.menu_set:
-				    for i in m.item_set:
-					    itemdata = {
-						    "name": str(i.name),
-						    "rating": str(i.rating()),
-						    "locationname": locationname,
-						    "location": location,
-						    "locationid": locationid,
-						    "itemid": str(i.key().id()),
-						    "restaurantname": restaurantname,
-						    "restaurantid": restaurantid,
-						    "address": address,
-						    "city": city,
-						    "state": state,
-						    "zipcode": zipcode,
-						    "phonenumber": phonenumber,
-						    "distance": distance
-						    }
-			    if itemdata:
-				    values['items'].append(itemdata)
-		    if offset == limit == "":
-			    pass #none provided! dont bother
-		    else:
-			    offset = int(offset) if offset != "" else 0
-			    limit = int(limit) if limit != "" else 50
-			    values['items'] = values['items'][offset:offset+limit]
+
+	index = search.Index(name=_ITEM_INDEX)
+	query_string = "distance(location, geopoint(" + lat + "," + lon + ")) < " + radius
+	query = search.Query(query_string=query_string)
+	results = index.search(query)
+	for i in results:
+		values = {
+			"name": i.name,
+			"rating": i.rating,
+			"itemid": i.doc_id,
+			"restaurantname": i.restaurantname,
+			}
+		if offset == limit == "":
+			pass #none provided! dont bother
+		else:
+			offset = int(offset) if offset != "" else 0
+			limit = int(limit) if limit != "" else 50
+			values['items'] = values['items'][offset:offset+limit]
 
             else:
-		    locations = None
 		    values['response'] = 0
 
         else:
@@ -358,7 +334,6 @@ class GetItemSuggestions(BaseHandler):
 		results = index.search(search.Query(query_string=querystring))
 		
 		
-#TODO add image calls here, find or create
 class ReviewItem(BaseHandler):
 	def options(self):
 		self.response.headers['Access-Control-Allow-Origin'] = '*'
@@ -410,6 +385,8 @@ class ReviewItem(BaseHandler):
 				name = itemname,
 				restaurant = restaurant
 				)
+			item.put()
+			createitemdocument(item, restaurant)
 
 		review = Review.all().filter("userid =", int(userid)).filter("item =", item).get()
 
@@ -426,6 +403,10 @@ class ReviewItem(BaseHandler):
 		review.put()
 		item.numberofreviews += 1
 		item.put()
+		user.numberofreviews += 1
+		user.put()
+		restaurant.numberofreviews += 1
+		restaurant.put()
 		values = {
 			"response": 1,
 			"rating": item.rating(),

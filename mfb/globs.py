@@ -58,3 +58,5 @@ states = {
     'WV': 'West Virginia',
     'WY': 'Wyoming'
     }
+
+_ITEM_INDEX = "items"
