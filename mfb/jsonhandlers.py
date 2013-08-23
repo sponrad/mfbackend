@@ -249,8 +249,23 @@ class GetItems(webapp2.RequestHandler):
 	limit = self.request.get("limit")
 
 	index = search.Index(name=_ITEM_INDEX)
+	
 	query_string = "distance(location, geopoint(" + lat + "," + lon + ")) < " + radius
-	query = search.Query(query_string=query_string)
+	
+	expr1 = search.FieldExpression(name='distance', expression='distance(location, geopoint(' + lat + ',' + lon +'))')
+	sort1 = search.SortExpression(expression='distance', direction=SortExpression.DESCENDING, default_value=0)
+	sort_opts = search.SortOptions(expressions=[sort1])
+	
+	query_options = search.QueryOptions(
+		returned_fields = ['name', 'rating', 'restaurantname'],
+		returned_expressions=[expr1, expr2],
+		sort_options= sort_opts
+		)
+
+	query = search.Query(
+		query_string=query_string, 
+		options=query_options
+		)
 	results = index.search(query)
 	for i in results:
 		values = {
