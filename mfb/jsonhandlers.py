@@ -10,8 +10,6 @@ from helpers import *
 from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
 
-DEFAULTMENUS = globs.DEFAULT_MENUS
-
 _ITEM_INDEX = globs._ITEM_INDEX
 
 def renderjson(self, values):
@@ -253,13 +251,13 @@ class GetItems(webapp2.RequestHandler):
 	query_string = "distance(location, geopoint(" + lat + "," + lon + ")) < " + radius
 	
 	expr1 = search.FieldExpression(name='distance', expression='distance(location, geopoint(' + lat + ',' + lon +'))')
-	sort1 = search.SortExpression(expression='distance', direction=SortExpression.DESCENDING, default_value=0)
-	sort_opts = search.SortOptions(expressions=[sort1])
+	#sort1 = search.SortExpression(expression='distance', direction=SortExpression.DESCENDING, default_value=0)
+	#sort_opts = search.SortOptions(expressions=[sort1])
 	
 	query_options = search.QueryOptions(
 		returned_fields = ['name', 'rating', 'restaurantname'],
-		returned_expressions=[expr1, expr2],
-		sort_options= sort_opts
+		returned_expressions=[expr1],
+		#sort_options= sort_opts
 		)
 
 	query = search.Query(
@@ -267,28 +265,9 @@ class GetItems(webapp2.RequestHandler):
 		options=query_options
 		)
 	results = index.search(query)
-	for i in results:
-		values = {
-			"name": i.name,
-			"rating": i.rating,
-			"itemid": i.doc_id,
-			"restaurantname": i.restaurantname,
-			}
-		if offset == limit == "":
-			pass #none provided! dont bother
-		else:
-			offset = int(offset) if offset != "" else 0
-			limit = int(limit) if limit != "" else 50
-			values['items'] = values['items'][offset:offset+limit]
+	self.response.out.write(results)
 
-            else:
-		    values['response'] = 0
-
-        else:
-            items = None
-            values['response'] = 0
-
-        renderjson(self, values)
+        #renderjson(self, values)
 
 class GetMenu(webapp2.RequestHandler):
 	def get(self):
@@ -389,8 +368,9 @@ class ReviewItem(BaseHandler):
 			restaurant = Restaurant(
 				name = restaurantname
 				)
-			locationstring = latitude + ", " + longitude
-			restaurant.updatelocation(locationstring)
+			#locationstring = latitude + ", " + longitude
+			#restaurant.updatelocation(locationstring)
+			restaurant.location = db.GeoPt(latitude, longitude)			
 			restaurant.put()
 
 		if itemid:
@@ -401,7 +381,8 @@ class ReviewItem(BaseHandler):
 				restaurant = restaurant
 				)
 			item.put()
-			createitemdocument(item, restaurant)
+			doc = createitemdocument(item, restaurant)
+			search.Index(name=_ITEM_INDEX).put(doc)
 
 		review = Review.all().filter("userid =", int(userid)).filter("item =", item).get()
 
@@ -418,8 +399,8 @@ class ReviewItem(BaseHandler):
 		review.put()
 		item.numberofreviews += 1
 		item.put()
-		user.numberofreviews += 1
-		user.put()
+		#user.numberofreviews += 1
+		#user.put()
 		restaurant.numberofreviews += 1
 		restaurant.put()
 		values = {
