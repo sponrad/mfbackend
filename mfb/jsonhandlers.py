@@ -239,6 +239,7 @@ class GetLocations(webapp2.RequestHandler):
 #TODO, search api
 class GetItems(webapp2.RequestHandler):
     def get(self):
+        self.response.headers['Access-Control-Allow-Origin'] = '*'
         values = {}
         lat = self.request.get("latitude")
         lon = self.request.get("longitude")
@@ -408,6 +409,13 @@ class ReviewItem(BaseHandler):
 			"rating": item.rating(),
 			}
 		renderjson(self, values)
+
+class GetProfile(BaseHandler):
+	def get(self):
+		userid = self.request.get("userid")
+		user = self.auth.get_user_by_token(int(userid), authtoken)
+		
+	
 		
 class CreateRestaurant(webapp2.RequestHandler):
 #given restaurantname, address, city, state, zipcode
