@@ -60,3 +60,4 @@ states = {
     }
 
 _ITEM_INDEX = "items"
+_RESTAURANT_INDEX = "restaurants"

@@ -1,9 +1,9 @@
+import helpers, time, globs
 from google.appengine.ext import db, ndb, blobstore
 from google.appengine.api.images import get_serving_url
 import webapp2_extras.appengine.auth.models
 from webapp2_extras import security
 from geo.geomodel import GeoModel
-import helpers, time
 
 class User(webapp2_extras.appengine.auth.models.User):
     '''
@@ -76,9 +76,15 @@ class Restaurant(db.Model):
             self.update_location()    
             
     def delete(self):
+        #delete from the search index
+        doc_index = search.Index(name=_RESTAURANT_INDEX)
+        doc_index.delete(self.key().id())
         for item in self.item_set:
             item.delete()
         db.delete(self.key())
+
+    def updateindex(self):
+        helpers.createrestaurantdocument(self)
 
 class Item(db.Model):
     name = db.StringProperty(required = True)
@@ -105,11 +111,17 @@ class Item(db.Model):
         return rating
             
     def delete(self):
+        #delete from the search index
+        doc_index = search.Index(name=_ITEM_INDEX)
+        doc_index.delete(self.key().id())
         for review in self.review_set:
             review.delete()
         self.restaurant.numberofitems -= 1
         self.restaurant.put()
         db.delete(self.key())
+
+    def updateindex(self):
+        helpers.createitemdocument(self, self.restaurant)        
 
 class Review(db.Model):
     userid = db.IntegerProperty()

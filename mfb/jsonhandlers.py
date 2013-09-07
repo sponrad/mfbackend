@@ -11,6 +11,7 @@ from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
 
 _ITEM_INDEX = globs._ITEM_INDEX
+_RESTAURANT_INDEX = globs._RESTAURANT_INDEX
 
 def renderjson(self, values):
 	self.response.headers['Access-Control-Allow-Origin'] = '*'
@@ -28,6 +29,16 @@ def createitemdocument(item, restaurant):
       search.NumberField(name='rating', value=item.rating()),
       search.GeoField(name='location', value=search.GeoPoint(lat, lon)),
       search.TextField(name='restaurantname', value=restaurant.name),
+      ]
+    )
+
+def createrestaurantdocument(restaurant):
+  lat = restaurant.location.lat
+  lon = restaurant.location.lon
+  return search.Document(doc_id=str(restaurant.key().id()),
+    fields=[
+      search.TextField(name='name', value=restaurant.name),
+      search.GeoField(name='location', value=search.GeoPoint(lat, lon)),
       ]
     )
 
@@ -139,48 +150,9 @@ class SignupHandler(BaseHandler):
 	    }
     renderjson(self, values)
 
-''' given a lat long, returns a single location for the flip screen '''
-#REMOVE
-class GetLocation(webapp2.RequestHandler):
-    def get(self):
-        latitude = self.request.get("latitude")
-        longitude = self.request.get("longitude")
-        if latitude != "" and longitude != "":
-            locations = Location.all()
-            locations = Location.proximity_fetch(
-                locations,
-                geotypes.Point(float(latitude), float(longitude)),
-                max_results = 1,
-                max_distance = 48,  #meters, this is ~150 feet
-                )
-            if locations: 
-                location = locations[0]
-                values = {
-                    "locationname": str(location.name),
-                    "location": [location.location.lat, location.location.lon],
-		    "locationid": location.key().id(),
-                    "restaurantname": str(location.restaurant.name),
-		    "restaurantid": str(location.restaurant.key().id()),
-                    "address": str(location.address),
-                    "city": str(location.city),
-		    "zipcode": str(location.zipcode),
-		    "state": str(location.state),
-		    "response": 1,
-                    }
-            else:
-                location = None
-                values = {'response': 0}
-
-        else:
-            locations = None
-	    values = {'response': 0}
-
-        renderjson(self, values)
-        
-
 ''' given a lat long and radius, returns nearby locations '''
 #TODO search api
-class GetLocations(webapp2.RequestHandler):
+class GetRestaurants(webapp2.RequestHandler):
     def get(self):
         values = {}
         latitude = self.request.get("latitude")
@@ -236,7 +208,6 @@ class GetLocations(webapp2.RequestHandler):
         renderjson(self, values)
 
 ''' given a lat long and radius, returns nearby Items '''
-#TODO, search api
 class GetItems(webapp2.RequestHandler):
     def get(self):
         self.response.headers['Access-Control-Allow-Origin'] = '*'
@@ -250,6 +221,9 @@ class GetItems(webapp2.RequestHandler):
 	index = search.Index(name=_ITEM_INDEX)
 	
 	query_string = "distance(location, geopoint(" + lat + "," + lon + ")) < " + radius
+
+	if not lat and not lon:
+		return self.response.out.write("lat and long")
 	
 	expr1 = search.FieldExpression(name='distance', expression='distance(location, geopoint(' + lat + ',' + lon +'))')
 	#sort1 = search.SortExpression(expression='distance', direction=SortExpression.DESCENDING, default_value=0)
@@ -266,9 +240,26 @@ class GetItems(webapp2.RequestHandler):
 		options=query_options
 		)
 	results = index.search(query)
-	self.response.out.write(results)
+	items = []
 
-        #renderjson(self, values)
+	for scored_document in results.results:
+		item = {
+			"itemid": scored_document.doc_id
+			}
+		for field in scored_document.fields:
+			item[field.name] = field.value
+		for field in scored_document.expressions:
+			item[field.value] = field.value
+	
+		items.append(item)
+
+	values['items'] = items
+	values['response'] = 1
+
+	#self.response.out.write(results.results[0].expressions[0].name)
+	#self.response.out.write(results.results)
+
+        renderjson(self, values)
 
 class GetMenu(webapp2.RequestHandler):
 	def get(self):

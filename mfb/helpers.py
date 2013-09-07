@@ -12,6 +12,9 @@ from geo import geotypes
 
 BINGKEY = globs.BINGKEY
 
+_ITEM_INDEX = globs._ITEM_INDEX
+_RESTAURANT_INDEX = globs._RESTAURANT_INDEX
+
 def admin_required(handler):
   def check_admin(self, *args, **kwargs):
     auth = self.auth
@@ -165,3 +168,28 @@ def haversine(lon1, lat1, lon2, lat2):
   #km = 6367 * c
   miles = 10086 * c
   return str(round(miles, 2))
+
+
+def createitemdocument(item, restaurant):
+  lat = restaurant.location.lat
+  lon = restaurant.location.lon
+  return search.Document(doc_id=str(item.key().id()),
+    fields=[
+      search.TextField(name='name', value=item.name),
+      search.TextField(name='price', value=item.price),
+      search.TextField(name='description', value=item.description),
+      search.NumberField(name='rating', value=item.rating()),
+      search.GeoField(name='location', value=search.GeoPoint(lat, lon)),
+      search.TextField(name='restaurantname', value=restaurant.name),
+      ]
+    )
+
+def createrestaurantdocument(restaurant):
+  lat = restaurant.location.lat
+  lon = restaurant.location.lon
+  return search.Document(doc_id=str(restaurant.key().id()),
+    fields=[
+      search.TextField(name='name', value=restaurant.name),
+      search.GeoField(name='location', value=search.GeoPoint(lat, lon)),
+      ]
+    )
