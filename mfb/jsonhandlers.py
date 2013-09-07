@@ -389,9 +389,11 @@ class GetProfile(BaseHandler):
 	def get(self):
 		userid = self.request.get("userid")
 		user = self.auth.get_user_by_token(int(userid), authtoken)
-		
-	
-		
+
+class CreateList(webapp2.RequestHandler):
+	def post(self):
+		pass
+
 class CreateRestaurant(webapp2.RequestHandler):
 #OLD
 #given restaurantname, address, city, state, zipcode 
