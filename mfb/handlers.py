@@ -241,7 +241,7 @@ class Maintain(BaseHandler):
       deferred.defer(something_expensive,"a","b","c")
       return self.response.out.write("added to queue")
     if action == "removedocuments":
-      doc_index = search.Index(name=_ITEM_INDEX)
+      doc_index = search.Index(name="_RESTAURANT_INDEX")
       while True:
         document_ids = [document.doc_id for document in doc_index.get_range(ids_only=True)]
         if not document_ids:

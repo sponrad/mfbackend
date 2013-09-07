@@ -136,10 +136,14 @@ class GetRestaurants(webapp2.RequestHandler):
 	radius = self.request.get("radius")
 	offset = self.request.get("offset")
 	limit = self.request.get("limit")
+	querystring = self.request.get("querystring")
 
 	index = search.Index(name=_RESTAURANT_INDEX)
 	
 	query_string = "distance(location, geopoint(" + lat + "," + lon + ")) < " + radius
+
+	if querystring:
+		query_string += " AND " + querystring
 
 	if not lat and not lon:
 		return self.response.out.write("lat and long")
@@ -190,10 +194,15 @@ class GetItems(webapp2.RequestHandler):
 	radius = self.request.get("radius")
 	offset = self.request.get("offset")
 	limit = self.request.get("limit")
+	querystring = self.request.get("querystring")
+	restaurantname = self.request.get("restaurantname")
 
 	index = search.Index(name=_ITEM_INDEX)
 	
 	query_string = "distance(location, geopoint(" + lat + "," + lon + ")) < " + radius
+
+	if querystring and restaurantname:
+		query_string += " AND restaurantname: " + restaurantname + " AND " + querystring
 
 	if not lat and not lon:
 		return self.response.out.write("lat and long")
