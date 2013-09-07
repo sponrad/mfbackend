@@ -14,12 +14,14 @@ config = {
 app = webapp2.WSGIApplication([
         ('/json/items', GetItems),
         ('/json/restaurants', GetRestaurants),
-        ('/json/getmenu', GetMenu),         #locationid
+        ('/json/getmenu', GetMenu),         #restaurantid
         ('/json/getitem', GetItem),         #menuid, optional:locationid
-        ('/json/reviewitem', ReviewItem),   #userid, authtoken, itemid, rating, description
         ('/json/profile', GetProfile),
+
+        ('/json/reviewitem', ReviewItem),   #userid, authtoken, itemid, rating, description
         ('/json/createrestaurant', CreateRestaurant),
         ('/json/createitem', CreateItem),
+
         ('/json/signup', Signup),
         ('/json/login', Login),
         ('/json/logout', Logout),

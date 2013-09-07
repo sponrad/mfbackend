@@ -18,30 +18,6 @@ def renderjson(self, values):
         self.response.headers['Content-Type'] = "application/json"
         self.response.out.write(json.dumps(values))
 
-def createitemdocument(item, restaurant):
-  lat = restaurant.location.lat
-  lon = restaurant.location.lon
-  return search.Document(doc_id=str(item.key().id()),
-    fields=[
-      search.TextField(name='name', value=item.name),
-      search.TextField(name='price', value=item.price),
-      search.TextField(name='description', value=item.description),
-      search.NumberField(name='rating', value=item.rating()),
-      search.GeoField(name='location', value=search.GeoPoint(lat, lon)),
-      search.TextField(name='restaurantname', value=restaurant.name),
-      ]
-    )
-
-def createrestaurantdocument(restaurant):
-  lat = restaurant.location.lat
-  lon = restaurant.location.lon
-  return search.Document(doc_id=str(restaurant.key().id()),
-    fields=[
-      search.TextField(name='name', value=restaurant.name),
-      search.GeoField(name='location', value=search.GeoPoint(lat, lon)),
-      ]
-    )
-
 class Signup(BaseHandler):
 	def post(self):
 		user_name = self.request.get('username')
@@ -150,60 +126,57 @@ class SignupHandler(BaseHandler):
 	    }
     renderjson(self, values)
 
-''' given a lat long and radius, returns nearby locations '''
-#TODO search api
+''' given a lat long and radius, returns nearby restaurants '''
 class GetRestaurants(webapp2.RequestHandler):
     def get(self):
+        self.response.headers['Access-Control-Allow-Origin'] = '*'
         values = {}
-        latitude = self.request.get("latitude")
-        longitude = self.request.get("longitude")
+        lat = self.request.get("latitude")
+        lon = self.request.get("longitude")
 	radius = self.request.get("radius")
 	offset = self.request.get("offset")
 	limit = self.request.get("limit")
-        if latitude != "" and longitude != "":
-            locations = Location.all()
-            locations = Location.proximity_fetch(
-		    locations,
-		    geotypes.Point(float(latitude), float(longitude)),
-		    max_results = 30,
-		    max_distance = int(float(radius)*0.3048),  #ft to meters
-		    )
-	    if len(locations) > 0: 
-		    values['locations'] = []
-		    values['response'] = 1
-		    for l in locations:
-			    locationdata = {
-				    "locationname": str(l.name),
-				    "location": [l.location.lat, l.location.lon],
-				    "locationid": l.key().id(),
-				    "restaurantname": str(l.restaurant.name),
-				    "restaurantid": str(l.restaurant.key().id()),
-				    "address": str(l.address),
-				    "city": str(l.city),
-				    "state": str(l.state),
-				    "zipcode": str(l.zipcode),
-				    "distance": haversine(
-					    float(longitude), 
-					    float(latitude),
-					    float(l.location.lon),
-					    float(l.location.lat)
-					    )
-				    }
-			    values['locations'].append(locationdata)
-		    if offset == limit == "":
-			    pass #none provided! dont bother
-		    else:
-			    offset = int(offset) if offset != "" else 0
-			    limit = int(limit) if limit != "" else 50
-			    values['locations'] = values['locations'][offset:offset+limit]
 
-            else:
-		    location = None
-		    values['response'] = 0
+	index = search.Index(name=_RESTAURANT_INDEX)
+	
+	query_string = "distance(location, geopoint(" + lat + "," + lon + ")) < " + radius
 
-        else:
-            locations = None
-            values['response'] = 0
+	if not lat and not lon:
+		return self.response.out.write("lat and long")
+	
+	expr1 = search.FieldExpression(name='distance', expression='distance(location, geopoint(' + lat + ',' + lon +'))')
+	#sort1 = search.SortExpression(expression='distance', direction=SortExpression.DESCENDING, default_value=0)
+	#sort_opts = search.SortOptions(expressions=[sort1])
+	
+	query_options = search.QueryOptions(
+		returned_fields = ['name'],
+		returned_expressions=[expr1],
+		#sort_options= sort_opts
+		)
+
+	query = search.Query(
+		query_string=query_string, 
+		options=query_options
+		)
+	results = index.search(query)
+	restaurants = []
+
+	for scored_document in results.results:
+		restaurant = {
+			"restaurantid": scored_document.doc_id
+			}
+		for field in scored_document.fields:
+			restaurant[field.name] = field.value
+		for field in scored_document.expressions:
+			restaurant[field.name] = field.value
+	
+		restaurants.append(restaurant)
+
+	values['restaurants'] = restaurants
+	values['response'] = 1
+
+	#self.response.out.write(results.results[0].expressions[0].name)
+	#self.response.out.write(results.results)
 
         renderjson(self, values)
 
@@ -249,7 +222,7 @@ class GetItems(webapp2.RequestHandler):
 		for field in scored_document.fields:
 			item[field.name] = field.value
 		for field in scored_document.expressions:
-			item[field.value] = field.value
+			item[field.name] = field.value
 	
 		items.append(item)
 
@@ -390,10 +363,12 @@ class ReviewItem(BaseHandler):
 			review.description = description
 		review.put()
 		item.numberofreviews += 1
+		item.updateindex()
 		item.put()
 		#user.numberofreviews += 1
 		#user.put()
 		restaurant.numberofreviews += 1
+		restaurant.updateindex()
 		restaurant.put()
 		values = {
 			"response": 1,
@@ -409,7 +384,8 @@ class GetProfile(BaseHandler):
 	
 		
 class CreateRestaurant(webapp2.RequestHandler):
-#given restaurantname, address, city, state, zipcode
+#OLD
+#given restaurantname, address, city, state, zipcode 
 #return restaurant id
 	def get(self):
 		if self.request.get("name") == "":
@@ -430,6 +406,7 @@ class CreateRestaurant(webapp2.RequestHandler):
 			renderjson(self, "Error on save")
 
 class CreateItem(webapp2.RequestHandler):
+#OLD
 #given restaurantid, name, description, price
 #return item id
     def get(self):

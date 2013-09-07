@@ -10,29 +10,15 @@ from webapp2_extras.auth import InvalidPasswordError
 
 _ITEM_INDEX = globs._ITEM_INDEX
 
-def createitemdocument(item, restaurant):
-  lat = restaurant.location.lat
-  lon = restaurant.location.lon
-  return search.Document(doc_id=str(item.key().id()),
-    fields=[
-      search.TextField(name='name', value=item.name),
-      search.TextField(name='price', value=item.price),
-      search.TextField(name='description', value=item.description),
-      search.NumberField(name='rating', value=item.rating()),
-      search.GeoField(name='location', value=search.GeoPoint(lat, lon)),
-      search.TextField(name='restaurantname', value=restaurant.name),
-      ]
-    )
-
 def something_expensive(a,b,c):
   logging.info("Doing something expensive")
-  restaurants = Restaurant.all(keys_only=True)
-  items = Item.all(keys_only=True)
-  reviews = Review.all(keys_only=True)
-  db.delete(restaurants)
-  db.delete(items)
-  db.delete(reviews)
-
+  #this updates all indexes
+  restaurants = Restaurant.all()
+  items = Item.all()
+  for r in restaurants:
+    r.updateindex()
+  for i in items:
+    i.updateindex()
 
 ######################## HANDLERS
 class SignupHandler(BaseHandler):

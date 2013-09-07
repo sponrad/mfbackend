@@ -1,4 +1,5 @@
 import os, datetime, random, string, urllib, math, globs, json
+from google.appengine.api import search
 import webapp2
 import os.path
 from math import radians, cos, sin, asin, sqrt
@@ -169,11 +170,11 @@ def haversine(lon1, lat1, lon2, lat2):
   miles = 10086 * c
   return str(round(miles, 2))
 
-
+#create new or update existing
 def createitemdocument(item, restaurant):
   lat = restaurant.location.lat
   lon = restaurant.location.lon
-  return search.Document(doc_id=str(item.key().id()),
+  document = search.Document(doc_id=str(item.key().id()),
     fields=[
       search.TextField(name='name', value=item.name),
       search.TextField(name='price', value=item.price),
@@ -183,13 +184,18 @@ def createitemdocument(item, restaurant):
       search.TextField(name='restaurantname', value=restaurant.name),
       ]
     )
+  index = search.Index(name=_ITEM_INDEX)
+  index.put(document)
 
+#create new or update existing
 def createrestaurantdocument(restaurant):
   lat = restaurant.location.lat
   lon = restaurant.location.lon
-  return search.Document(doc_id=str(restaurant.key().id()),
+  document =  search.Document(doc_id=str(restaurant.key().id()),
     fields=[
       search.TextField(name='name', value=restaurant.name),
       search.GeoField(name='location', value=search.GeoPoint(lat, lon)),
       ]
     )
+  index = search.Index(name=_RESTAURANT_INDEX)
+  index.put(document)
