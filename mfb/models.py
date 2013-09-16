@@ -14,6 +14,9 @@ class User(webapp2_extras.appengine.auth.models.User):
     name
     last_name
     numberofratings
+    following?
+    followers?
+    followedlists?
     '''
     
     def set_password(self, raw_password):
@@ -133,3 +136,9 @@ class Review(db.Model):
 class Chain(db.Model):
     name = db.StringProperty(required = True)
     restaurantids = db.StringListProperty(int)
+
+class List(db.Model):
+    name = db.StringProperty(required = True)
+    userid = db.IntegerProperty()
+    itemids = db.StringListProperty()
+    followerids = db.StringListProperty()

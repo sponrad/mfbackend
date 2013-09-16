@@ -388,11 +388,14 @@ class ReviewItem(BaseHandler):
 class GetProfile(BaseHandler):
 	def get(self):
 		userid = self.request.get("userid")
-		user = self.auth.get_user_by_token(int(userid), authtoken)
-
-class CreateList(webapp2.RequestHandler):
-	def post(self):
-		pass
+		user = User.get_by_id(int(userif))
+		lists = List.all().filter("userid =", userid).run()
+		values = {
+			"user": user,
+			"lists": lists,
+			}
+		renderjson(self, values)
+		#user = self.auth.get_user_by_token(int(userid), authtoken)
 
 class CreateRestaurant(webapp2.RequestHandler):
 #OLD
@@ -434,6 +437,88 @@ class CreateItem(webapp2.RequestHandler):
 		    renderjson(self, values)
 	    else:
 		    renderjson(self, "Error on item add")
+
+class ListHandler(webapp2.RequestHandler):
+	def get(self):
+		listid = self.request.get("listid")
+		thislist = List.get_by_id(int(listid))
+		values = {
+			"response": 1,
+			"itemids": thislist.itemids,
+			"list": thislist
+			}
+		renderjson(self, values)
+		
+	def post(self):
+		userid = self.request.get("userid")
+		authtoken = self.request.get("authtoken")
+
+		user = User.get_by_id(int(userid))
+
+		action = self.request.get("action")
+		values = {
+			response: 0
+			}
+
+		if action == "create":
+			listname = self.request.get("listname")
+			thislist = List(
+				userid = int(userid),
+				name = listname,
+				)
+			thislist.put()
+			values = {
+				response: 1,
+				listid: thislist.key().id(),
+				}
+
+		elif action == "delete":
+			listid = self.request.get("listid")
+			thislist = List.get_by_id(int(listid))
+			thislist.delete()
+			values['response'] = 1
+
+		elif action == "rename":
+			listid = self.request.get("listid")
+			listname = self.request.get("listname")
+			thislist = List.get_by_id(int(listid))
+			thislist.name = listname
+			thislist.put()
+			values['response'] = 1
+
+		elif action == "follow":
+			listid = self.request.get("listid")
+			thislist = List.get_by_id(int(listid))
+			thislist.followerids.append(userid)
+			thislist.put()
+			values['response'] = 1
+
+		elif action == "unfollow":
+			listid = self.request.get("listid")
+			thislist = List.get_by_id(int(listid))
+			try: thislist.followerids.remove(userid)
+			except: pass
+			thislist.put()
+			values['response'] = 1
+
+		elif action == "additem":
+			listid = self.request.get("listid")
+			thislist = List.get_by_id(int(listid))
+			itemid = self.requset.get("itemid")
+			thislist.itemids.append(itemid)
+			thislist.put()
+			values['response'] = 1
+
+		elif action == "removeitem":
+			listid = self.request.get("listid")
+			thislist = List.get_by_id(int(listid))
+			itemid = self.requset.get("itemid")
+			thislist.itemids.remove(itemid)
+			thislist.put()
+			values['response'] = 1
+
+		renderjson(self,values)
+
 
 class Test(webapp2.RequestHandler):
     def get(self):
