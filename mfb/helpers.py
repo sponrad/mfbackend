@@ -203,5 +203,3 @@ def createrestaurantdocument(restaurant):
     )
   index = search.Index(name=_RESTAURANT_INDEX)
   index.put(document)
-
-  

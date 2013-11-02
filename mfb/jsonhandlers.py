@@ -301,6 +301,14 @@ class GetItemSuggestions(BaseHandler):
 		querystring = self.request.get("query")
 		doc_index = search.Index(name=_ITEM_INDEX)
 		results = index.search(search.Query(query_string=querystring))
+
+class GetRestaurantSuggestions(BaseHandler):
+	def get(self):
+		latitude = self.request.get("latitude")
+		longitude = self.request.get("longitude")
+		querystring = self.request.get("query")
+		doc_index = search.Index(name=_ITEM_INDEX)
+		results = index.search(search.Query(query_string=querystring))
 		
 		
 class ReviewItem(BaseHandler):
@@ -316,7 +324,7 @@ class ReviewItem(BaseHandler):
 		restaurantid = self.request.get("restaurantid")
 		restaurantname = self.request.get("restaurantname")
 		itemname = self.request.get("itemname")
-		rating = self.request.get("rating")
+		rating = self.request.get("rating")   #1 or 0
 		description = self.request.get("description")
 		latitude = self.request.get("latitude")
 		longitude = self.request.get("longitude")
@@ -347,7 +355,6 @@ class ReviewItem(BaseHandler):
 			#restaurant.updatelocation(locationstring)
 			restaurant.location = db.GeoPt(latitude, longitude)
 			restaurant.put()
-			restaurant.updateindex()
 
 
 		if itemid:
@@ -360,27 +367,26 @@ class ReviewItem(BaseHandler):
 			item.put()
 			restaurant.numberofitems += 1
 			restaurant.put()
-			item.updateindex()
-
+			
 		review = Review.all().filter("userid =", int(userid)).filter("item =", item).get()
 
 		if not review:
 			review = Review(
 				userid = int(userid),
 				item = item,
-				rating = int(rating),
+				rating = rating,
 				description = description,
 				)
 			item.numberofreviews += 1
-			item.updateindex()
 			item.put()
 			restaurant.numberofreviews += 1
-			restaurant.updateindex()
 			restaurant.put()
 		else:
-			review.rating = int(rating)
+			review.rating = rating
 			review.description = description
 		review.put()
+		item.updateindex()
+		restaurant.updateindex()
 		values = {
 			"response": 1,
 			"rating": item.rating(),
