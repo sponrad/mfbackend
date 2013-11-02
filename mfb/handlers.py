@@ -1,8 +1,10 @@
 from helpers import *
+import helpers
 from models import *
 from geo import geotypes
 from google.appengine.api import search
 from google.appengine.ext import deferred
+from google.appengine.ext import db, ndb
 import globs, logging
 
 from webapp2_extras.auth import InvalidAuthIdError
@@ -20,6 +22,15 @@ def something_expensive(a,b,c):
   for i in items:
     i.updateindex()
 
+#reset everything except the user accounts
+def reset_food(a,b,c):
+  restaurants = Restaurant.all(keys_only=True)
+  items = Item.all(keys_only=True)
+  reviews = Review.all(keys_only=True)
+  db.delete(restaurants)
+  db.delete(items)
+  db.delete(reviews)
+  
 ######################## HANDLERS
 class SignupHandler(BaseHandler):
   def post(self):
@@ -108,6 +119,7 @@ class Restaurants(BaseHandler):
             numberofitems = 0
             )
         restaurant.put()
+        helpers.createrestaurantdocument(restaurant)
         self.redirect('/restaurant/' + str(restaurant.key().id()))
 
 class RestaurantPage(BaseHandler):
@@ -119,40 +131,21 @@ class RestaurantPage(BaseHandler):
         }
       render(self, "restaurant.html", values)
     @admin_required
-    def post(self, restaurantid):
-        restaurant = Restaurant.get_by_id(int(restaurantid))
+    def post(self, restaurantid):      
+      restaurant = Restaurant.get_by_id(int(restaurantid))
+      if self.request.get("action") == "additem":
+        item = Item(
+          name = self.request.get("name"),
+          description = self.request.get("description"),
+          price = self.request.get("price"),
+          restaurant = restaurant,          
+          )
+        item.put()
+        restaurant.numberofitems += 1
         restaurant.put()
-        self.redirect("/restaurant/" + str(restaurant.key().id()))
+        doc = helpers.createitemdocument(item, restaurant)
+      self.redirect('/restaurant/' + str(restaurant.key().id()))
         
-class RestaurantItems(BaseHandler):
-    @admin_required
-    def get(self, restaurantid):
-        restaurant = Restaurant.get_by_id(int(restaurantid))
-        values = {
-            "restaurant": restaurant,
-            }
-        render(self, "items.html", values)
-    @admin_required
-    def post(self, restaurantid):
-        restaurant = Restaurant.get_by_id(int(restaurantid))
-        if self.request.get("action") == "additem":
-            menu = Menu.get_by_id(int(self.request.get("menu")))
-            item = Item(
-                name = self.request.get("name"),
-                description = self.request.get("description"),
-                price = self.request.get("price"),
-                menu = menu
-                )
-            item.put()
-            restaurant.numberofitems += 1
-            restaurant.put()
-        if self.request.get("action") == "moveitem":
-          itemid = self.request.get("itemid")
-          item = Item.get_by_id(int(itemid))
-          item.put()
-          restaurant.put()
-        self.redirect("/items/" + str(restaurant.key().id()))
-
 class Editable(BaseHandler):
   @admin_required
   def get(self):
@@ -165,34 +158,43 @@ class Editable(BaseHandler):
       restaurant = Restaurant.get_by_id(int(id))
       restaurant.name = value
       restaurant.put()
+      restaurant.updateindex()
+      for item in restaurant.item_set:
+        item.updateindex()
       self.response.out.write(value)
-    if action ==  "location_address":
+    if action ==  "restaurant_address":
       #set the location, recalc the geohash
-      location = Location.get_by_id(int(id))
+      location = Restaurant.get_by_id(int(id))
       location.address = value.split(",").replace(" ", "")[0]
       location.city = value.split(",").replace(" ", "")[1]
       location.zipcode = value.split(",").replace(" ", "")[2]
       location.updatelocation()
       location.put()
       location.restaurant.put()
+      restaurant.updateindex()
+      for item in restaurant.item_set:
+        item.updateindex()
       self.response.out.write(value)
     if action == "item_name":
       item = Item.get_by_id(int(id))
       item.name = value
       item.put()
       item.restaurant.put()
+      item.updateindex()
       self.response.out.write(value)
     if action == "item_description":
       item = Item.get_by_id(int(id))
       item.description = value
       item.put()
       item.restaurant.put()
+      item.updateindex()
       self.response.out.write(value)
     if action == "item_price":
       item = Item.get_by_id(int(id))
       item.price = value
       item.put()
       item.restaurant.put()
+      item.updateindex()
       self.response.out.write(value)
 
 class AjaxHandler(BaseHandler):
@@ -222,7 +224,8 @@ class Delete(BaseHandler):
       item.delete()
       restaurant.numberofitems -= 1
       restaurant.put()
-      self.redirect("/items/" + str(restaurant.key().id()))
+
+      self.redirect("/restaurant/" + str(restaurant.key().id()))
 
 class Maintain(BaseHandler):
   @admin_required
@@ -240,11 +243,19 @@ class Maintain(BaseHandler):
     if action == "deferred":
       deferred.defer(something_expensive,"a","b","c")
       return self.response.out.write("added to queue")
-    if action == "removedocuments":
-      doc_index = search.Index(name="_RESTAURANT_INDEX")
-      while True:
-        document_ids = [document.doc_id for document in doc_index.get_range(ids_only=True)]
-        if not document_ids:
-            break
-        doc_index.delete(document_ids)
+    if action == "resetfood":
+      deferred.defer(reset_food,"a","b","c")
+      return self.response.out.write("reset!")
+    #remove search documents that do not have a datastore entry anymore
+    if action == "removeitemdocuments":
+      doc_index = search.Index(name="items")
+      for item in doc_index.get_range(ids_only=True):
+        if not Item.get_by_id(int(item.doc_id)):
+          doc_index.delete(item.doc_id)
+      self.response.out.write("ok")
+    if action == "removerestaurantdocuments":
+      doc_index = search.Index(name="restaurants")
+      for restaurant in doc_index.get_range(ids_only=True):
+        if not Restaurant.get_by_id(int(restaurant.doc_id)):
+          doc_index.delete(item.doc_id)
       self.response.out.write("ok")

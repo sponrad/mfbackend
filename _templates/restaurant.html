@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 
@@ -24,24 +23,39 @@
       });
     });
   </script>
-  <p><a href="/items/{{ restaurant.key.id }}">Menus and Items</a></p>
+
+  <p>Location:</p>
+  <span id="{{ restaurant.key.id }}.restaurant_address" class="edit">{% if restaurant.location %}{{ restaurant.address }}, {{ restaurant.city }}, {{ restaurant.zipcode }}{% else %}Enter address, city, zipcode{% endif %}</span> | {{ restaurant.location }}</p>  <!-- http://maps.google.com/?q=<lat>,<lng> -->
+
+<p><a href="/items/{{ restaurant.key.id }}">Items</a></p>
 
   <form method="post" style="float: right; background: #eee; padding: 10px;">
-    <input type="text" name="name" placeholder="Name"/>
-    <input type="text" name="address" placeholder="Address"/>
-    <input type="text" name="city" placeholder="City"/>
-    <input type="text" name="zipcode" placeholder="Zip"/>
-    <input type="hidden" name="restaurant" value="{{ restaurant.key.id }}" />
-    <input type="submit" value="Add Location" />
+    <input type="hidden" name="action" value="additem" />
+    <input type="text" name="name" placeholder="Item Name" />
+    <input type="text" name="description" placeholder="Description" />
+    <input type="text" name="price" placeholder="Price" />    
+    <input type="submit" value="Add Item" />
   </form>
 
-  <p>Locations:</p>
-  {% for l in locations %}
-  <p><span id="{{ l.key.id }}.location_name" class="edit">{{ l.name }}</span> <a href="/delete?action=location&id={{ l.key.id }}" class="delete" data-confirm="Are you sure?">Delete</a><br>
-    <span id="{{ l.key.id }}.location_address" class="edit">{{ l.address }}, {{ l.city }}, {{ l.zipcode }} </span> | {{ l.location }}</p>  <!-- http://maps.google.com/?q=<lat>,<lng> -->
-  {% endfor %}
+{% if restaurant.item_set.count == 0 %}
+No items yet
+{% else %}
+
+{% for item in restaurant.item_set %}
+<div style="padding: 0px 0px 15px 0px;">
+  <span class="edit" id="{{ item.key.id }}.item_name">{{ item.name }}</span> - $<span class="edit" id="{{ item.key.id }}.item_price">{{ item.price|floatformat:"-2" }}</span> 
+  <a href="/delete?action=item&id={{ item.key.id }}" class="delete" data-confirm="Delete this Item. Are you sure?">Delete</a> 
+  <br> 
+  <span class="edit" id="{{ item.key.id }}.item_description">{{ item.description }}</span>
+  
 </div>
+
+{% endfor %}
+{% endif %}
+</div>
+
 {% endblock body %}
+
 
 {% block bodyend %}
 {% endblock bodyend %}

@@ -5,6 +5,7 @@ from google.appengine.api import users, search
 from google.appengine.ext.webapp import template
 from google.appengine.ext import db
 
+import helpers
 from helpers import *
 
 from webapp2_extras.auth import InvalidAuthIdError
@@ -344,8 +345,10 @@ class ReviewItem(BaseHandler):
 				)
 			#locationstring = latitude + ", " + longitude
 			#restaurant.updatelocation(locationstring)
-			restaurant.location = db.GeoPt(latitude, longitude)			
+			restaurant.location = db.GeoPt(latitude, longitude)
 			restaurant.put()
+			restaurant.updateindex()
+
 
 		if itemid:
 			item = Item.get_by_id(int(itemid))
@@ -355,8 +358,9 @@ class ReviewItem(BaseHandler):
 				restaurant = restaurant
 				)
 			item.put()
-			doc = createitemdocument(item, restaurant)
-			search.Index(name=_ITEM_INDEX).put(doc)
+			restaurant.numberofitems += 1
+			restaurant.put()
+			item.updateindex()
 
 		review = Review.all().filter("userid =", int(userid)).filter("item =", item).get()
 
@@ -367,18 +371,16 @@ class ReviewItem(BaseHandler):
 				rating = int(rating),
 				description = description,
 				)
+			item.numberofreviews += 1
+			item.updateindex()
+			item.put()
+			restaurant.numberofreviews += 1
+			restaurant.updateindex()
+			restaurant.put()
 		else:
 			review.rating = int(rating)
 			review.description = description
 		review.put()
-		item.numberofreviews += 1
-		item.updateindex()
-		item.put()
-		#user.numberofreviews += 1
-		#user.put()
-		restaurant.numberofreviews += 1
-		restaurant.updateindex()
-		restaurant.put()
 		values = {
 			"response": 1,
 			"rating": item.rating(),

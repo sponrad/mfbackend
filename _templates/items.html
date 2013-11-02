@@ -2,46 +2,26 @@
 
 {% block body %}
 <div class="twelve-columns">
-  <h2>{{ restaurant.name }} - Menu's and Item's</h2> 
+  <h2>{{ restaurant.name }} - Item's</h2> 
   <a href="/restaurant/{{ restaurant.key.id }}">Restaurant Page</a>
 
-  <form method="post" style="float: right; background: #eee; padding: 10px;">
-    <input type="hidden" name="action" value="addmenu" />
-    <input type="text" name="name" placeholder="Menu Name" />
-    <input type="submit" value="Add Menu" />
-  </form>
-
-  {% for menu in menus %}
-  <div style="clear: both;"></div>
-  <p><span class="edit" style="width: 13px; display:inline-block;" id="{{ menu.key.id }}.menu_order">{{ menu.order }}</span> <b class="edit" id="{{ menu.key.id }}.menu_name" >{{ menu.name }}</b> <a href="/delete?action=menu&id={{ menu.key.id }}" class="delete" data-confirm="Delete this Menu, and all Items. Are you sure?">Delete</a></p>
-  <p>
-    {% for item in menu.item_set %}
+  {% for item in restaurant.item_set %}
     <div style="padding: 0px 0px 15px 0px;">
       <span class="edit" id="{{ item.key.id }}.item_name">{{ item.name }}</span> - $<span class="edit" id="{{ item.key.id }}.item_price">{{ item.price|floatformat:"-2" }}</span> 
       <a href="/delete?action=item&id={{ item.key.id }}" class="delete" data-confirm="Delete this Item. Are you sure?">Delete</a> 
-      <form method="post" style="display: inline;">
-	<select style="display: inline; width: auto;" name="tomenu">
-	  {% for menu in menus %}
-	  <option style="display: inline;" value="{{ menu.key.id }}" >{{ menu.name }}</option>
-	  {% endfor %}
-	</select>
-	<input type="hidden" name="action" value="moveitem">
-	<input type="hidden" name="itemid" value="{{ item.key.id }}" />
-	<input style="display: inline;" type="submit" value="Move" />
-      </form>
       <br> 
       <span class="edit" id="{{ item.key.id }}.item_description">{{ item.description }}</span>
+     
     </div>
     {% endfor %}
   </p>
   <form method="post" style="float: right; background: #eee; padding: 10px;">
     <input type="hidden" name="action" value="additem" />
-    <input type="hidden" name="menu" value="{{ menu.key.id }}" />
     <input type="text" name="name" placeholder="Item Name" />
     <input type="text" name="description" placeholder="Description" />
     <input type="text" name="price" placeholder="Price" />    
-    <input type="submit" value="Add Item to {{ menu.name }}" />
+    <input type="submit" value="Add Item" />
   </form>
-  {% endfor %}
+
 </div>
 {% endblock body %}

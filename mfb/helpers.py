@@ -172,8 +172,10 @@ def haversine(lon1, lat1, lon2, lat2):
 
 #create new or update existing
 def createitemdocument(item, restaurant):
-  lat = restaurant.location.lat
-  lon = restaurant.location.lon
+  try: lat = restaurant.location.lat
+  except: lat = 0
+  try: lon = restaurant.location.lon
+  except: lon = 0
   document = search.Document(doc_id=str(item.key().id()),
     fields=[
       search.TextField(name='name', value=item.name),
@@ -189,8 +191,10 @@ def createitemdocument(item, restaurant):
 
 #create new or update existing
 def createrestaurantdocument(restaurant):
-  lat = restaurant.location.lat
-  lon = restaurant.location.lon
+  try: lat = restaurant.location.lat
+  except: lat = 0
+  try: lon = restaurant.location.lon
+  except: lon = 0
   document =  search.Document(doc_id=str(restaurant.key().id()),
     fields=[
       search.TextField(name='name', value=restaurant.name),
@@ -199,3 +203,5 @@ def createrestaurantdocument(restaurant):
     )
   index = search.Index(name=_RESTAURANT_INDEX)
   index.put(document)
+
+  
