@@ -15,7 +15,7 @@ app = webapp2.WSGIApplication([
         ('/json/items', GetItems),
         ('/json/restaurants', GetRestaurants),
         ('/json/getmenu', GetMenu),         #restaurantid
-        ('/json/getitem', GetItem),         #menuid, optional:locationid
+        ('/json/getitem', GetItem),         #
         ('/json/profile', GetProfile),
         ('/json/getitemsuggestions', GetItemSuggestions),
         ('/json/getrestaurantsuggestions', GetRestaurantSuggestions),

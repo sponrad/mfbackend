@@ -226,8 +226,10 @@ class GetItems(webapp2.RequestHandler):
 	items = []
 
 	for scored_document in results.results:
+		restaurantid = Item.get_by_id(int(scored_document.doc_id)).restaurant.key().id()
 		item = {
-			"itemid": scored_document.doc_id
+			"itemid": scored_document.doc_id,
+			"restaurantid": restaurantid
 			}
 		for field in scored_document.fields:
 			item[field.name] = field.value
@@ -268,7 +270,6 @@ class GetMenu(webapp2.RequestHandler):
 		values['city'] = restaurant.city
 		values['address'] = restaurant.address
 		values['zipcode'] = restaurant.zipcode
-		values['state'] = restaurant.state			
 		values['response'] = 1
 		renderjson(self, values)
 
@@ -276,6 +277,7 @@ class GetItem(webapp2.RequestHandler):
 	def get(self):
 		itemid = self.request.get("itemid")
 		item = Item.get_by_id(int(itemid))
+		restaurant = item.restaurant
 		values = {
 			"response": 1,
 			"restaurantname": item.restaurant.name,
@@ -291,7 +293,6 @@ class GetItem(webapp2.RequestHandler):
 		values['city'] = restaurant.city
 		values['address'] = restaurant.address
 		values['zipcode'] = restaurant.zipcode
-		values['state'] = restaurant.state
 		renderjson(self, values)
 
 class GetItemSuggestions(BaseHandler):
@@ -338,8 +339,10 @@ class ReviewItem(BaseHandler):
 		if description == "":
 			description = None
 
-		if rating == "1":
+		if rating == "100":
 			rating = 100
+		elif rating == "50":
+			rating = 50
 		elif rating == "0":
 			rating = 0
 
@@ -374,7 +377,7 @@ class ReviewItem(BaseHandler):
 			review = Review(
 				userid = int(userid),
 				item = item,
-				rating = rating,
+				rating = int(rating),
 				description = description,
 				)
 			item.numberofreviews += 1
@@ -382,7 +385,7 @@ class ReviewItem(BaseHandler):
 			restaurant.numberofreviews += 1
 			restaurant.put()
 		else:
-			review.rating = rating
+			review.rating = int(rating)
 			review.description = description
 		review.put()
 		item.updateindex()
