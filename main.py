@@ -14,6 +14,7 @@ config = {
 app = webapp2.WSGIApplication([
         ('/restaurants', Restaurants),
         (r'/restaurant/(.*)', RestaurantPage),
+        ('/cards', Cards),
         ('/signup', SignupHandler),
         ('/login', LoginHandler),
         ('/logout', LogoutHandler),

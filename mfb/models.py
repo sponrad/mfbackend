@@ -146,3 +146,14 @@ class List(db.Model):
     userid = db.IntegerProperty()
     itemids = db.StringListProperty()
     followerids = db.StringListProperty()
+
+
+class Card(db.Model):
+    name = db.StringProperty(required = True)
+    ratingvalue = db.IntegerProperty()
+    color = db.StringListProperty()
+    timesused = db.IntegerProperty()
+    submittedby = db.IntegerProperty() #userid that created/submitte
+    date_created = db.DateTimeProperty(auto_now_add = True)
+    date_edited = db.DateTimeProperty(auto_now = True)
+    

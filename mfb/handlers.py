@@ -145,6 +145,23 @@ class RestaurantPage(BaseHandler):
         restaurant.put()
         doc = helpers.createitemdocument(item, restaurant)
       self.redirect('/restaurant/' + str(restaurant.key().id()))
+
+class Cards(BaseHandler):
+  @admin_required
+  def get(self):
+    cards = Card.all().run()
+    values = {
+      "cards": cards,
+      }
+    render(self, 'cards.html', values)
+  def post(self):
+    if self.request.get("action") == "addcard":
+      card = Card(
+        name = self.request.get("name"),
+        ratingvalue = int(self.request.get("ratingvalue"))        
+        )
+      card.put()
+      self.redirect("/cards")
         
 class Editable(BaseHandler):
   @admin_required
@@ -259,3 +276,4 @@ class Maintain(BaseHandler):
         if not Restaurant.get_by_id(int(restaurant.doc_id)):
           doc_index.delete(item.doc_id)
       self.response.out.write("ok")
+
