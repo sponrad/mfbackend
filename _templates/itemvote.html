@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="twelve-columns">
+  <h3>Item Vote Test</h3> 
+
+  <p>Random Item from Database:</p>
+
+  <h2 style="margin-bottom: 0px;">{{ item.name }}</h2>
+  <p>{{ item.restaurant.name }}</p>
+
+  <p>Your cards, click to vote:</p>
+
+  <div id="cardvotediv">
+  {% if hand|length < 1%}
+  <p>No hand yet...</p>{% endif %}
+  {% for card in hand %}
+  <p style="padding: 0px 0px 15px 0px;" class="card{{ card.ratingvalue}}">
+    <span class="" id="{{ card.key.id }}.card_name">{{ card.name }}</span>
+  </p>
+  {% endfor %}
+  </div>
+
+  <form method="post" style="display: block; background: #eee; padding: 10px;">
+    <input type="hidden" name="action" value="addcard" />
+  </form>
+
+</div>
+{% endblock body %}

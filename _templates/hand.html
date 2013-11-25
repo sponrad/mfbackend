@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="twelve-columns">
+  <h3>Your Hand</h3> 
+
+  <form method="post" style="background: #eee; padding: 10px;">
+    <input type="hidden" name="action" value="mulligan" />
+    <input type="submit" value="Mulligan" />
+  </form>
+
+  {% if hand|length < 1%}
+  <p>No hand yet...</p>{% endif %}
+  {% for card in hand %}
+  <p style="padding: 0px 0px 15px 0px;" class="card{{ card.ratingvalue}}">
+    <span class="" id="{{ card.key.id }}.card_name">{{ card.name }}</span>
+  </p>
+  {% endfor %}
+  
+</div>
+{% endblock body %}

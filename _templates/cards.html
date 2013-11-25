@@ -4,18 +4,21 @@
 <div class="twelve-columns">
   <h3>Cards</h3> 
 
-  {% for card in cards %}
-  <div style="padding: 0px 0px 15px 0px;" class="card{{ card.ratingvalue}}">
-    {{ card.name }} - {{ card.ratingvalue }}
-  </div>
-  {% endfor %}
-  </p>
-  <form method="post" style="float: right; background: #eee; padding: 10px;">
+  <form method="post" style="display: block; background: #eee; padding: 10px;">
     <input type="hidden" name="action" value="addcard" />
     <input type="text" name="name" placeholder="Card Name" />
-    <input type="text" name="ratingvalue" placeholder="Rating value 0,50,100 etc" />
-    <input type="submit" value="Add Card" />
+    <input type="text" name="ratingvalue" placeholder="Rating value 0,50,100 etc" style="display: inline; width: 300px;"/>
+    <input type="submit" value="Add Card" style="display: inline;"/>
   </form>
+
+  {% for card in cards %}
+  <p style="padding: 0px 0px 15px 0px;" class="card{{ card.ratingvalue}}">
+    <a href="/delete?action=card&id={{ card.key.id }}" class="delete" data-confirm="Delete this Item. Are you sure?" style="float: right;">X</a>
+    <span class="edit" id="{{ card.key.id }}.card_name">{{ card.name }}</span>
+    - 
+    <span class="edit" id="{{ card.key.id}}.card_ratingvalue">{{ card.ratingvalue }}</span>
+  </p>
+  {% endfor %}
 
 </div>
 {% endblock body %}

@@ -21,6 +21,31 @@
       padding: 3px;
       border-radius: 3px;
       }
+      p[class*='card']{
+      text-align: center;
+      display: inline-block;
+      margin: 10px;
+      padding: 5px;
+      border-radius: 3px;
+      width: 200px;
+      border: 1px solid #ccc;
+      }
+      p[class*='card'].span{
+      padding: 0px;
+      }
+      p.card0 {
+      background-color: red;
+      color: white;
+      }
+      p.card100 {
+      background-color: blue;
+      color: white;
+      }
+      #cardvotediv p:hover{
+      background-color: #aaa;
+      transition: all 0.2s ease-in-out 0s;
+      transform: rotate(3deg);
+      }
     </style>
     {% block head %}{% endblock head %}
   </head>
@@ -43,7 +68,8 @@
 	  <a href="/">Home</a>
 	  <a href="/restaurants">Restaurants</a>
 	  <a href="/cards">Cards</a>
-	  <a href="" title="not hooked up yet">Users</a>
+	  <a href="/hand">Card Hand</a>
+	  <a href="/itemvote">Item Vote</a>
 	</nav>
      	{% endif %}
       </div>

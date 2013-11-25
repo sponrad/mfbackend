@@ -1,5 +1,6 @@
 from helpers import *
 import helpers
+import random
 from models import *
 from geo import geotypes
 from google.appengine.api import search
@@ -162,6 +163,68 @@ class Cards(BaseHandler):
         )
       card.put()
       self.redirect("/cards")
+
+class CardHand(BaseHandler):
+  @admin_required
+  def get(self):
+    user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    try: user.cardhand
+    except: 
+      user.cardhand = [0]
+      user.put()
+    try:
+      hand = [Card.get(key) for key in user.cardhand]
+    except:
+      hand = []
+    values = {
+      "user": user,
+      "hand": hand,
+      }
+    render(self, 'hand.html', values)
+  def post(self):
+    if self.request.get("action") == "mulligan":
+      user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+      #redraw all the cards in the hand
+      #lets say a hand is 2 good cards, 2 bad cards and 2 meh cards
+      goodcards = Card.all(keys_only=True).filter('ratingvalue =', 100).fetch(2000)
+      mehcards = Card.all(keys_only=True).filter('ratingvalue =', 50).fetch(2000)
+      badcards = Card.all(keys_only=True).filter('ratingvalue =', 0).fetch(2000)
+      hand = [
+        str(random.choice(goodcards)),
+        str(random.choice(goodcards)),
+        str(random.choice(mehcards)),
+        str(random.choice(mehcards)),
+        str(random.choice(badcards)),
+        str(random.choice(badcards)),
+        ]
+      random.shuffle(hand)
+      user.cardhand = hand
+      user.put()
+      self.redirect("/hand")
+
+class ItemVote(BaseHandler):
+  def get(self):
+    itemkey = random.choice([key for key in Item.all(keys_only=True).run()])
+    item = Item.get(itemkey)
+
+    user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+
+    try: user.cardhand
+    except: 
+      user.cardhand = [0]
+      user.put()
+    try:
+      hand = [Card.get(key) for key in user.cardhand]
+    except:
+      hand = []
+    values = {
+      "user": user,
+      "item": item,
+      "hand": hand,
+      }
+    render(self, 'itemvote.html', values)
+  def post(self):
+    pass
         
 class Editable(BaseHandler):
   @admin_required
@@ -213,6 +276,16 @@ class Editable(BaseHandler):
       item.restaurant.put()
       item.updateindex()
       self.response.out.write(value)
+    if action == "card_name":
+      card = Card.get_by_id(int(id))
+      card.name = value
+      card.put()
+      self.response.out.write(value)
+    if action == "card_ratingvalue":
+      card = Card.get_by_id(int(id))
+      card.ratingvalue = int(value)
+      card.put()
+      self.response.out.write(value)
 
 class AjaxHandler(BaseHandler):
   @admin_required
@@ -241,8 +314,11 @@ class Delete(BaseHandler):
       item.delete()
       restaurant.numberofitems -= 1
       restaurant.put()
-
       self.redirect("/restaurant/" + str(restaurant.key().id()))
+    if action == "card":
+      card = Card.get_by_id(int(id))
+      card.delete()
+      self.redirect("/cards")
 
 class Maintain(BaseHandler):
   @admin_required
