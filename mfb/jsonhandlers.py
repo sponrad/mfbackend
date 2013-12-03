@@ -163,6 +163,7 @@ class GetRestaurants(webapp2.RequestHandler):
 		query_string=query_string, 
 		options=query_options
 		)
+
 	results = index.search(query)
 	restaurants = []
 
@@ -310,6 +311,64 @@ class GetRestaurantSuggestions(BaseHandler):
 		querystring = self.request.get("query")
 		doc_index = search.Index(name=_ITEM_INDEX)
 		results = index.search(search.Query(query_string=querystring))
+
+class GetRestaurantId(BaseHandler):
+	#given a lat long and a name of a restaurant, return an id and a name
+	def get(self):
+		#also send name of restaurant?
+		restaurantname = self.request.get("restaurantname")
+		lat = self.request.get("latitude")
+		lon = self.request.get("longitude")
+
+		values = {}
+
+		query_string = "name = ~" + restaurantname + " AND distance(location, geopoint(" + lat + "," + lon + ")) < " + str(100000)
+		#query_string = "distance(location, geopoint(" + lat + "," + lon + ")) < " + str(100)
+
+		doc_index = search.Index(name=_RESTAURANT_INDEX)
+
+		query_options = search.QueryOptions(
+			returned_fields = ['name'],
+			)
+
+		query = search.Query(
+			query_string=query_string, 
+			options=query_options
+			)
+
+		results = doc_index.search(query)
+
+		restaurants = []
+
+		if results.number_found == 0:
+			restaurant = Restaurant(
+				name = restaurantname
+				)
+			restaurant.location = db.GeoPt(lat, lon)
+			restaurant.put()
+			restaurant.updateindex()
+			restaurants.append({
+					"restaurantid": restaurant.key().id(),
+					"name": restaurant.name
+					})
+
+		else:
+			for scored_document in results.results:
+				restaurant = {
+					"restaurantid": scored_document.doc_id
+					}
+				for field in scored_document.fields:
+					restaurant[field.name] = field.value
+				for field in scored_document.expressions:
+					restaurant[field.name] = field.value
+						
+				restaurants.append(restaurant)
+
+
+		values['restaurants'] = restaurants
+		values['response'] = 1
+
+		renderjson(self, values)
 		
 		
 class ReviewItem(BaseHandler):
