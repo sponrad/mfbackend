@@ -164,6 +164,22 @@ class Cards(BaseHandler):
       card.put()
       self.redirect("/cards")
 
+class Prompts(BaseHandler):
+  @admin_required
+  def get(self):
+    prompts = Prompt.all().run()
+    values = {
+      "prompts": prompts,
+      }
+    render(self, 'prompts.html', values)
+  def post(self):
+    if self.request.get("action") == "addprompt":
+      prompt = Prompt(
+        name = self.request.get("name")
+        )
+      prompt.put()
+      self.redirect("/prompts")
+
 class CardHand(BaseHandler):
   @admin_required
   def get(self):
@@ -207,6 +223,9 @@ class ItemVote(BaseHandler):
     itemkey = random.choice([key for key in Item.all(keys_only=True).run()])
     item = Item.get(itemkey)
 
+    promptkey = random.choice([key for key in Prompt.all(keys_only=True).run()])
+    prompt = Prompt.get(promptkey)
+
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
 
     try: user.cardhand
@@ -220,6 +239,7 @@ class ItemVote(BaseHandler):
     values = {
       "user": user,
       "item": item,
+      "prompt": prompt,
       "hand": hand,
       }
     render(self, 'itemvote.html', values)
@@ -286,6 +306,10 @@ class Editable(BaseHandler):
       card.ratingvalue = int(value)
       card.put()
       self.response.out.write(value)
+    if action == "prompt_name":
+      prompt = Prompt.get_by_id(int(id))
+      prompt.name = value
+      prompt.put()
 
 class AjaxHandler(BaseHandler):
   @admin_required
@@ -319,6 +343,10 @@ class Delete(BaseHandler):
       card = Card.get_by_id(int(id))
       card.delete()
       self.redirect("/cards")
+    if action == "prompt":
+      prompt = Prompt.get_by_id(int(id))
+      prompt.delete()
+      self.redirect("/prompts")
 
 class Maintain(BaseHandler):
   @admin_required

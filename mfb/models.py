@@ -157,3 +157,8 @@ class Card(db.Model):
     date_created = db.DateTimeProperty(auto_now_add = True)
     date_edited = db.DateTimeProperty(auto_now = True)
     
+class Prompt(db.Model):
+    name = db.TextProperty(required = True)
+    date_created = db.DateTimeProperty(auto_now_add = True)
+    date_edited = db.DateTimeProperty(auto_now = True)
+    timesused = db.IntegerProperty()

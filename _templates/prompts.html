@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="twelve-columns">
+  <h3>Prompts</h3> 
+
+  <form method="post" style="display: block; background: #eee; padding: 10px;">
+    <input type="hidden" name="action" value="addprompt" />
+    <input type="text" name="name" placeholder="Prompt Name" />
+    <input type="submit" value="Add Prompt" style="display: inline;"/>
+  </form>
+
+  {% for prompt in prompts %}
+  <p style="padding: 0px 0px 15px 0px;">
+    <a href="/delete?action=prompt&id={{ prompt.key.id }}" class="delete" data-confirm="Delete this Prompt. Are you sure?" style="float: right;">X</a>
+    <span class="edit" id="{{ prompt.key.id }}.prompt_name">{{ prompt.name }}</span>
+  </p>
+  {% endfor %}
+
+</div>
+{% endblock body %}
