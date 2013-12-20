@@ -157,9 +157,13 @@ class Cards(BaseHandler):
     render(self, 'cards.html', values)
   def post(self):
     if self.request.get("action") == "addcard":
+      try:
+        ratingvalue = int(self.request.get("ratingvalue"))
+      except:
+        ratingvalue = 50
       card = Card(
         name = self.request.get("name"),
-        ratingvalue = int(self.request.get("ratingvalue"))        
+        ratingvalue = ratingvalue
         )
       card.put()
       self.redirect("/cards")
@@ -226,8 +230,13 @@ class ItemVote(BaseHandler):
     promptkey = random.choice([key for key in Prompt.all(keys_only=True).run()])
     prompt = Prompt.get(promptkey)
 
+    cardkeys = [key for key in Card.all(keys_only=True).run()]
+    random.shuffle(cardkeys)
+    cards = Card.get(cardkeys[:6])
+
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
 
+    '''
     try: user.cardhand
     except: 
       user.cardhand = [0]
@@ -236,11 +245,14 @@ class ItemVote(BaseHandler):
       hand = [Card.get(key) for key in user.cardhand]
     except:
       hand = []
+      '''
+
     values = {
       "user": user,
       "item": item,
       "prompt": prompt,
-      "hand": hand,
+      #"hand": hand,
+      "hand": cards,
       }
     render(self, 'itemvote.html', values)
   def post(self):
@@ -310,6 +322,7 @@ class Editable(BaseHandler):
       prompt = Prompt.get_by_id(int(id))
       prompt.name = value
       prompt.put()
+      self.response.out.write(value)
 
 class AjaxHandler(BaseHandler):
   @admin_required
