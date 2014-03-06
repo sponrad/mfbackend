@@ -96,14 +96,15 @@ class BaseHandler(webapp2.RequestHandler):
   # this is needed for webapp2 sessions to work
   def dispatch(self):
       # Get a session store for this request.
-      self.session_store = sessions.get_store(request=self.request)
+    self.response.headers.add_header('Access-Control-Allow-Origin', '*')
+    self.session_store = sessions.get_store(request=self.request)
 
-      try:
-          # Dispatch the request.
-          webapp2.RequestHandler.dispatch(self)
-      finally:
-          # Save all sessions.
-          self.session_store.save_sessions(self.response)
+    try:
+      # Dispatch the request.
+      webapp2.RequestHandler.dispatch(self)
+    finally:
+      # Save all sessions.
+      self.session_store.save_sessions(self.response)
 
 def get_lat_long(query):
     query = urllib.quote_plus(query)

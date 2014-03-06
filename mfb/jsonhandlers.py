@@ -8,6 +8,9 @@ from google.appengine.ext import db
 import helpers
 from helpers import *
 
+from webapp2_extras import auth
+from webapp2_extras import sessions
+
 from webapp2_extras.auth import InvalidAuthIdError
 from webapp2_extras.auth import InvalidPasswordError
 
@@ -47,7 +50,8 @@ class Signup(BaseHandler):
 			email_address=email,
 			password_raw=password,
 			verified=False, 
-			admin=False
+			admin=False,
+                        following=[],
 			)
 		if not user_data[0]: #user_data is a tuple
 			values = {
@@ -371,13 +375,13 @@ class GetRestaurantId(BaseHandler):
 		renderjson(self, values)
 		
 		
-class ReviewItem(BaseHandler):
+class ReviewItem(webapp2.RequestHandler):
 	def options(self):
 		self.response.headers['Access-Control-Allow-Origin'] = '*'
 		self.response.headers['Access-Control-Allow-Headers'] = "Origin, X-Requested-With, Content-Type, Accept"
 
 	def post(self):
-		#self.response.headers['Access-Control-Allow-Origin'] = '*'
+		self.response.headers.add_header('Access-Control-Allow-Origin', '*')
 		userid = self.request.get("userid")
 		authtoken = self.request.get("authtoken")
 		itemid = self.request.get("itemid")
@@ -405,7 +409,8 @@ class ReviewItem(BaseHandler):
 		elif rating == "0":
 			rating = 0
 
-		user = self.auth.get_user_by_token(int(userid), authtoken)
+		#user = self.auth.get_user_by_token(int(userid), authtoken)
+                user = auth.get_auth().get_user_by_token(int(userid), authtoken)
 
 		if restaurantid:
 			restaurant = Restaurant.get_by_id(int(restaurantid))
@@ -589,6 +594,35 @@ class ListHandler(webapp2.RequestHandler):
 
 		renderjson(self,values)
 
+#    ('/json/getfeed', GetFeed),
+class GetFeed(webapp2.RequestHandler):
+        def get(self):
+		userid = self.request.get("userid")
+		authtoken = self.request.get("authtoken")
+                user = auth.get_auth().get_user_by_token(int(userid), authtoken)
+
+                values = {}
+                feed_items = []
+                
+                for review in Review.all().filter("userid =", int(userid)).fetch(50):
+                        review = {
+                                "reviewid": review.key().id(),
+                                "item": review.item.name,
+                                "itemid": review.item.key().id(),
+                                "rating": review.rating,
+                                "restaurant": review.item.restaurant.name
+                        }
+                        feed_items.append(review)
+
+                values['response'] = 1
+                values['feed_items'] = feed_items
+
+                renderjson(self,values)
+
+#    ('/json/follow', FollowUser),
+class FollowUser(BaseHandler):
+        def get(self):
+                pass
 
 class Test(webapp2.RequestHandler):
     def get(self):

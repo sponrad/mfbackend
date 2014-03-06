@@ -132,6 +132,8 @@ class Item(db.Model):
 
 class Review(db.Model):
     userid = db.IntegerProperty()
+    date_created = db.DateTimeProperty(auto_now_add = True)
+    date_edited = db.DateTimeProperty(auto_now = True)
     item = db.ReferenceProperty(Item)
     rating = db.IntegerProperty() #0 bad 100 good
     description = db.TextProperty()
@@ -146,7 +148,6 @@ class List(db.Model):
     userid = db.IntegerProperty()
     itemids = db.StringListProperty()
     followerids = db.StringListProperty()
-
 
 class Card(db.Model):
     name = db.StringProperty(required = True)

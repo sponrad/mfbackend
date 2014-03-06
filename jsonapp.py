@@ -12,25 +12,26 @@ config = {
     }
 
 app = webapp2.WSGIApplication([
-        ('/json/items', GetItems),
-        ('/json/restaurants', GetRestaurants),
-        ('/json/getmenu', GetMenu),         #restaurantid
-        ('/json/getitem', GetItem),         #
-        ('/json/profile', GetProfile),
-        ('/json/getitemsuggestions', GetItemSuggestions),
-        ('/json/getrestaurantsuggestions', GetRestaurantSuggestions),
-        ('/json/getrestaurantid', GetRestaurantId),
+    ('/json/items', GetItems),
+    ('/json/restaurants', GetRestaurants),
+    ('/json/getmenu', GetMenu),         #restaurantid
+    ('/json/getitem', GetItem),         #
+    ('/json/profile', GetProfile),
+    ('/json/getitemsuggestions', GetItemSuggestions),
+    ('/json/getrestaurantsuggestions', GetRestaurantSuggestions),
+    ('/json/getrestaurantid', GetRestaurantId),
 
         ('/json/reviewitem', ReviewItem),   #userid, authtoken, itemid, rating, description
-        ('/json/createrestaurant', CreateRestaurant),
-        ('/json/createitem', CreateItem),
+    ('/json/createrestaurant', CreateRestaurant),
+    ('/json/createitem', CreateItem),
 
         ('/json/list', ListHandler), #create/delete, (un)follow, add/remove item
-
-        ('/json/signup', Signup),
-        ('/json/login', Login),
-        ('/json/logout', Logout),
-        ('/json/signup', SignupHandler),
-        ('/json/', Test),
-        ('/json', Test),
+    ('/json/getfeed', GetFeed),
+    ('/json/follow', FollowUser),
+    ('/json/signup', Signup),
+    ('/json/login', Login),
+    ('/json/logout', Logout),
+    ('/json/signup', SignupHandler),
+    ('/json/', Test),
+    ('/json', Test),
 ], debug=True, config=config)
