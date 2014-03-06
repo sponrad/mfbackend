@@ -14,3 +14,8 @@ indexes:
   properties:
   - name: restaurant
   - name: order
+
+- kind: Review
+  properties:
+  - name: userid
+  - name: date_edited

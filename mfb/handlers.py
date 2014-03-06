@@ -393,4 +393,22 @@ class Maintain(BaseHandler):
         if not Restaurant.get_by_id(int(restaurant.doc_id)):
           doc_index.delete(item.doc_id)
       self.response.out.write("ok")
+    if action == "missing":
+      for review in Review.all():
+        try: review.date_edited
+        except:
+          review.date_edited = datetime.datetime.now()
+          review.save()
+      self.response.out.write("ok")
+    if action == "following":
+      for u in User.query():
+        u.following = [
+          43001,
+          44001,
+          45001,
+          46001,
+          109001
+        ]
+        u.put()
+      self.response.out.write("ok")
 

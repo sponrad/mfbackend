@@ -62,6 +62,7 @@ class Signup(BaseHandler):
 
 		user = user_data[1]
 		user_id = user.get_id()
+                user.following.append(user_id)
 		user.put()
     #token = self.user_model.create_signup_token(user_id)
 
@@ -597,20 +598,27 @@ class ListHandler(webapp2.RequestHandler):
 #    ('/json/getfeed', GetFeed),
 class GetFeed(webapp2.RequestHandler):
         def get(self):
+                self.response.headers['Access-Control-Allow-Origin'] = '*'
 		userid = self.request.get("userid")
 		authtoken = self.request.get("authtoken")
-                user = auth.get_auth().get_user_by_token(int(userid), authtoken)
+                user = User.get_by_id(int(userid))
 
                 values = {}
                 feed_items = []
                 
-                for review in Review.all().filter("userid =", int(userid)).fetch(50):
+                for review in Review.all().filter("userid IN", user.following).order("date_edited").run():
+                        reviewuser = User.get_by_id(int(review.userid))
                         review = {
+                                "username": reviewuser.auth_ids[0],
+                                "userid": review.userid,
+                                "useremail": reviewuser.email_address,
                                 "reviewid": review.key().id(),
                                 "item": review.item.name,
+                                "description": review.description,
                                 "itemid": review.item.key().id(),
                                 "rating": review.rating,
-                                "restaurant": review.item.restaurant.name
+                                "restaurant": review.item.restaurant.name,
+                                "restaurantid": review.item.restaurant.key().id()
                         }
                         feed_items.append(review)
 
