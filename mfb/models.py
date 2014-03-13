@@ -130,6 +130,12 @@ class Item(db.Model):
     def updateindex(self):
         helpers.createitemdocument(self, self.restaurant)        
 
+class Prompt(db.Model):
+    name = db.TextProperty(required = True)
+    date_created = db.DateTimeProperty(auto_now_add = True)
+    date_edited = db.DateTimeProperty(auto_now = True)
+    timesused = db.IntegerProperty()
+
 class Review(db.Model):
     userid = db.IntegerProperty()
     date_created = db.DateTimeProperty(auto_now_add = True)
@@ -138,6 +144,9 @@ class Review(db.Model):
     rating = db.IntegerProperty() #0 bad 100 good
     description = db.TextProperty()
     image = db.BlobProperty()
+    input = db.StringProperty()
+    input2 = db.StringProperty()
+    prompt = db.ReferenceProperty(Prompt)
 
 class Chain(db.Model):
     name = db.StringProperty(required = True)
@@ -157,9 +166,3 @@ class Card(db.Model):
     submittedby = db.IntegerProperty() #userid that created/submitte
     date_created = db.DateTimeProperty(auto_now_add = True)
     date_edited = db.DateTimeProperty(auto_now = True)
-    
-class Prompt(db.Model):
-    name = db.TextProperty(required = True)
-    date_created = db.DateTimeProperty(auto_now_add = True)
-    date_edited = db.DateTimeProperty(auto_now = True)
-    timesused = db.IntegerProperty()

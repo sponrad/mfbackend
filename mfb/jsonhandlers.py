@@ -393,6 +393,9 @@ class ReviewItem(webapp2.RequestHandler):
 		description = self.request.get("description")
 		latitude = self.request.get("latitude")
 		longitude = self.request.get("longitude")
+                input = self.request.get("input")
+                input2 = self.request.get("input2")
+                promptid = self.request.get("promptid")
 
 		if restaurantid == "":
 			restaurantid = None
@@ -409,6 +412,18 @@ class ReviewItem(webapp2.RequestHandler):
 			rating = 50
 		elif rating == "0":
 			rating = 0
+                        
+                if input == "":
+                        input = None
+
+                if input2 == "":
+                        input2 = None
+
+                if promptid == "":
+                        promptid = None
+                        prompt = None
+                else:
+                        prompt = Prompt.get_by_id(int(promptid))
 
 		#user = self.auth.get_user_by_token(int(userid), authtoken)
                 user = auth.get_auth().get_user_by_token(int(userid), authtoken)
@@ -444,6 +459,9 @@ class ReviewItem(webapp2.RequestHandler):
 				item = item,
 				rating = int(rating),
 				description = description,
+                                input = input,
+                                input2 = input2,
+                                prompt = prompt
 				)
 			item.numberofreviews += 1
 			item.put()
@@ -452,6 +470,8 @@ class ReviewItem(webapp2.RequestHandler):
 		else:
 			review.rating = int(rating)
 			review.description = description
+                        review.input = input
+                        review.input2 = input2
 		review.put()
 		item.updateindex()
 		restaurant.updateindex()
@@ -607,6 +627,8 @@ class GetFeed(webapp2.RequestHandler):
                 feed_items = []
                 
                 for review in Review.all().filter("userid IN", user.following).order("date_edited").run():
+                        try: prompt = review.prompt.name
+                        except: prompt = None
                         reviewuser = User.get_by_id(int(review.userid))
                         review = {
                                 "username": reviewuser.auth_ids[0],
@@ -618,7 +640,10 @@ class GetFeed(webapp2.RequestHandler):
                                 "itemid": review.item.key().id(),
                                 "rating": review.rating,
                                 "restaurant": review.item.restaurant.name,
-                                "restaurantid": review.item.restaurant.key().id()
+                                "restaurantid": review.item.restaurant.key().id(),
+                                "prompt": prompt,
+                                "input": review.input,
+                                "input2": review.input2
                         }
                         feed_items.append(review)
 
@@ -631,6 +656,20 @@ class GetFeed(webapp2.RequestHandler):
 class FollowUser(BaseHandler):
         def get(self):
                 pass
+
+#     ('/json/getprompt', GetPrompt),
+class GetPrompt(BaseHandler):
+        def get(self):
+                values = {}
+                promptkey = random.choice([key for key in Prompt.all(keys_only=True).run()])
+                prompt = Prompt.get(promptkey)
+
+                values['response'] = 1
+                values['prompt'] = prompt.name
+                values['promptid'] = prompt.key().id()
+
+                renderjson(self,values)
+                
 
 class Test(webapp2.RequestHandler):
     def get(self):
