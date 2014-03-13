@@ -472,6 +472,7 @@ class ReviewItem(webapp2.RequestHandler):
 			review.description = description
                         review.input = input
                         review.input2 = input2
+                        review.prompt = prompt
 		review.put()
 		item.updateindex()
 		restaurant.updateindex()
