@@ -522,7 +522,7 @@ class CreateItem(webapp2.RequestHandler):
 #return item id
     def get(self):
             self.response.headers['Access-Control-Allow-Origin'] = '*'
-	    restaurant = Restaurant.get_by_id(int(restaurantid))
+	    restaurant = Restaurant.get_by_id(int(self.request.get("restaurantid")))
 	    item = Item(
 		    name = self.request.get("name"),
 		    description = self.request.get("description"),
