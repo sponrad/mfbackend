@@ -721,8 +721,10 @@ class UnFollowUser(BaseHandler):
                 user = User.get_by_id(int(userid))
                 unfollowuser = User.get_by_id(int(unfollowid))
 
-                user.following.remove(int(unfollowid))
-                unfollowuser.followers.remove(int(userid))
+                #remove unfollowid from users folliwing
+                user.following = [f for f in user.following if f != int(unfollowid)]
+                #remove userid from unfollowed users followers
+                unfollowuser.followers = [f for f in unfollowuser.followers if f != int(userid)]
 
                 user.put()
                 unfollowuser.put()
