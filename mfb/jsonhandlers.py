@@ -329,7 +329,7 @@ class GetRestaurantId(BaseHandler):
 
 		values = {}
 
-		query_string = "name = ~" + restaurantname + " AND distance(location, geopoint(" + lat + "," + lon + ")) < " + str(100000)
+		query_string = "name = ~" + restaurantname + " AND distance(location, geopoint(" + lat + "," + lon + ")) < " + str(300)
 		#query_string = "distance(location, geopoint(" + lat + "," + lon + ")) < " + str(100)
 
 		doc_index = search.Index(name=_RESTAURANT_INDEX)
