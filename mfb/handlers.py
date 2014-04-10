@@ -364,7 +364,7 @@ class Delete(BaseHandler):
 class Maintain(BaseHandler):
   @admin_required
   def get(self):
-    action = self.request.get("a")
+    action = self.request.get("action")
     if action == "":
       return self.response.out.write("no action specfifed")
     if action == "testsearch":
@@ -403,6 +403,13 @@ class Maintain(BaseHandler):
     if action == "following":
       for u in User.query():
         u.following = [
+          43001,
+          44001,
+          45001,
+          46001,
+          109001
+        ]
+        u.followers = [
           43001,
           44001,
           45001,

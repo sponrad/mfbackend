@@ -22,13 +22,16 @@ app = webapp2.WSGIApplication([
     ('/json/getrestaurantid', GetRestaurantId),
     ('/json/getprompt', GetPrompt),
 
+    ('/json/getprofile', GetProfile),
+
     ('/json/reviewitem', ReviewItem),   #userid, authtoken, itemid, rating, description
     ('/json/createrestaurant', CreateRestaurant),
     ('/json/createitem', CreateItem),
 
     ('/json/list', ListHandler), #create/delete, (un)follow, add/remove item
     ('/json/getfeed', GetFeed),
-    ('/json/follow', FollowUser),
+    ('/json/followuser', FollowUser),
+    ('/json/unfollowuser', UnFollowUser),
     ('/json/signup', Signup),
     ('/json/login', Login),
     ('/json/logout', Logout),

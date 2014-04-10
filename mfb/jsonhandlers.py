@@ -52,6 +52,7 @@ class Signup(BaseHandler):
 			verified=False, 
 			admin=False,
                         following=[],
+                        followers=[],
 			)
 		if not user_data[0]: #user_data is a tuple
 			values = {
@@ -63,6 +64,7 @@ class Signup(BaseHandler):
 		user = user_data[1]
 		user_id = user.get_id()
                 user.following.append(user_id)
+                user.followers.append(user_id)
 		user.put()
     #token = self.user_model.create_signup_token(user_id)
 
@@ -482,18 +484,6 @@ class ReviewItem(webapp2.RequestHandler):
 			}
 		renderjson(self, values)
 
-class GetProfile(BaseHandler):
-	def get(self):
-		userid = self.request.get("userid")
-		user = User.get_by_id(int(userif))
-		lists = List.all().filter("userid =", userid).run()
-		values = {
-			"user": user,
-			"lists": lists,
-			}
-		renderjson(self, values)
-		#user = self.auth.get_user_by_token(int(userid), authtoken)
-
 class CreateRestaurant(webapp2.RequestHandler):
 #OLD
 #given restaurantname, address, city, state, zipcode 
@@ -654,10 +644,7 @@ class GetFeed(webapp2.RequestHandler):
 
                 renderjson(self,values)
 
-#    ('/json/follow', FollowUser),
-class FollowUser(BaseHandler):
-        def get(self):
-                pass
+
 
 #     ('/json/getprompt', GetPrompt),
 class GetPrompt(BaseHandler):
@@ -670,6 +657,79 @@ class GetPrompt(BaseHandler):
                 values['prompt'] = prompt.name
                 values['promptid'] = prompt.key().id()
 
+                renderjson(self,values)
+
+class GetProfile(BaseHandler):
+        def get(self):
+                #current user
+                userid = self.request.get("userid")
+                user = User.get_by_id(int(userid))
+
+                profileid = int(self.request.get("profileid"))
+                values = {}
+                profile = User.get_by_id(profileid)
+
+                values['response'] = 1
+
+                values['username'] = profile.auth_ids[0]
+                values['followers'] = len(profile.followers)
+                values['following'] = len(profile.following)
+                values['reviewcount'] = Review.all(keys_only=True).filter("userid =", profileid).count()
+                values['isfollowing'] = True if profileid in user.following else False
+
+                '''
+                +actual review content
+                profileid
+                '''
+
+                renderjson(self,values)
+
+#    ('/json/followuser', FollowUser),
+class FollowUser(BaseHandler):
+        def get(self):
+                values = {}
+                userid = self.request.get("userid")
+                followid = self.request.get("profileid")
+                authtoken = self.request.get("authtoken")
+
+                user = User.get_by_id(int(userid))
+                followuser = User.get_by_id(int(followid))
+                
+                #add the follower to both sides
+                #also everyone always follows,followings themselves
+                try: user.following.append(int(followid))
+                except: user.following = [int(userid), int(followid)]
+                try: followuser.followers.append(int(userid))
+                except: followuser.followers = [int(followid), int(userid)]
+
+                user.put()
+                followuser.put()
+
+                values['response'] = 1
+                values['following'] = len(user.following)
+                values['followers'] = len(followuser.followers)
+                renderjson(self,values)
+
+#    ('/json/unfollowuser', UnFollowUser),
+class UnFollowUser(BaseHandler):
+        def get(self):
+                values = {}
+                userid = self.request.get("userid")
+                unfollowid = self.request.get("profileid")
+                authtoken = self.request.get("authtoken")
+
+                user = User.get_by_id(int(userid))
+                unfollowuser = User.get_by_id(int(unfollowid))
+
+                user.following.remove(int(unfollowid))
+                unfollowuser.followers.remove(int(userid))
+
+                user.put()
+                unfollowuser.put()
+
+                values['response'] = 1
+                values['following'] = len(user.following)
+                values['followers'] = len(unfollowuser.followers)
                 renderjson(self,values)
                 
 
