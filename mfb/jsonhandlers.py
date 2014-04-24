@@ -659,6 +659,7 @@ class GetPrompt(BaseHandler):
 
                 renderjson(self,values)
 
+# ('/json/getprofile', GetProfile),
 class GetProfile(BaseHandler):
         def get(self):
                 #current user
@@ -668,6 +669,31 @@ class GetProfile(BaseHandler):
                 profileid = int(self.request.get("profileid"))
                 values = {}
                 profile = User.get_by_id(profileid)
+
+		feed_items = []
+
+                for review in Review.all().filter("userid =", int(userid)).order("date_edited").run():
+                        try: prompt = review.prompt.name
+                        except: prompt = None
+                        reviewuser = user
+                        review = {
+                                "username": reviewuser.auth_ids[0],
+                                "userid": review.userid,
+                                "useremail": reviewuser.email_address,
+                                "reviewid": review.key().id(),
+                                "item": review.item.name,
+                                "description": review.description,
+                                "itemid": review.item.key().id(),
+                                "rating": review.rating,
+                                "restaurant": review.item.restaurant.name,
+                                "restaurantid": review.item.restaurant.key().id(),
+                                "prompt": prompt,
+                                "input": review.input,
+                                "input2": review.input2
+                        }
+                        feed_items.append(review)
+
+		values['feed_items'] = feed_items
 
                 values['response'] = 1
 
