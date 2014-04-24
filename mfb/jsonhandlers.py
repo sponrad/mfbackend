@@ -376,8 +376,42 @@ class GetRestaurantId(BaseHandler):
 		values['response'] = 1
 
 		renderjson(self, values)
-		
-		
+
+#('/json/getitemreviews', GetItemReviews),		
+class GetItemReviews(webapp2.RequestHandler):
+	def get(self):
+		itemid = self.request.get("itemid")
+		item = Item.get_by_id(int(itemid))
+
+                values = {}
+                feed_items = []
+                
+                for review in Review.all().filter("item =", item).order("date_edited").run():
+                        try: prompt = review.prompt.name
+                        except: prompt = None
+                        reviewuser = User.get_by_id(int(review.userid))
+                        review = {
+                                "username": reviewuser.auth_ids[0],
+                                "userid": review.userid,
+                                "useremail": reviewuser.email_address,
+                                "reviewid": review.key().id(),
+                                "item": review.item.name,
+                                "description": review.description,
+                                "itemid": review.item.key().id(),
+                                "rating": review.rating,
+                                "restaurant": review.item.restaurant.name,
+                                "restaurantid": review.item.restaurant.key().id(),
+                                "prompt": prompt,
+                                "input": review.input,
+                                "input2": review.input2
+                        }
+                        feed_items.append(review)
+
+                values['response'] = 1
+                values['feed_items'] = feed_items
+
+                renderjson(self,values)
+
 class ReviewItem(webapp2.RequestHandler):
 	def options(self):
 		self.response.headers['Access-Control-Allow-Origin'] = '*'
