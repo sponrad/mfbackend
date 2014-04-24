@@ -672,10 +672,10 @@ class GetProfile(BaseHandler):
 
 		feed_items = []
 
-                for review in Review.all().filter("userid =", int(userid)).order("date_edited").run():
+                for review in Review.all().filter("userid =", int(profileid)).order("date_edited").run():
                         try: prompt = review.prompt.name
                         except: prompt = None
-                        reviewuser = user
+                        reviewuser = profile
                         review = {
                                 "username": reviewuser.auth_ids[0],
                                 "userid": review.userid,
