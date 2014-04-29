@@ -797,8 +797,10 @@ class UnFollowUser(BaseHandler):
 
 class Test(webapp2.RequestHandler):
     def get(self):
-        self.response.out.write("Success")
+	    self.response.headers['Access-Control-Allow-Origin'] = '*'
+	    self.response.out.write("Success")
     def post(self):
+	    self.response.headers['Access-Control-Allow-Origin'] = '*'
 	    values = {
 		    "success": 1
 		    }
