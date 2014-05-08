@@ -652,7 +652,8 @@ class GetFeed(webapp2.RequestHandler):
                 values = {}
                 feed_items = []
                 
-                for review in Review.all().filter("userid IN", user.following).order("date_edited").run():
+                #for review in Review.all().filter("userid IN", user.following).order("date_edited").run():
+                for review in Review.all().order("date_edited").run():
                         try: prompt = review.prompt.name
                         except: prompt = None
                         reviewuser = User.get_by_id(int(review.userid))
