@@ -84,7 +84,7 @@ class Login(BaseHandler):
 		username = self.request.get('username')
 		password = self.request.get('password')
 		try:
-			u = self.auth.get_user_by_password(username, password, remember=False, save_session=False)
+			u = self.auth.get_user_by_password(username, password, remember=True, save_session=True)
 			auth_token = self.user_model.create_auth_token(u['user_id'])
 			values = {
 				"response": 1,
