@@ -32,9 +32,9 @@ app = webapp2.WSGIApplication([
     ('/signup', main.SignupHandler),
     ('/login', main.LoginHandler),
     ('/logout', main.LogoutHandler),
-    ('/restaurants', main.Restaurants),
-    #vote
-    #items
+    ('/restaurants', main.Restaurants),    
+    #/vote/(id)
+    #/items/(restid)
     ('/feed', main.Feed),
     ('/profile/(.*)', main.Profile), #profile?profileid
      

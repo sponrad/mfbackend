@@ -5,12 +5,13 @@
 <div class="container text-center">
 
   <img src="/_static/img/logo.jpg" class="img-responsive logo">
-
+  {% if not user %}
   <form id="loginForm" action="/login" method="post">
     <input type="text" name="username" placeholder="username" autocapitalize="off" />
     <input type="password" name="password" placeholder="password" autocapitalize="off" />
     <input type="submit" id="loginButton" value="Sign In" />
   </form>
+  {% endif %}
 
 </div><!-- /end .container -->
 
