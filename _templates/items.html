@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="container">
+  <h1 id="restaurantName">{{ restaurant.name }}</h1>
+
+  <div class="new-panel">
+
+    <a id="newDish" href="/votenew?restaurantid={{ restaurant.key.id }}&restaurantname={{ restaurant.name }}">Vote on a new dish</a>
+    <hr>
+    <h2>Dishes</h2>
+    {% if restaurant.item_set|length > 0 %}
+    {% for item in restaurant.item_set %}
+    
+    <a href='/vote?restaurantid={{ restuarant.key.id }}&itemid={{ item.key.id }}&itemname={{ item.name }}&restaurantname={{ restaurant.name }}'>
+      {{ item.name }}: {{ item.rating }}%
+    </a>
+    <br/>
+    
+    {% endfor %}
+    {% else %}
+    <p>No dishes here so far</p>
+    {% endif %}
+    
+  </div> 
+  
+</div>
+{% endblock body %}

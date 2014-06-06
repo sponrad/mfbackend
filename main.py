@@ -34,7 +34,7 @@ app = webapp2.WSGIApplication([
     ('/logout', main.LogoutHandler),
     ('/restaurants', main.Restaurants),    
     #/vote/(id)
-    #/items/(restid)
+    ('/items/(.*)', main.Items),
     ('/feed', main.Feed),
     ('/profile/(.*)', main.Profile), #profile?profileid
      

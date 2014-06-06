@@ -240,3 +240,16 @@ class Profile(BaseHandler):
     }      
 
     render(self, 'profile.html', values)
+
+#/items/(restid)     ('/items/(.*)', main.Items),
+class Items(BaseHandler):
+  def get(self, restaurantid):
+    user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    restaurant = Restaurant.get_by_id(int(restaurantid))
+    values = {
+      "user": user,
+      "restaurant": restaurant,
+    }      
+
+    render(self, 'items.html', values)
+
