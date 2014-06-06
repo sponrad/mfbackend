@@ -14,6 +14,7 @@ config = {
 app = webapp2.WSGIApplication([
     ('/json/items', GetItems),
     ('/json/restaurants', GetRestaurants),
+    ('/json/getrestaurants', GetRestaurantsGoogle),
     ('/json/getmenu', GetMenu),         #restaurantid
     ('/json/getitem', GetItem),         #
     ('/json/profile', GetProfile),

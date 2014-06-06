@@ -1,4 +1,4 @@
-import os, webapp2, helpers, globs, json, re
+import os, webapp2, helpers, globs, json, re, urllib, urllib2
 from models import *
 from geo import geotypes
 from google.appengine.api import users, search
@@ -105,6 +105,29 @@ class Logout(BaseHandler):
 			"response": 1,
 			}
 		renderjson(self, values)
+
+''' given a lat long and radius, returns nearby restaurants '''
+class GetRestaurantsGoogle(webapp2.RequestHandler):
+        def get(self):
+                url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
+                urldata = {
+                        #"key": "AIzaSyD82p3cZfbO7xQthU1aE9Nu3L89SaEhWbI", #website
+                        "key": "AIzaSyBfqZNaQ6d9AtdZXPI5vkHBLk-pcq1hqOg", #server ip
+                        #"key": "AIzaSyCkBh8u9kR_yuyyxzeMzZDeHEyQF1PmlwU",  #personal
+                        "location": self.request.get("location"),
+                        "sensor": "false",
+                        "types": "cafe|restaurant|bar|bakery",
+                        "rankby": "distance"
+                }
+                try:
+                        result = urllib2.urlopen(url + "?" + urllib.urlencode(urldata))
+                except urllib2.URLError, e:
+                        pass
+                        
+                values = {
+                        "result": result,
+                }
+                renderjson(self, values)
 
 ''' given a lat long and radius, returns nearby restaurants '''
 class GetRestaurants(webapp2.RequestHandler):

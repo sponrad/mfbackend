@@ -5,6 +5,8 @@ from geo import geotypes
 from google.appengine.api import search
 from google.appengine.ext import deferred
 from google.appengine.ext import db, ndb
+from google.appengine.api import users
+
 import globs, logging
 
 from webapp2_extras.auth import InvalidAuthIdError
@@ -118,24 +120,8 @@ class Restaurants(BaseHandler):
   def get(self):
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
 
-    url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
-    urldata = {
-      #"key": "AIzaSyD82p3cZfbO7xQthU1aE9Nu3L89SaEhWbI", #website
-      "key": "AIzaSyBfqZNaQ6d9AtdZXPI5vkHBLk-pcq1hqOg", #server ip
-      #"key": "AIzaSyCkBh8u9kR_yuyyxzeMzZDeHEyQF1PmlwU",  #personal
-      "location": "",#$_GET['location'],  #lat+","+lng
-      "sensor": "false",
-      "types": "cafe|restaurant|bar|bakery",
-      "rankby": "distance"
-    }
-    try:
-      result = urllib2.urlopen(url + "?" + urllib.urlencode(urldata))
-    except urllib2.URLError, e:
-      pass
-
     values = {
       "user": user,
-      "result": result,
     }
     render(self, 'restaurants.html', values)
     
@@ -189,7 +175,11 @@ class Feed(BaseHandler):
 #    ('/profile/(.*)', main.Profile), #profile?profileid
 class Profile(BaseHandler):
   def get(self, profileid):
-    user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    user = User.get_by_auth_id(profileid)
+#    user = User.query( User.auth_idsstr([u'sponrad']) ).fetch(1)
+#    user = User.query(profileid in User.auth_ids).get()
+    if not user:
+      user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
     profileid = int(profileid)
     profile = User.get_by_id(profileid)
                 
@@ -241,7 +231,7 @@ class Profile(BaseHandler):
 
     render(self, 'profile.html', values)
 
-#/items/(restid)     ('/items/(.*)', main.Items),
+#/items/(restid)     ('/items/(.*)', main.Items), lat lng restname
 class Items(BaseHandler):
   def get(self, restaurantid):
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
