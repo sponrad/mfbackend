@@ -176,7 +176,7 @@ class Feed(BaseHandler):
 class Profile(BaseHandler):
   def get(self, profileid):
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
-    profile = User.get_by_auth_id("sponrad")
+    profile = User.get_by_auth_id(profileid)
     if not profile:
       profile = User.get_by_id(int(profileid))
                 
