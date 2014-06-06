@@ -250,6 +250,34 @@ class Items(BaseHandler):
       "user": user,
       "restaurant": restaurant,
     }      
-
     render(self, 'items.html', values)
+
+#    ('/vote/(.*)', main.Vote),
+class Vote(BaseHandler):
+  def get(self, itemid):
+    user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    item = Item.get_by_id(int(itemid))
+
+    #getprompt and format it
+    promptkey = random.choice([key for key in Prompt.all(keys_only=True).run()])
+    prompt = Prompt.get(promptkey)
+    
+    promptname = str(prompt.name)
+    promptname = promptname.replace("{{input}}", "<input type='text' name='input' style='display: inline;'>")
+    promptname = promptname.replace("{{input2}}", "<input type='text' name='input2' style='display: inline;'>")
+    promptname = promptname.replace("{{restaurant}}", "<span style='color: red;'>"+utf8_decode(restaurant)+"</span>")
+    promptname = promptname.replace("{{dish}}", "<span style='color: red;'>"+item+"</span>")
+
+    values = {
+      "user": user,
+      "item": item,
+      "prompt": promptname,
+      "promptid": prompt.key().id(),
+    }      
+    render(self, 'items.html', values)
+
+  def post(self, itemid):
+    #handled via json atm
+    pass
+
 

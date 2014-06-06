@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 phone-contain">
+      <h1 class="vote-on">Vote on {{ item.name }}</h1>
+
+      <div class="new-panel">
+        <form id="voteForm" action="/vote/{{ item.key.id }}" method="post">
+          <input type="hidden" name="restaurantid" value={{ item.restaurant.key.id }} />
+          <input type="hidden" name="itemid" value={{ item.key.id }} />
+          <input type="hidden" name="promptid" value={{ promptid }} />
+
+          <div id="promptDiv" style="font-size: 22px;">{{ prompt }}</div>
+	  
+          <div class="btn-group vote-buttons" data-toggle="buttons" style="margin-bottom: 15px;">
+            <label class="btn btn-primary first-vote-btn">
+              <input type="radio" name="rating" id="rating1" value="100"> <span class="fa fa-smile-o"></span>
+            </label>
+            <label class="btn btn-primary second-vote-btn">
+              <input type="radio" name="rating" id="rating2" value="50"> <span class="fa fa-meh-o"></span>
+            </label>
+            <label class="btn btn-primary third-vote-btn">
+              <input type="radio" name="rating" id="rating3" value="0"> <span class="fa fa-frown-o"></span>
+            </label>
+          </div>
+
+
+          <input type="submit" id="voteButton" value="Vote" class="btn btn-primary btn-block" style="font-size: 20px;">
+        </form>
+
+        <div id="reviewDiv" style="margin-top: 50px;">
+          <h2 style="line-height: 26px;">What other people think of this item:</h2>
+          <hr>
+          <div id="fakeReview"></div>
+        </div>
+      </div><!-- /end .new-panel -->
+
+    </div><!-- /end .col-md-12 -->
+  </div><!-- /end .row -->
+</div><!-- /end .container -->
+
+<script>
+
+$(document).ready( function(){
+
+   $('#promptDiv input[type="text"]').css({'border': '1px solid red;'});
+
+   item = "{{ item.name }}";
+   restaurant = "{{ item.restaurant.name }}";
+
+   dataToSend = {
+     itemid: '<?= $itemId; ?>'
+   };
+   
+   $.ajax({
+     url: "http://mfbackend.appspot.com/json/getitemreviews",
+     dataType: "json",
+     data: dataToSend,
+     type: "GET",
+     success: function(data){
+       console.log(data);
+       if (data.response == 1){
+	 for (var key in data.feed_items){
+	   var html = parsePrompt(data.feed_items[key]);
+	   $("#fakeReview").after( html );
+	 }	
+       }
+     }
+   });
+
+   $("#voteButton").click( function(e){
+     $("#voteButton").attr('disabled', 'disabled').attr('value', 'Vote pending');
+     e.preventDefault();
+     dataToSend = $("#voteForm").serialize();
+     $.ajax({
+       url: "http://mfbackend.appspot.com/json/reviewitem",
+       dataType: "json",
+       data: dataToSend,
+       type: "POST",
+       success: function(data){
+	 //do something
+	 if (data.response == 1){
+	   window.location = 'http://menuflick.com/items/{{ item.restaurant.key.id}}';
+	 }
+       }
+     });
+   });
+
+});
+
+</script>
+{% endblock body %}
