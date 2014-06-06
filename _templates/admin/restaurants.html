@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="twelve-columns">
+  <h3>Restaurants</h3>
+
+  <form method="post" style="float: right; background: #eee; padding: 10px;">
+    <input type="test" name="name" placeholder="Name"/>
+    <input type="submit" name="submit" value="Add Restaurant" />
+  </form>
+
+  <p>List of Restaurants:</p>
+  {% for r in restaurants %}
+  <p><a href="/restaurant/{{ r.key.id }}">{{ r.name }}</a> {{ r.numberofitems }}</p>
+  {% endfor %}
+</div>
+{% endblock body %}

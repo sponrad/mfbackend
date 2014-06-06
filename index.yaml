@@ -17,10 +17,16 @@ indexes:
 
 - kind: Review
   properties:
+  - name: item
+  - name: date_edited
+
+- kind: Review
+  properties:
   - name: userid
   - name: date_edited
 
 - kind: Review
   properties:
-  - name: item
+  - name: userid
   - name: date_edited
+    direction: desc

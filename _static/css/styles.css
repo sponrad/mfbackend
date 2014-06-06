@@ -1,0 +1,326 @@
+@font-face {
+  font-family: NeueHaasGroteskRegular;
+  src: url('../fonts/NeueHaasGroteskRegular.ttf');
+}
+
+@font-face {
+  font-family: NeueHaasGroteskMedium;
+  src: url('../fonts/NeueHaasGroteskMedium.ttf');
+}
+
+@font-face {
+  font-family: NeueHaasGroteskBold;
+  src: url('../fonts/NeueHaasGroteskBold.ttf');
+}
+
+@font-face {
+    font-family: entypo-social;
+    src: url('../fonts/entypo-social.eot');
+    src: url('../fonts/entypo-social.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/entypo-social.woff') format('woff'),
+    url('../fonts/entypo-social.ttf') format('truetype'),
+    url('../fonts/entypo-social.svg#entypo-social') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+  font-size: 16px;
+  font-family: 'NeueHaasGroteskMedium', sans-serif;
+  padding-bottom: 60px;
+  background: #ff5656;
+  position: relative;
+}
+
+body.index {
+  overflow: hidden;
+}
+
+#feedDiv, #restaurantsList, #profileList, .new-panel {
+  padding: 20px;
+  background: #fff;
+}
+
+#restaurantsList a {
+  display: block;
+}
+
+#itemsList {
+  margin-bottom: 10px;
+}
+
+#distance {
+  display: block;
+  margin-bottom: 14px;
+}
+
+.vote-buttons {
+  width: 100%;
+}
+
+.vote-buttons .btn {
+  width: 33.3333333333333333333333%;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  color: #ccc;
+  font-size: 50px;
+}
+
+.first-vote-btn.active {
+  color: #5cb85c;
+}
+
+.second-vote-btn.active {
+  color: #f0ad4e;
+}
+
+.third-vote-btn.active {
+  color: #d9534f;
+}
+
+.vote-on {
+  font-size: 34px;
+}
+
+#promptDiv input[type="text"], .vote-new-div input[type="text"] {
+  display: block;
+  width: 100%;
+  border-radius: 0;
+  box-shadow: none;
+  -webkit-appearance: none;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#promptDiv input[name="input"] {
+  margin-bottom: 35px;
+}
+
+#promptDiv input[name="input2"] {
+  margin-bottom: 35px;
+}
+
+#voteForm #voteButton {
+  margin-top: 15px;
+  display: block;
+}
+
+.sign-up-cta {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: #000;
+  padding: 10px;
+  text-align: center;
+  background: #000;
+  color: #fff;
+  display: block;
+}
+
+a {
+}
+
+a:hover {
+  color: red;
+}
+
+img {
+  max-width: 100%;
+}
+
+h1 {
+  font-size: 30px;
+  color: #fff;
+  margin-bottom: 20px;
+  margin-top: 70px;
+  font-family: 'NeueHaasGroteskMedium', sans-serif;
+  font-weight: normal;
+  line-height: 38px;
+}
+
+h2 {
+  font-size: 20px;
+}
+
+.new-panel h2 {
+  margin-bottom: 10px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.iphone {
+  margin-top: 65px;
+  margin-bottom: 40px;
+  background: url(../img/iphone.png) no-repeat 0 0;
+  height: 700px;
+  width: 100%;
+  background-size: contain;
+}
+
+.logo {
+  margin-top: 90px;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+footer {
+  background: #ff0000;
+  color: #fff;
+  padding: 20px 0;
+  bottom: 0;
+}
+
+input[type="email"] {
+  width: 67%;
+}
+
+input.form-control {
+  border: none;
+  -webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+  border-radius: 0;
+  height: 44px;
+}
+
+.sign-up-button {
+  margin-top: 30px;
+}
+
+nav {
+  text-align: center;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  background: #fff;
+  z-index: 10000;
+  box-shadow: 1px 0 1px rgba(0,0,0,.2);
+  opacity: .9;
+  height: 44px;
+  line-height: 42px;
+}
+
+.list-inline {
+  margin-bottom: 0;
+}
+
+.list-inline button, .list-inline a {
+  transition: all .2s ease-in-out;
+  font-family: 'NeueHaasGroteskMedium', sans-serif;
+  color: black;
+  background: transparent;
+  border: none;
+  padding: 2px;
+}
+
+.list-inline button:hover, .list-inline a:hover {
+  color: red;
+  text-decoration: none;
+}
+
+.item {
+  padding: 0 23px;
+  margin-top: 97px;
+}
+
+.carousel-control.right, .carousel-control.left  {
+  background: none;
+}
+
+.carousel-control.right {
+  right: 20px;
+}
+
+.carousel-control.left {
+  left: 20px;
+}
+
+.carousel {
+  z-index: -1;
+}
+
+.carousel-inner > .item {
+  -webkit-transition: 1.5s ease-in-out left;
+  -moz-transition: 1.5s ease-in-out left;
+  -o-transition: 1.5s ease-in-out left;
+  transition: 1.5s ease-in-out left;    
+}
+
+.phone-contain {
+  padding-right: 4%;
+}
+
+.privacy-policy {
+}
+
+input[type="email"] {
+  float: left;
+  margin-right: 3%;
+}
+
+/*
+input[type="submit"] {
+  float: left;
+}
+*/
+
+.offset-left {
+  position: relative;
+  left: 96px;
+}
+
+.app-store-mobile {
+  display: none;
+}
+
+#slider {
+  display: none;
+}
+
+#loginForm input[type="text"], #loginForm input[type="password"] {
+  width: 100%; 
+  margin-bottom: 20px;
+  padding: 14px 10px;
+  border: none;
+  border-radius: 0;
+}
+
+#loginForm input[type="submit"] {
+  border-radius: 4px;
+  background: white;
+  padding: 10px 20px;
+  border: none;
+  margin-bottom: 20px;
+  color: #555;
+}
+
+
+.main-menu {
+  padding-left: 0;
+}
+.swipe {
+  overflow: hidden;
+  visibility: hidden;
+  position: relative;
+}
+.swipe-wrap {
+  overflow: hidden;
+  position: relative;
+}
+.swipe-wrap > div {
+  float:left;
+  width:100%;
+  position: relative;
+}
+
+a.entypo {
+    font-family: entypo-social, serif;
+    font-size: 48px;
+    color: black;
+}

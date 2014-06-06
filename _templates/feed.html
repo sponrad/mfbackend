@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="container">
+  <h1></h1>
+  <div id="feedDiv" style="background: white;">
+    {% if feed_items|length > 0 %}
+    {% for review in feed_items %}
+    <div class='reviewItem'>
+      {% if review.rating == 100 %}+{% else %}
+      {% if review.rating == 0 %}-{% else %}
+      /{% endif %}{% endif %}
+      <a class='profilelink' href='/profile/{{ review.userid }}'>{{ review.username}}</a><br>
+      {% autoescape off %}
+      {{ review.prompt }}
+      {% endautoescape %}
+    </div><br> 
+    {% endfor %}
+    {% else %}
+    <p>Nothing in feed =*<</p>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+ $(document).ready( function(){
+   var dataToSend = {
+     userid: <?= $userId; ?>,
+   };
+
+   $.ajax({
+     url: 'http://mfbackend.appspot.com/json/getfeed',
+     dataType: 'json',
+     data: dataToSend, 
+     type: 'GET',
+     success: function(data){
+       console.log(data);
+       if (data.response == 1){
+	 for (var key in data.feed_items){
+	   var html = parsePrompt(data.feed_items[key]);
+	   $("#fakeItem").after( html );
+	   $("#fakeItem").html("");
+	 }	
+       }
+     }
+   });
+ });
+</script>
+
+<!--
+_______________ 
+/ EAT AT DAN’S   \
+\_______________/
+\
+\ 
+__             ___
+// )    ___--""    "-.
+\ |,"( /`--""              `. 
+\/ o                        \
+(   _.-.              ,'"    ;  
+|\"   /`. \  ,      /       |
+| \  ' .'`.; |      |       \.______________________________
+_-'.'    | |--..,,,\_    \________------------""""""""""""
+'''"   _-'.'       ___"-   )
+'''"        '''---~""
+-->
+{% endblock body %}

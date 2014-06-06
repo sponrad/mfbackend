@@ -1,117 +1,63 @@
-<!Doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="/_static/stylesheets/foundation.min.css" />
-    <script type="text/javascript" src="/_static/javascripts/jquery.js"></script>
-    <script type="text/javascript" src="/_static/javascripts/jquery.jeditable.js" /></script>
-    <style>
-      nav {
-      margin-bottom: 15px;
-      }
-      nav a {
-      padding: 0px 0px 0px 20px;
-      }
-      .edit {
-      border-bottom: 1px #9c9 solid;
-      }
-      .delete {
-      color: red;
-      font-size: 75%;
-      background: #ccc;
-      padding: 3px;
-      border-radius: 3px;
-      }
-      p[class*='card']{
-      text-align: center;
-      display: inline-block;
-      margin: 10px;
-      padding: 5px;
-      border-radius: 3px;
-      width: 200px;
-      border: 1px solid #ccc;
-      }
-      p[class*='card'].span{
-      padding: 0px;
-      }
-/*      p.card0 {
-      background-color: red;
-      color: white;
-      }
-      p.card100 {
-      background-color: blue;
-      color: white;
-      }*/
-      #cardvotediv p:hover{
-      background-color: #aaa;
-      transition: all 0.2s ease-in-out 0s;
-      transform: rotate(3deg);
-      }
-    </style>
-    {% block head %}{% endblock head %}
+    <title>Menuflick</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta content='yes' name='apple-mobile-web-app-capable'>
+    <meta content='white-translucent' name='apple-mobile-web-app-status-bar-style'>
+    <!-- Bootstrap -->
+    <link href="/_static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="/_static/css/styles.css" rel="stylesheet" media="screen">
+    <script src="https://code.jquery.com/jquery.js"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    <script src="js/functions.js"></script>
+
   </head>
-
-  <body>
-    <div class="row">
-      <div class="twelve-columns">
-	<img src="/_static/images/mflogo.JPG" width=100 height=100 style="float: right;"/>
-	<h1>Menuflick Backend</h1>
-      </div>
-    </div>
-
-	{% if user %}
-    <div class="row">
-      <div class="twelve-columns">
-	<p>Hi {{ user.auth_ids.0 }}. <a href="/logout">Sign Out</a></p>
-	{% if user.admin %}
-	<h4>Admin</h4>
-	<nav style="border: #FE4600 solid 2px; padding: 5px;">
-	  <a href="/">Home</a>
-	  <a href="/restaurants">Restaurants</a>
-	  <a href="/cards">Cards</a>
-	  <a href="/prompts">MadlibPrompts</a>	  
-	  <a href="/hand">Card Hand</a>
-	  <a href="/itemvote">Item Vote</a>
-	</nav>
-     	{% endif %}
-      </div>
-    </div>
-
-    {% else %}
-    <form action="/login" method="post">
-      <div class="row">
-	<div class="three columns">
-	  <input type="text" name="username" placeholder="username" />
-	</div>
-	<div class="three columns">
-	  <input type="password" name="password" placeholder="password" />
-	</div>
-	<div class="">
-	  <input type="submit" value="Login" />
-	</div>
-      </div>
-    </form>
+  <body id="top">
+    {% if user %}
+    <nav>
+      <ul class="list-inline">
+        <li><button id="menuButton" onclick="location.href='/restaurants'">Nearby</button></li>
+        <li><button id="feedButton" onclick="location.href='/feed'">Feed</button></li>
+        <li><button id="menuButton" onclick="location.href='/profile/{{ user.key.id }}'">Profile</button></li>
+        <li><a href="http://www.menuflick.com/logout" id="logoutLink">Logout</a></li>
+      </ul>
+    </nav>
     {% endif %}
-   
-    <div class="row">
-      {% block body %}{% endblock body %}
-      <div class="twelve-columns">
-	<p style="background: #eee; border-top: black 1px solid;">Session: {{ user }}</p>
-	<p>&copy2013 Menuflick</p>
-      </div>
-    </div>
-    <script>
-      $(document).ready(function(){
-      $('.edit').editable('/editable', {
-      tooltip : "Click to edit, save with ENTER",
-      style : "inherit",
-      });
-      });
-      $('body').on('click', '[data-confirm]', function(){
-      var msg = $(this).attr('data-confirm');
-      return confirm(msg);
-      });
-    </script>
-    {% block bodyend %}{% endblock bodyend %}
-  </body>
 
+    {% block body %}{% endblock body %}
+
+    <script>
+     
+     var _gaq = _gaq || [];
+     _gaq.push(['_setAccount', 'UA-39574765-1']);
+     _gaq.push(['_trackPageview']);
+     
+     (function() {
+       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+     })();
+    </script>
+
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/retina.min.js"></script>
+    <script src="js/fastclick.js"></script>
+    <script src="js/script.js"></script>
+
+    <script>
+     $(document).ready( function(){
+       FastClick.attach(document.body);
+     });
+    </script>
+
+  </body>
 </html>

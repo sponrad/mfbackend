@@ -1,0 +1,207 @@
+@font-face {
+  font-family: NeueHaasGroteskRegular;
+  src: url('../fonts/NeueHaasGroteskRegular.ttf');
+}
+
+@font-face {
+  font-family: NeueHaasGroteskMedium;
+  src: url('../fonts/NeueHaasGroteskMedium.ttf');
+}
+
+@font-face {
+  font-family: NeueHaasGroteskBold;
+  src: url('../fonts/NeueHaasGroteskBold.ttf');
+}
+
+@font-face {
+    font-family: entypo-social;
+    src: url('../fonts/entypo-social.eot');
+    src: url('../fonts/entypo-social.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/entypo-social.woff') format('woff'),
+    url('../fonts/entypo-social.ttf') format('truetype'),
+    url('../fonts/entypo-social.svg#entypo-social') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+  font-size: 16px;
+  font-family: 'NeueHaasGroteskMedium', sans-serif;
+  padding-bottom: 60px;
+  background: #ff5656;
+}
+
+a {
+}
+
+a:hover {
+  color: red;
+}
+
+img {
+  max-width: 100%;
+}
+
+h1 {
+  font-size: 50px;
+  color: #1e1e1e;
+  margin-bottom: 65px;
+  font-family: 'NeueHaasGroteskMedium', sans-serif;
+  font-weight: normal;
+}
+
+h2 {
+  font-size: 22px;
+  margin: 4px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.iphone {
+  margin-top: 65px;
+  margin-bottom: 40px;
+  background: url(../img/iphone.png) no-repeat 0 0;
+  height: 700px;
+  width: 100%;
+  background-size: contain;
+}
+
+.logo {
+  margin-top: 200px;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+footer {
+  background: #ff0000;
+  color: #fff;
+  padding: 20px 0;
+  bottom: 0;
+}
+
+input[type="email"] {
+  width: 67%;
+}
+
+.list-inline {
+  border-bottom: 1px solid #7f7f7f;
+  margin-top: 100px;
+  padding-bottom: 10px;
+}
+
+.list-inline a {
+  transition: all .2s ease-in-out;
+  font-family: 'NeueHaasGroteskMedium', sans-serif;
+  color: black;
+}
+
+.list-inline a:hover {
+  color: red;
+  text-decoration: none;
+}
+
+.item {
+  padding: 0 23px;
+  margin-top: 97px;
+}
+
+.carousel-control.right, .carousel-control.left  {
+  background: none;
+}
+
+.carousel-control.right {
+  right: 20px;
+}
+
+.carousel-control.left {
+  left: 20px;
+}
+
+.carousel {
+  z-index: -1;
+}
+
+.carousel-inner > .item {
+  -webkit-transition: 1.5s ease-in-out left;
+  -moz-transition: 1.5s ease-in-out left;
+  -o-transition: 1.5s ease-in-out left;
+  transition: 1.5s ease-in-out left;    
+}
+
+.phone-contain {
+  padding-right: 4%;
+}
+
+.privacy-policy {
+}
+
+h2 {
+  width: 38%;
+  float: left;
+}
+
+input[type="email"] {
+  float: left;
+  margin-right: 3%;
+}
+
+/*
+input[type="submit"] {
+  float: left;
+}
+*/
+
+.offset-left {
+  position: relative;
+  left: 96px;
+}
+
+.app-store-mobile {
+  display: none;
+}
+
+#slider {
+  display: none;
+}
+
+#loginForm input[type="text"], #loginForm input[type="password"] {
+  width: 100%; 
+  margin-bottom: 20px;
+  padding: 14px 10px;
+  border: none;
+}
+
+#loginForm input[type="submit"] {
+  border-radius: 4px;
+  background: white;
+  padding: 10px 20px;
+  border: none;
+  margin-bottom: 20px;
+}
+
+
+.main-menu {
+  padding-left: 0;
+}
+.swipe {
+  overflow: hidden;
+  visibility: hidden;
+  position: relative;
+}
+.swipe-wrap {
+  overflow: hidden;
+  position: relative;
+}
+.swipe-wrap > div {
+  float:left;
+  width:100%;
+  position: relative;
+}
+
+a.entypo {
+    font-family: entypo-social, serif;
+    font-size: 48px;
+    color: black;
+}

@@ -1,0 +1,88 @@
+body {
+  font-size: 16px;
+}
+
+a {
+}
+
+a:hover {
+  color: red;
+}
+
+@font-face {
+  font-family: NeueHaasGroteskMedium;
+  src: url('../fonts/NeueHaasGroteskMedium.ttf');
+}
+
+img {
+  max-width: 100%;
+}
+
+h1 {
+  font-size: 50px;
+  color: #1e1e1e;
+  margin-bottom: 65px;
+}
+
+h2 {
+  font-size: 22px;
+  margin: 4px;
+}
+
+.iphone {
+  margin-top: 65px;
+  margin-bottom: 40px;
+  background: url(../img/iphone.png) no-repeat 0 0;
+  height: 799px;
+  width: 350px;
+}
+
+.logo {
+  margin-bottom: 30px;
+  margin-top: 160px;
+}
+
+footer {
+  background: #ff0000;
+  color: #fff;
+  padding: 40px 0;
+}
+
+input[type="email"] {
+  width: 67%;
+}
+
+.list-inline {
+  border-bottom: 1px solid #7f7f7f;
+  margin-top: 100px;
+  padding-bottom: 10px;
+}
+
+.list-inline a {
+  transition: all .2s ease-in-out;
+  font-family: 'NeueHaasGroteskMedium', sans-serif;
+  color: black;
+  margin-right: 14px;
+}
+
+.list-inline a:hover {
+  color: red;
+  text-decoration: none;
+}
+
+.item {
+  padding: 0 25px !important;
+  margin-top: 110px !important;
+}
+
+.carousel-control.right, .carousel-control.left  {
+  background: none;
+}
+
+.carousel-control.right {
+  right: 20px;
+}
+
+.carousel-control.left {
+  left: 20px;
+}

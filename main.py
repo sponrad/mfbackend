@@ -1,5 +1,6 @@
 import webapp2
-from mfb.handlers import *
+import mfb.admin as admin
+import mfb.handlers as main
 
 config = {
     'webapp2_extras.auth': {
@@ -12,19 +13,30 @@ config = {
     }
 
 app = webapp2.WSGIApplication([
-        ('/restaurants', Restaurants),
-        (r'/restaurant/(.*)', RestaurantPage),
-        ('/cards', Cards),
-        ('/prompts', Prompts),
-        ('/hand', CardHand),
-        ('/itemvote', ItemVote),
-        ('/signup', SignupHandler),
-        ('/login', LoginHandler),
-        ('/logout', LogoutHandler),
-        ('/editable', Editable),
-        ('/ajax', AjaxHandler),
-        ('/delete', Delete),
-        ('/password', Password),
-        ('/maintain', Maintain),
-         webapp2.Route('/', MainHandler, name="home")
+    ('/_a/restaurants', admin.Restaurants),
+    (r'/_a/restaurant/(.*)', admin.RestaurantPage),
+    ('/_a/cards', admin.Cards),
+    ('/_a/prompts', admin.Prompts),
+    ('/_a/hand', admin.CardHand),
+    ('/_a/itemvote', admin.ItemVote),
+    ('/_a/signup', admin.SignupHandler),
+    ('/_a/login', admin.LoginHandler),
+    ('/_a/logout', admin.LogoutHandler),
+    ('/_a/editable', admin.Editable),
+    ('/_a/ajax', admin.AjaxHandler),
+    ('/_a/delete', admin.Delete),
+    ('/_a/password', admin.Password),
+    ('/_a/maintain', admin.Maintain),
+    webapp2.Route('/_a', admin.MainHandler, name="home"),
+
+    ('/signup', main.SignupHandler),
+    ('/login', main.LoginHandler),
+    ('/logout', main.LogoutHandler),
+    ('/restaurants', main.Restaurants),
+    #vote
+    #items
+    ('/feed', main.Feed),
+    ('/profile/(.*)', main.Profile), #profile?profileid
+     
+    ('/', main.MainHandler),
 ], debug=True, config=config)
