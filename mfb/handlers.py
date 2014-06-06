@@ -281,3 +281,26 @@ class Vote(BaseHandler):
     pass
 
 
+#    ('/votenew/(.*)', main.VoteNew),
+class VoteNew(BaseHandler):
+  def get(self, restaurantid):
+    user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    restaurant = Restaurant.get_by_id(int(restaurantid))
+    values = {
+      "user": user,
+      "restaurant": restaurant,
+    }
+    render(self, "votenew.html", values)
+
+  def post(self, restaurantid):
+    user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    restaurant = Restaurant.get_by_id(int(restaurantid))
+    item = Item(
+      name = self.request.get("name"),
+      description = self.request.get("description"),
+      price = self.request.get("price"),
+      restaurant = restaurant
+    )
+    item.put()
+    
+    self.redirect("/vote/" + str(item.key().id()) )

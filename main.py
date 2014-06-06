@@ -35,7 +35,7 @@ app = webapp2.WSGIApplication([
     ('/restaurants', main.Restaurants),    
     ('/items/(.*)', main.Items),
     ('/vote/(.*)', main.Vote),
-    #vote new ? why separate?
+    ('/votenew/(.*)', main.VoteNew),
     ('/feed', main.Feed),
     ('/profile/(.*)', main.Profile), #profile?profileid
      
