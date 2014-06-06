@@ -175,17 +175,14 @@ class Feed(BaseHandler):
 #    ('/profile/(.*)', main.Profile), #profile?profileid
 class Profile(BaseHandler):
   def get(self, profileid):
-    user = User.get_by_auth_id(profileid)
-#    user = User.query( User.auth_idsstr([u'sponrad']) ).fetch(1)
-#    user = User.query(profileid in User.auth_ids).get()
-    if not user:
-      user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
-    profileid = int(profileid)
-    profile = User.get_by_id(profileid)
+    user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    profile = User.get_by_auth_id("sponrad")
+    if not profile:
+      profile = User.get_by_id(int(profileid))
                 
     feed_items = []
-                
-    for review in Review.all().filter("userid =", int(profileid)).order("-date_edited").run():
+    
+    for review in Review.all().filter("userid =", profile.key.id()).order("-date_edited").run():
       try: 
         prompt = str(review.prompt.name)
         

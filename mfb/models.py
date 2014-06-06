@@ -52,10 +52,6 @@ class User(webapp2_extras.appengine.auth.models.User):
 
         return None, None
 
-    @classmethod
-    def get_by_auth_id(cls, auth_id):
-        return cls.query(cls.auth_ids == auth_id).get()
-
 class State(db.Model):
     name = db.StringProperty()
     abb = db.StringProperty()
