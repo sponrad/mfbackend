@@ -51,7 +51,7 @@ $(document).ready( function(){
    restaurant = "{{ item.restaurant.name }}";
 
    dataToSend = {
-     itemid: '<?= $itemId; ?>'
+     itemid: '{{ item.key.id }}'
    };
    
    $.ajax({

@@ -12,7 +12,7 @@
     {% if restaurant.item_set|length > 0 %}
     {% for item in restaurant.item_set %}
     
-    <a href='/vote?restaurantid={{ restuarant.key.id }}&itemid={{ item.key.id }}&itemname={{ item.name }}&restaurantname={{ restaurant.name }}'>
+    <a href='/vote/{{ item.key.id }}'>
       {{ item.name }}: {{ item.rating }}%
     </a>
     <br/>
