@@ -35,15 +35,16 @@ def reset_food(a,b,c):
   
 ######################## HANDLERS
 class MainHandler(BaseHandler):
-    def get(self):
-        user = self.auth.get_user_by_session()
-        values = {
-          "user": user,
-            }
-        render(self, 'landing.html', values)
-
+  def get(self):
+    user = self.auth.get_user_by_session()
+    values = {
+      "user": user,
+      }
+    render(self, 'landing.html', values)
+    
 class SignupHandler(BaseHandler):
   def get(self):
+    user = self.auth.get_user_by_session()
     values = {
       "user": user,
     }
@@ -141,8 +142,8 @@ class Feed(BaseHandler):
 
       prompt = str(review.prompt.name)
 
-      prompt = prompt.replace("{{restaurant}}", "<a style='display: inline;' href='/items?restaurantid="+ str(review.item.restaurant.key().id()) +"'>"+review.item.restaurant.name+"</a>")
-      prompt = prompt.replace("{{dish}}", "<a style='display: inline;' href='/vote?restaurantid="+str(review.item.restaurant.key().id())+"&itemid="+str(review.item.key().id())+"&restaurantname="+review.item.restaurant.name+"&itemname="+review.item.name+"'>"+review.item.name+"</a>")
+      prompt = prompt.replace("{{restaurant}}", "<a style='display: inline;' href='/items/"+ str(review.item.restaurant.key().id()) +"'>"+review.item.restaurant.name+"</a>")
+      prompt = prompt.replace("{{dish}}", "<a style='display: inline;' href='/vote/"+str(review.item.key().id())+"'>"+review.item.name+"</a>")
 
       if review.input:
         prompt = prompt.replace("{{input}}", "<span style='display: inline; color:red;'>"+review.input+"</span>")
@@ -190,8 +191,8 @@ class Profile(BaseHandler):
         prompt = None
 
       if prompt:
-        prompt = prompt.replace("{{restaurant}}", "<a style='display: inline;' href='/items?restaurantid="+ str(review.item.restaurant.key().id()) +"'>"+review.item.restaurant.name+"</a>")
-        prompt = prompt.replace("{{dish}}", "<a style='display: inline;' href='/vote?restaurantid="+str(review.item.restaurant.key().id())+"&itemid="+str(review.item.key().id())+"&restaurantname="+review.item.restaurant.name+"&itemname="+review.item.name+"'>"+review.item.name+"</a>")
+        prompt = prompt.replace("{{restaurant}}", "<a style='display: inline;' href='/items/"+ str(review.item.restaurant.key().id()) +"'>"+review.item.restaurant.name+"</a>")
+        prompt = prompt.replace("{{dish}}", "<a style='display: inline;' href='/vote/"+str(review.item.key().id())+"'>"+review.item.name+"</a>")
 
         if review.input:
           prompt = prompt.replace("{{input}}", "<span style='display: inline; color:red;'>"+review.input+"</span>")
@@ -252,8 +253,8 @@ class Vote(BaseHandler):
     promptname = str(prompt.name)
     promptname = promptname.replace("{{input}}", "<input type='text' name='input' style='display: inline;'>")
     promptname = promptname.replace("{{input2}}", "<input type='text' name='input2' style='display: inline;'>")
-    promptname = promptname.replace("{{restaurant}}", "<span style='color: red;'>"+utf8_decode(restaurant)+"</span>")
-    promptname = promptname.replace("{{dish}}", "<span style='color: red;'>"+item+"</span>")
+    promptname = promptname.replace("{{restaurant}}", "<span style='color: red;'>"+item.restaurant.name + "</span>")
+    promptname = promptname.replace("{{dish}}", "<span style='color: red;'>"+item.name+"</span>")
 
     values = {
       "user": user,

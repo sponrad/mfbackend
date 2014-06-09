@@ -26,7 +26,7 @@
       <ul class="list-inline">
         <li><button id="menuButton" onclick="location.href='/restaurants'">Nearby</button></li>
         <li><button id="feedButton" onclick="location.href='/feed'">Feed</button></li>
-        <li><button id="menuButton" onclick="location.href='/profile/{{ user.key.id }}'">Profile</button></li>
+        <li><button id="menuButton" onclick="location.href='/profile/{{ user.auth_ids.0 }}'">Profile</button></li>
         <li><a href="/logout" id="logoutLink">Logout</a></li>
       </ul>
     </nav>

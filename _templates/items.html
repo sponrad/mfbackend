@@ -6,7 +6,7 @@
 
   <div class="new-panel">
 
-    <a id="newDish" href="/votenew?restaurantid={{ restaurant.key.id }}&restaurantname={{ restaurant.name }}">Vote on a new dish</a>
+    <a id="newDish" href="/votenew/{{ restaurant.key.id }}">Vote on a new dish</a>
     <hr>
     <h2>Dishes</h2>
     {% if restaurant.item_set|length > 0 %}
