@@ -230,13 +230,19 @@ class Profile(BaseHandler):
     render(self, 'profile.html', values)
 
 #/items/(restid)     ('/items/(.*)', main.Items), lat lng restname
-class Items(BaseHandler):
-  def get(self, restaurantid):
+class Items(BaseHandler):  
+  def get(self, restaurantid = None):
+    if not restaurantid:
+      #get restaurant id based on name lat and long
+      restaurants = getrestaurantid(self)
+      restaurantid = restaurants[0]["restaurantid"]
+
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
     restaurant = Restaurant.get_by_id(int(restaurantid))
     values = {
       "user": user,
       "restaurant": restaurant,
+      "items": restaurant.item_set,
     }      
     render(self, 'items.html', values)
 
@@ -262,7 +268,7 @@ class Vote(BaseHandler):
       "prompt": promptname,
       "promptid": prompt.key().id(),
     }      
-    render(self, 'items.html', values)
+    render(self, 'vote.html', values)
 
   def post(self, itemid):
     #handled via json atm
