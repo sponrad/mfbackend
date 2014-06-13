@@ -77,14 +77,14 @@ $(document).ready( function(){
      e.preventDefault();
      dataToSend = $("#voteForm").serialize();
      $.ajax({
-       url: "http://mfbackend.appspot.com/json/reviewitem",
+       url: "/json/reviewitem",
        dataType: "json",
        data: dataToSend,
        type: "POST",
        success: function(data){
 	 //do something
 	 if (data.response == 1){
-	   window.location = 'http://menuflick.com/items/{{ item.restaurant.key.id}}';
+	   window.location = '/items/{{ item.restaurant.key.id}}';
 	 }
        }
      });
