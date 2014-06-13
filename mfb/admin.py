@@ -98,11 +98,11 @@ class Password(BaseHandler):
     rawpassword = self.request.get("password")
     rawpasswordcheck = self.request.get("password2")
     if not rawpassword == rawpasswordcheck:
-      return self.redirect("/password")
+      return self.redirect("/_a/password")
     user = User.get_by_auth_id(username)
     user.password = security.generate_password_hash(rawpassword)
     user.put()
-    self.redirect("/password?m=done")
+    self.redirect("/_a/password?m=done")
 
 
 class Restaurants(BaseHandler):
@@ -121,7 +121,7 @@ class Restaurants(BaseHandler):
             )
         restaurant.put()
         helpers.createrestaurantdocument(restaurant)
-        self.redirect('/restaurant/' + str(restaurant.key().id()))
+        self.redirect('/_a/restaurant/' + str(restaurant.key().id()))
 
 class RestaurantPage(BaseHandler):
     @admin_required
@@ -145,7 +145,7 @@ class RestaurantPage(BaseHandler):
         restaurant.numberofitems += 1
         restaurant.put()
         doc = helpers.createitemdocument(item, restaurant)
-      self.redirect('/restaurant/' + str(restaurant.key().id()))
+      self.redirect('/_a/restaurant/' + str(restaurant.key().id()))
 
 class Cards(BaseHandler):
   @admin_required
@@ -166,7 +166,7 @@ class Cards(BaseHandler):
         ratingvalue = ratingvalue
         )
       card.put()
-      self.redirect("/cards")
+      self.redirect("/_a/cards")
 
 class Prompts(BaseHandler):
   @admin_required
@@ -182,7 +182,7 @@ class Prompts(BaseHandler):
         name = self.request.get("name")
         )
       prompt.put()
-      self.redirect("/prompts")
+      self.redirect("/_a/prompts")
 
 class CardHand(BaseHandler):
   @admin_required
@@ -220,7 +220,7 @@ class CardHand(BaseHandler):
       random.shuffle(hand)
       user.cardhand = hand
       user.put()
-      self.redirect("/hand")
+      self.redirect("/_a/hand")
 
 class ItemVote(BaseHandler):
   def get(self):
@@ -344,22 +344,22 @@ class Delete(BaseHandler):
     if action == "restaurant":
       restaurant = Restaurant.get_by_id(int(id))
       restaurant.delete()
-      self.redirect("/restaurants")
+      self.redirect("/_a/restaurants")
     if action == "item":
       item = Item.get_by_id(int(id))
       restaurant = item.restaurant
       item.delete()
       restaurant.numberofitems -= 1
       restaurant.put()
-      self.redirect("/restaurant/" + str(restaurant.key().id()))
+      self.redirect("/_a/restaurant/" + str(restaurant.key().id()))
     if action == "card":
       card = Card.get_by_id(int(id))
       card.delete()
-      self.redirect("/cards")
+      self.redirect("/_a/cards")
     if action == "prompt":
       prompt = Prompt.get_by_id(int(id))
       prompt.delete()
-      self.redirect("/prompts")
+      self.redirect("/_a/prompts")
 
 class Maintain(BaseHandler):
   @admin_required
