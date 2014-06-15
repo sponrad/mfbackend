@@ -28,12 +28,20 @@ body {
   font-size: 16px;
   font-family: 'NeueHaasGroteskMedium', sans-serif;
   padding-bottom: 60px;
-  background: #ff5656;
+  background: #cbcbcb;
   position: relative;
+  overflow: hidden;
 }
 
 body.index {
   overflow: hidden;
+  position: relative;
+}
+
+.container.home {
+  margin: 9px;
+  border: 5px solid #f16264;
+  background: #fff;
 }
 
 #feedDiv, #restaurantsList, #profileList, .new-panel {
@@ -110,15 +118,14 @@ body.index {
 }
 
 .sign-up-cta {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: #000;
-  padding: 10px;
-  text-align: center;
+  width: 90px;
+  height: 90px;
   background: #000;
   color: #fff;
+  line-height: 90px;
   display: block;
+  margin: 0 auto 17px auto;
+  font-weight: bold;
 }
 
 a {
@@ -164,8 +171,8 @@ h2 {
 }
 
 .logo {
-  margin-top: 90px;
-  margin-bottom: 20px;
+  margin-top: 69px;
+  margin-bottom: 30px;
   display: inline-block;
 }
 
@@ -285,19 +292,35 @@ input[type="submit"] {
 
 #loginForm input[type="text"], #loginForm input[type="password"] {
   width: 100%; 
-  margin-bottom: 20px;
-  padding: 14px 10px;
-  border: none;
+  margin-bottom: 13px;
   border-radius: 0;
+  border: 5px solid #000;
+  height: 52px;
+  line-height: 52px;
+  padding-left: 9px;
+  -webkit-appearance: none;
+  font-size: 24px;
+}
+
+#loginForm input[type="text"]::-webkit-input-placeholder, 
+#loginForm input[type="password"]::-webkit-input-placeholder {
+  font-size: 26px;
+  font-weight: bold;
+  color: #000;
 }
 
 #loginForm input[type="submit"] {
   border-radius: 4px;
-  background: white;
-  padding: 10px 20px;
+  background: #f16264;
   border: none;
   margin-bottom: 20px;
-  color: #555;
+  color: #fff;
+  width: 262px;
+  height: 55px;
+  border-radius: 0;
+  font-weight: bold;
+  font-size: 20px;
+  margin-top: 6px;
 }
 
 

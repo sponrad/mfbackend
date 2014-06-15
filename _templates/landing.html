@@ -2,17 +2,18 @@
 
 {% block body %}
 
-<div class="container text-center">
+<div class="home container text-center">
 
-  <img src="/_static/img/logo.jpg" class="img-responsive logo">
+  <img src="/_static/img/logo.png" class="img-responsive logo">
   {% if not user %}
   <form id="loginForm" action="/login" method="post">
-    <input type="text" name="username" placeholder="username" autocapitalize="off" />
-    <input type="password" name="password" placeholder="password" autocapitalize="off" />
+    <input type="text" name="username" placeholder="Username" autocapitalize="off" />
+    <input type="password" name="password" placeholder="Password" autocapitalize="off" />
     <input type="submit" id="loginButton" value="Sign In" />
   </form>
   {% endif %}
 
+  <a href="/signup" class="sign-up-cta">Sign Up</a>
 </div><!-- /end .container -->
 
 <!-- <div class="container text-center">
@@ -46,7 +47,6 @@ width: 200px;
 </div>
 </div> -->
 
-<a href="/signup" class="sign-up-cta">Sign Up</a>
 
 
 <script src="/_static/js/swipe.js"></script>
