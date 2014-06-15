@@ -119,15 +119,14 @@ class GetRestaurantsGoogle(webapp2.RequestHandler):
                         "types": "cafe|restaurant|bar|bakery",
                         "rankby": "distance"
                 }
+		newurl = url + "?" + urllib.urlencode(urldata)
                 try:
-                        result = urllib2.urlopen(url + "?" + urllib.urlencode(urldata))
+                        result = urllib2.urlopen(newurl).read()
                 except urllib2.URLError, e:
-                        pass
+                        result = "no go"
                         
-                values = {
-                        "result": result,
-                }
-                renderjson(self, values)
+                renderjson(self, json.loads(result))
+
 
 ''' given a lat long and radius, returns nearby restaurants '''
 class GetRestaurants(webapp2.RequestHandler):
@@ -457,7 +456,8 @@ class ReviewItem(webapp2.RequestHandler):
                         prompt = Prompt.get_by_id(int(promptid))
 
 		#user = self.auth.get_user_by_token(int(userid), authtoken)
-                user = auth.get_auth().get_user_by_token(int(userid), authtoken)
+		#user = auth.get_auth().get_user_by_token(int(userid), authtoken)
+		user = User.get_by_id(int(userid))
 
 		if restaurantid:
 			restaurant = Restaurant.get_by_id(int(restaurantid))

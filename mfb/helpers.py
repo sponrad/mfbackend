@@ -204,3 +204,50 @@ def createrestaurantdocument(restaurant):
     )
   index = search.Index(name=_RESTAURANT_INDEX)
   index.put(document)
+
+def getrestaurantid(self):
+  restaurantname = self.request.get("restaurantname")
+  lat = self.request.get("lat")
+  lon = self.request.get("lon")
+
+  values = {}
+
+  query_string = "name = " + restaurantname + " AND distance(location, geopoint(" + lat + "," + lon + ")) < " + str(300)
+
+  #return query_string
+
+  doc_index = search.Index(name=_RESTAURANT_INDEX)
+  query_options = search.QueryOptions(
+    returned_fields = ['name'],
+    )
+  query = search.Query(
+    query_string=query_string, 
+    options=query_options
+    )
+  results = doc_index.search(query)
+  restaurants = []
+
+  if results.number_found == 0:
+    restaurant = Restaurant(
+      name = restaurantname
+      )
+    restaurant.location = db.GeoPt(lat, lon)
+    restaurant.put()
+    restaurant.updateindex()
+
+    restaurants.append({
+        "restaurantid": restaurant.key().id(),
+        "name": restaurant.name
+        })
+
+  else:
+    for scored_document in results.results:
+      restaurant = {
+        "restaurantid": scored_document.doc_id
+        }
+      for field in scored_document.fields:
+        restaurant[field.name] = field.value
+        for field in scored_document.expressions:
+          restaurant[field.name] = field.value
+      restaurants.append(restaurant)
+  return restaurants

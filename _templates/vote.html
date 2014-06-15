@@ -10,10 +10,11 @@
         <form id="voteForm" action="/vote/{{ item.key.id }}" method="post">
           <input type="hidden" name="restaurantid" value={{ item.restaurant.key.id }} />
           <input type="hidden" name="itemid" value={{ item.key.id }} />
+          <input type="hidden" name="userid" value={{ user.key.id }} />
           <input type="hidden" name="promptid" value={{ promptid }} />
-
+	  {% autoescape off %}
           <div id="promptDiv" style="font-size: 22px;">{{ prompt }}</div>
-	  
+	  {% endautoescape %}
           <div class="btn-group vote-buttons" data-toggle="buttons" style="margin-bottom: 15px;">
             <label class="btn btn-primary first-vote-btn">
               <input type="radio" name="rating" id="rating1" value="100"> <span class="fa fa-smile-o"></span>
@@ -51,7 +52,8 @@ $(document).ready( function(){
    restaurant = "{{ item.restaurant.name }}";
 
    dataToSend = {
-     itemid: '{{ item.key.id }}'
+     itemid: '{{ item.key.id }}',
+     userid: '{{ user.key.id }}',
    };
    
    $.ajax({
@@ -75,14 +77,14 @@ $(document).ready( function(){
      e.preventDefault();
      dataToSend = $("#voteForm").serialize();
      $.ajax({
-       url: "http://mfbackend.appspot.com/json/reviewitem",
+       url: "/json/reviewitem",
        dataType: "json",
        data: dataToSend,
        type: "POST",
        success: function(data){
 	 //do something
 	 if (data.response == 1){
-	   window.location = 'http://menuflick.com/items/{{ item.restaurant.key.id}}';
+	   window.location = '/items/{{ item.restaurant.key.id}}';
 	 }
        }
      });

@@ -34,6 +34,7 @@ app = webapp2.WSGIApplication([
     ('/logout', main.LogoutHandler),
     ('/restaurants', main.Restaurants),    
     ('/items/(.*)', main.Items),
+    ('/items', main.Items),
     ('/vote/(.*)', main.Vote),
     ('/votenew/(.*)', main.VoteNew),
     ('/feed', main.Feed),

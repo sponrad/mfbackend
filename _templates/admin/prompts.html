@@ -12,7 +12,7 @@
 
   {% for prompt in prompts %}
   <p style="padding: 0px 0px 15px 0px;">
-    <a href="/delete?action=prompt&id={{ prompt.key.id }}" class="delete" data-confirm="Delete this Prompt. Are you sure?" style="float: right;">X</a>
+    <a href="/_a/delete?action=prompt&id={{ prompt.key.id }}" class="delete" data-confirm="Delete this Prompt. Are you sure?" style="float: right;">X</a>
     <span class="edit" id="{{ prompt.key.id }}.prompt_name">{{ prompt.name }}</span>
   </p>
   {% endfor %}
