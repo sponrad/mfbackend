@@ -38,6 +38,9 @@ app = webapp2.WSGIApplication([
     ('/vote/(.*)', main.Vote),
     ('/votenew/(.*)', main.VoteNew),
     ('/feed', main.Feed),
+    ('/find', main.FindPeople),
+    ('/profile/(.*)/followers', main.Followers), 
+    ('/profile/(.*)/following', main.Following), 
     ('/profile/(.*)', main.Profile), #profile?profileid
      
     ('/', main.MainHandler),

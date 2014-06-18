@@ -498,6 +498,10 @@ class ReviewItem(webapp2.RequestHandler):
 			item.put()
 			restaurant.numberofreviews += 1
 			restaurant.put()
+			try:
+				user.reviewcount += 1
+			except: 
+				user.reviewcount = Review.all().filter("userid =", int(userid)).count() + 1
 		else:
 			review.rating = int(rating)
 			review.description = description
@@ -505,6 +509,8 @@ class ReviewItem(webapp2.RequestHandler):
                         review.input2 = input2
                         review.prompt = prompt
 		review.put()
+		
+		user.put()
 		item.updateindex()
 		restaurant.updateindex()
 		values = {
@@ -745,8 +751,7 @@ class FollowUser(BaseHandler):
         def get(self):
                 values = {}
                 userid = self.request.get("userid")
-                followid = self.request.get("profileid")
-                authtoken = self.request.get("authtoken")
+                followid = self.request.get("followid")
 
                 user = User.get_by_id(int(userid))
                 followuser = User.get_by_id(int(followid))
@@ -771,8 +776,9 @@ class UnFollowUser(BaseHandler):
         def get(self):
                 values = {}
                 userid = self.request.get("userid")
-                unfollowid = self.request.get("profileid")
-                authtoken = self.request.get("authtoken")
+                unfollowid = self.request.get("unfollowid")
+		if userid == unfollowid:
+			return
 
                 user = User.get_by_id(int(userid))
                 unfollowuser = User.get_by_id(int(unfollowid))

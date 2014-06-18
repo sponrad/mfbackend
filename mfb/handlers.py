@@ -90,6 +90,7 @@ class SignupHandler(BaseHandler):
     user_id = user.get_id()
     user.following.append(user_id)
     user.followers.append(user_id)
+    user.reviewcount = 0
     user.put()
     #token = self.user_model.create_signup_token(user_id)
     
@@ -173,6 +174,55 @@ class Feed(BaseHandler):
     
     render(self, "feed.html", values)
 
+
+#    ('/profile/(.*)/followers', main.Followers), 
+class Followers(BaseHandler):
+  def get(self, profileid):
+    user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    profile = User.get_by_auth_id(profileid)
+    if not profile:
+      profile = User.get_by_id(int(profileid))
+    followers = ndb.get_multi([ndb.Key(User, k) for k in profile.followers])
+    values = {
+      "user": user,
+      "profile": profile,
+      "followers": followers,
+      "isfollowing": True if profileid in user.following else False,
+      "profileid": profileid,
+    }      
+    render(self, 'followers.html', values)
+    
+
+#    ('/profile/(.*)/following', main.Following), 
+class Following(BaseHandler):
+  def get(self, profileid):
+    user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    profile = User.get_by_auth_id(profileid)
+    if not profile:
+      profile = User.get_by_id(int(profileid))
+    following = ndb.get_multi([ndb.Key(User, k) for k in profile.following])
+    values = {
+      "user": user,
+      "profile": profile,
+      "following": following,
+      "isfollowing": True if profileid in user.following else False,
+      "profileid": profileid,
+    }      
+    render(self, 'following.html', values)
+
+#('/findpeople', main.FindPeople),
+class FindPeople(BaseHandler):
+  def get(self):
+    user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+
+    values = {
+      "user": user,
+    }
+    render(self, 'findpeople.html', values)
+  def post(self):
+    self.redirect("/find")
+
+
 #    ('/profile/(.*)', main.Profile), #profile?profileid
 class Profile(BaseHandler):
   def get(self, profileid):
@@ -220,10 +270,7 @@ class Profile(BaseHandler):
       "user": user,
       "profile": profile,
       "feed_items": feed_items,
-      "followers": len(profile.followers),
-      "following": len(profile.following),
       "isfollowing": True if profileid in user.following else False,
-      "reviewcount": len(feed_items),
       "profileid": profileid,
     }      
 
