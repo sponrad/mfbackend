@@ -210,6 +210,19 @@ class Following(BaseHandler):
     }      
     render(self, 'following.html', values)
 
+#('/findpeople', main.FindPeople),
+class FindPeople(BaseHandler):
+  def get(self):
+    user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+
+    values = {
+      "user": user,
+    }
+    render(self, 'findpeople.html', values)
+  def post(self):
+    self.redirect("/find")
+
+
 #    ('/profile/(.*)', main.Profile), #profile?profileid
 class Profile(BaseHandler):
   def get(self, profileid):

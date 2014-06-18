@@ -751,8 +751,7 @@ class FollowUser(BaseHandler):
         def get(self):
                 values = {}
                 userid = self.request.get("userid")
-                followid = self.request.get("profileid")
-                authtoken = self.request.get("authtoken")
+                followid = self.request.get("followid")
 
                 user = User.get_by_id(int(userid))
                 followuser = User.get_by_id(int(followid))
@@ -777,8 +776,9 @@ class UnFollowUser(BaseHandler):
         def get(self):
                 values = {}
                 userid = self.request.get("userid")
-                unfollowid = self.request.get("profileid")
-                authtoken = self.request.get("authtoken")
+                unfollowid = self.request.get("unfollowid")
+		if userid == unfollowid:
+			return
 
                 user = User.get_by_id(int(userid))
                 unfollowuser = User.get_by_id(int(unfollowid))

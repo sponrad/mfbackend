@@ -4,7 +4,13 @@
 <div class="container">
   <h1 id="userName">{{ profile.auth_ids.0 }}</h1>
   <div id="profileList">
-    <div id="isfollowing"></div>
+    <div id="isfollowing">
+      {% if profile.key.id in user.following %}
+      <button id="unFollowButton" data-id={{ profile.key.id }}>Unfollow</button>
+      {% else %}
+      <button id="followButton" data-id={{ profile.key.id }}>Follow</button>
+      {% endif %}
+    </div>
 
       <ul class="list-inline" style="font-size: 14px; color: #aaa;">
         
@@ -21,11 +27,18 @@
 	</li>
       </ul>
 
-      <div id="reviewDiv">
+      <div id="personDiv">
         <h2>Following</h2>
         <hr>
 	{% for person in following %}
-	<p>{{ person.auth_ids.0 }} - {% if person.key.id in user.followers %}Unfollow{% else %}Follow{% endif %}</p>
+	<p>
+	  <a href="/profile/{{ person.auth_ids.0 }}">{{ person.auth_ids.0 }}</a> 
+	  {% if person.key.id in user.following %}
+	  <button id="unFollowButton" data-id={{ person.key.id }}>Unfollow</button>
+	  {% else %}
+	  <button id="followButton" data-id={{ person.key.id }}>Follow</button>
+	  {% endif %}
+	</p>
 	{% endfor %}
       </div>
 
@@ -35,45 +48,46 @@
 <script>
  $(document).ready( function(){
    
-   var profileId = "{{ profileid }}";
-
-   dataToSend = {
-     userid: "{{ user.key.id }}",
-     profileid: profileId,
-   };
-
+   
    //follow
-   $("#isfollowing").on("click", "#followButton", function(e){
+   $("#profileList").on("click", "#followButton", function(e){
      e.preventDefault();
+     console.log(e.target.dataset.id);
      $.ajax({
-       url: "http://mfbackend.appspot.com/json/followuser",
+       url: "/json/followuser",
        dataType: "json",
-       data: dataToSend,
+       data: {
+	 userid: "{{ user.key.id }}",
+	 followid: e.target.dataset.id,
+       },
        type: "GET",
        success: function(data){
 	 console.log(data);
 	 if (data.response == 1){
-	   $("#isfollowing").html("<button id='unFollowButton'>Unfollow</button>");   
+	   $(e.target).attr("id", "unFollowButton").html("Unfollow");   
 	 }}
      });
    });
 
    //unfollow
-   $("#isfollowing").on("click", "#unFollowButton", function(e){
+   $("#profileList").on("click", "#unFollowButton", function(e){
      e.preventDefault();
+     console.log(e.target.dataset.id);
      $.ajax({
-       url: "http://mfbackend.appspot.com/json/unfollowuser",
+       url: "/json/unfollowuser",
        dataType: "json",
-       data: dataToSend,
+       data: {
+	 userid: "{{ user.key.id }}",
+	 unfollowid: e.target.dataset.id,
+       },
        type: "GET",
        success: function(data){
 	 console.log(data);
 	 if (data.response == 1){
-	   $("#isfollowing").html("<button id='followButton'>Follow</button>");   
+	   $(e.target).attr("id", "followButton").html("Follow");
 	 }}
      });
    });
-
 
  });
 </script>
