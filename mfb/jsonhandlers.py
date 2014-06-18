@@ -498,6 +498,10 @@ class ReviewItem(webapp2.RequestHandler):
 			item.put()
 			restaurant.numberofreviews += 1
 			restaurant.put()
+			try:
+				user.reviewcount += 1
+			except: 
+				user.reviewcount = Review.all().filter("userid =", int(userid)).count() + 1
 		else:
 			review.rating = int(rating)
 			review.description = description
@@ -505,6 +509,8 @@ class ReviewItem(webapp2.RequestHandler):
                         review.input2 = input2
                         review.prompt = prompt
 		review.put()
+		
+		user.put()
 		item.updateindex()
 		restaurant.updateindex()
 		values = {

@@ -22,24 +22,11 @@
       </ul>
 
       <div id="reviewDiv">
-        <h2>Reviews</h2>
+        <h2>Followers</h2>
         <hr>
-	{% if feed_items|length > 0 %}
-	{% for review in feed_items %}
-	<div class='reviewItem'>
-	  {% if review.rating == 100 %}+{% else %}
-	  {% if review.rating == 0 %}-{% else %}
-	  /{% endif %}{% endif %}
-	  <a class='profilelink' href='/profile/{{ review.username }}'>{{ review.username}}</a><br>
-	  {% autoescape off %}
-	  {{ review.prompt }}
-	  {% endautoescape %}
-	</div><br> 
+	{% for follower in followers %}
+	<p>{{ follower.auth_ids.0 }} - {% if follower.key.id in user.following %}Unfollow{% else %}Follow{% endif %}</p>
 	{% endfor %}
-	{% else %}
-	<p>No reviews so far =*<</p>
-	{% endif %}
-        <div id="fakeReview"></div>
       </div>
 
   </div><!-- /end .panel -->
