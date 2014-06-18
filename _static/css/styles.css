@@ -33,6 +33,7 @@ body {
   overflow: hidden;
 }
 
+
 body.index {
   overflow: hidden;
   position: relative;
@@ -217,22 +218,24 @@ nav {
   position: fixed;
   width: 100%;
   top: 0;
-  background: #fff;
+  background: #ff5656;
   z-index: 10000;
   box-shadow: 1px 0 1px rgba(0,0,0,.2);
   opacity: .9;
   height: 44px;
   line-height: 42px;
+  border-bottom: 1px solid #953232;
 }
 
 .list-inline {
   margin-bottom: 0;
+  position: relative;
 }
 
 .list-inline button, .list-inline a {
   transition: all .2s ease-in-out;
   font-family: 'NeueHaasGroteskMedium', sans-serif;
-  color: black;
+  color: #fff;
   background: transparent;
   border: none;
   padding: 2px;
@@ -241,6 +244,15 @@ nav {
 .list-inline button:hover, .list-inline a:hover {
   color: red;
   text-decoration: none;
+}
+
+.list-inline li:nth-child(2) {
+  margin-left: -10px;
+}
+
+.list-inline > li {
+  padding-right: 7px;
+  padding-left: 7px;
 }
 
 .item {
@@ -358,4 +370,67 @@ a.entypo {
     font-family: entypo-social, serif;
     font-size: 48px;
     color: black;
+}
+
+.list-inline .nearby {
+  height: 24px;
+  width: 16px;
+  background: #fff;
+  position: absolute;
+  top: 6px;
+}
+
+.inside-border {
+  width: 20px;
+  height: 28px;
+  background: #7f8181;
+  position: absolute;
+  top: 4px;
+  left: -2px;
+}
+
+.outside-border {
+  width: 24px;
+  height: 32px;
+  background: #000;
+  position: absolute;
+  top: 2px;
+  left: -4px;
+}
+
+.outside-border:after, .outside-border:before,
+.inside-border:after, .inside-border:before {
+  width: 2px;
+  height: 1px;
+  background: #ff5656;
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.outside-border:before, .inside-border:before {
+  width: 1px;
+  height: 1px;
+  top: 1px;
+}
+
+.inside-border:after, .inside-border:before {
+  background: #000;
+}
+
+.nearby:after {
+  width: 2px;
+  height: 2px;
+  background: #7f8181;
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.icon-container {
+  position: absolute;
+  top: 4px;
+  left: 20px;
 }

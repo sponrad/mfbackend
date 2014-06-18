@@ -24,7 +24,13 @@
     {% if user %}
     <nav>
       <ul class="list-inline">
-        <li><button id="menuButton" onclick="location.href='/restaurants'">Nearby</button></li>
+        <li>
+          <div class="icon-container">
+            <div class="outside-border"></div>
+            <div class="inside-border"></div>
+            <div class="nearby" id="menuButton" onclick="location.href='/restaurants'"></div>
+          </div><!--/ .end icon-container -->
+          </li>
         <li><button id="feedButton" onclick="location.href='/feed'">Feed</button></li>
         <li><button id="menuButton" onclick="location.href='/profile/{{ user.auth_ids.0 }}'">Profile</button></li>
         <li><a href="/logout" id="logoutLink">Logout</a></li>
