@@ -134,7 +134,7 @@ class Feed(BaseHandler):
     
     feed_items = []
 
-    for review in Review.all().order("-date_edited").run():
+    for review in Review.all().order("-date_edited").fetch(20):
       try: 
         prompt = review.prompt.name
       except: 
