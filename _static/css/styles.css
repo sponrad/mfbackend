@@ -241,6 +241,10 @@ nav {
   padding: 2px;
 }
 
+#profilenav a {
+    color: #333;
+}
+
 .list-inline button:hover, .list-inline a:hover {
   color: red;
   text-decoration: none;
