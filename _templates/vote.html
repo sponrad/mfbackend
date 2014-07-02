@@ -4,7 +4,7 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12 phone-contain">
-      <h1 class="vote-on">Vote on {{ item.name }}</h1>
+      <h1 class="vote-on">Vote on {{ item.name }} from {{ item.restaurant.name }}</h1>
 
       <div class="new-panel">
         <form id="voteForm" action="/vote/{{ item.key.id }}" method="post">

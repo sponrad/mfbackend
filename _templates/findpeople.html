@@ -5,12 +5,21 @@
   <h1>Find People</h1>
 
   <div id="feedDiv" style="background: white;">
-    <p>By username</p>
-    <p>By email</p>
+    <p>By username or email address</p>
+    <form method="post">
+      <input type="text" placeholder="Username/email" name="query" id="query" {% if query %}value="{{ query }}"{% endif %}/>
+      <input type="submit" value="Search" />
+    </form>
+    {% if result %}
+    <div id="results">
+      <p>We found someone:</p>
+      <div><a href="/profile/{{ result.auth_ids.0 }}">{{ result.auth_ids.0 }}</a></div>
+    </div>
+    {% endif %}
     <div>
-      <p>Facebook</p>
+      <h3>Log in with Facebook to connect with your Facebook frinds that use Menuflick</h3>
       <a href="#" onclick="FBInvite()">Invite Facebook Friends</a>
-      <fb:login-button scope="public_profile,email,user_friends" onlogin="checkLoginState();">
+      <fb:login-button scope="public_profile,email,user_friends" onlogin="checkLoginState();">	
       </fb:login-button>
 
       <div id="status"></div>

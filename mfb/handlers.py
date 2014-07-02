@@ -220,7 +220,26 @@ class FindPeople(BaseHandler):
     }
     render(self, 'findpeople.html', values)
   def post(self):
-    self.redirect("/find")
+    query = self.request.get("query")
+    user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+
+    values = {
+      "user": user,
+    }
+    if "@" in query:
+      #search emails
+      result = ndb.gql("SELECT * FROM User WHERE email_address = :1", query)
+    else:
+      #search usernames
+      result = User.get_by_auth_id(query)
+      
+    if result:
+      values["result"] = result
+
+    values["query"] = query
+    values["test"] = "HIHIHI"
+
+    render(self, 'findpeople.html', values)    
 
 
 #    ('/profile/(.*)', main.Profile), #profile?profileid
