@@ -16,6 +16,9 @@
       {% endautoescape %}
     </div><br> 
     {% endfor %}
+    {% if feed_items|length == 20 %}
+    <a id="loadmore" href="">Load More</a>
+    {% endif %}
     {% else %}
     <p>Nothing in feed =*<</p>
     {% endif %}
@@ -24,7 +27,41 @@
 
 <script>
  $(document).ready( function(){
+   offset = 20;
+   $("#feedDiv").on("click", "#loadmore", function(e){
+     e.preventDefault();
+     $("#loadmore").html("Loading....");
 
+     var dataToSend = {
+       userid: {{ user.key.id }},
+       offset: offset,
+     };
+
+     $.ajax({
+       url: '/json/loadmorefeed',
+       dataType: 'json',
+       data: dataToSend, 
+       type: 'GET',
+       success: function(data){
+	 console.log(data);
+	 if (data.response == 1){
+	   for (var key in data.feed_items){
+	     var html = parsePrompt(data.feed_items[key]);
+	     $("#loadmore").before( html );
+	     $("#loadmore").html("Load More");
+	   }
+	   console.log($.grep(data.feed_items,function(n){ return(n) }).length);
+	   if ($.grep(data.feed_items,function(n){ return(n) }).length < 20){
+	     $("#loadmore").html("");
+	   }
+	   else {
+	     offset = offset + 20;
+	     $("#loadmore").html("Load More");
+	   }
+	 }
+       }
+     });
+   });
  });
 </script>
 

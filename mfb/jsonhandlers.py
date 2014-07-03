@@ -654,7 +654,7 @@ class GetFeed(webapp2.RequestHandler):
                 feed_items = []
                 
                 #for review in Review.all().filter("userid IN", user.following).order("date_edited").run():
-                for review in Review.all().order("date_edited").run():
+                for review in Review.all().order("date_edited").fetch(20):
                         try: prompt = review.prompt.name
                         except: prompt = None
                         reviewuser = User.get_by_id(int(review.userid))
@@ -680,6 +680,46 @@ class GetFeed(webapp2.RequestHandler):
 
                 renderjson(self,values)
 
+#    ('/json/loadmorefeed', LoadMoreFeet),
+class LoadMoreFeed(BaseHandler):
+        def get(self):
+                self.response.headers['Access-Control-Allow-Origin'] = '*'
+                offset = int(self.request.get("offset"))
+                if not offset:
+                        offset = 20
+		userid = self.request.get("userid")
+		authtoken = self.request.get("authtoken")
+                user = User.get_by_id(int(userid))
+
+                values = {}
+                feed_items = []
+                
+                #for review in Review.all().filter("userid IN", user.following).order("date_edited").run():
+                for review in Review.all().order("-date_edited").fetch(20, offset=offset):
+                        try: prompt = review.prompt.name
+                        except: prompt = None
+                        reviewuser = User.get_by_id(int(review.userid))
+                        review = {
+                                "username": reviewuser.auth_ids[0],
+                                "userid": review.userid,
+                                "useremail": reviewuser.email_address,
+                                "reviewid": review.key().id(),
+                                "item": review.item.name,
+                                "description": review.description,
+                                "itemid": review.item.key().id(),
+                                "rating": review.rating,
+                                "restaurant": review.item.restaurant.name,
+                                "restaurantid": review.item.restaurant.key().id(),
+                                "prompt": prompt,
+                                "input": review.input,
+                                "input2": review.input2
+                        }
+                        feed_items.append(review)
+
+                values['response'] = 1
+                values['feed_items'] = feed_items
+
+                renderjson(self,values)
 
 
 #     ('/json/getprompt', GetPrompt),

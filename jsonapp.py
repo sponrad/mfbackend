@@ -32,6 +32,7 @@ app = webapp2.WSGIApplication([
 
     ('/json/list', ListHandler), #create/delete, (un)follow, add/remove item
     ('/json/getfeed', GetFeed),
+    ('/json/loadmorefeed', LoadMoreFeed),
     ('/json/followuser', FollowUser),
     ('/json/unfollowuser', UnFollowUser),
     ('/json/signup', Signup),

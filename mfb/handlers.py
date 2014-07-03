@@ -184,7 +184,7 @@ class Followers(BaseHandler):
   def get(self, profileid):
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
     if not user:
-      return self.redirect("/)"
+      return self.redirect("/")
     profile = User.get_by_auth_id(profileid)
     if not profile:
       profile = User.get_by_id(int(profileid))
