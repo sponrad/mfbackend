@@ -228,7 +228,7 @@ class FindPeople(BaseHandler):
     }
     if "@" in query:
       #search emails
-      result = ndb.gql("SELECT * FROM User WHERE email_address = :1", query)
+      result = ndb.gql("SELECT * FROM User WHERE email_address = :1", query).fetch()[0]
     else:
       #search usernames
       result = User.get_by_auth_id(query)
