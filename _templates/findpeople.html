@@ -19,6 +19,7 @@
     <div>
       <h3>Log in with Facebook to connect with your Facebook frinds that use Menuflick</h3>
       <a href="#" onclick="FBInvite()">Invite Facebook Friends</a>
+      <a href="#" onclick="FBShare()">Share this!</a>
       <fb:login-button scope="public_profile,email,user_friends" onlogin="checkLoginState();">	
       </fb:login-button>
 
@@ -102,6 +103,13 @@
        }
      });
  }
+
+function FBShare(){
+   FB.ui({
+     method: 'share',
+     href: 'http://www.menuflick.com',
+   }, function(response){});
+}
  
  window.fbAsyncInit = function() {
    FB.init({
