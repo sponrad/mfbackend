@@ -121,6 +121,8 @@ class LogoutHandler(BaseHandler):
 class Restaurants(BaseHandler):
   def get(self):
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    if not user:
+      return self.redirect("/")
 
     values = {
       "user": user,
@@ -131,6 +133,8 @@ class Restaurants(BaseHandler):
 class Feed(BaseHandler):
   def get(self):
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    if not user:
+      return self.redirect("/")
     
     feed_items = []
 
@@ -179,6 +183,8 @@ class Feed(BaseHandler):
 class Followers(BaseHandler):
   def get(self, profileid):
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    if not user:
+      return self.redirect("/)"
     profile = User.get_by_auth_id(profileid)
     if not profile:
       profile = User.get_by_id(int(profileid))
@@ -197,6 +203,8 @@ class Followers(BaseHandler):
 class Following(BaseHandler):
   def get(self, profileid):
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    if not user:
+      return self.redirect("/")
     profile = User.get_by_auth_id(profileid)
     if not profile:
       profile = User.get_by_id(int(profileid))
@@ -214,6 +222,8 @@ class Following(BaseHandler):
 class FindPeople(BaseHandler):
   def get(self):
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    if not user:
+      return self.redirect("/")
 
     values = {
       "user": user,
@@ -222,6 +232,8 @@ class FindPeople(BaseHandler):
   def post(self):
     query = self.request.get("query")
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    if not user:
+      return self.redirect("/")
 
     values = {
       "user": user,
@@ -246,6 +258,8 @@ class FindPeople(BaseHandler):
 class Profile(BaseHandler):
   def get(self, profileid):
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    if not user:
+      return self.redirect("/")
     profile = User.get_by_auth_id(profileid)
     if not profile:
       profile = User.get_by_id(int(profileid))
@@ -304,6 +318,8 @@ class Items(BaseHandler):
       restaurantid = restaurants[0]["restaurantid"]
 
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    if not user:
+      return self.redirect("/")
     restaurant = Restaurant.get_by_id(int(restaurantid))
     values = {
       "user": user,
@@ -316,6 +332,8 @@ class Items(BaseHandler):
 class Vote(BaseHandler):
   def get(self, itemid):
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    if not user:
+      return self.redirect("/")
     item = Item.get_by_id(int(itemid))
 
     #getprompt and format it
@@ -345,6 +363,8 @@ class Vote(BaseHandler):
 class VoteNew(BaseHandler):
   def get(self, restaurantid):
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    if not user:
+      return self.redirect("/")
     restaurant = Restaurant.get_by_id(int(restaurantid))
     values = {
       "user": user,
@@ -354,6 +374,8 @@ class VoteNew(BaseHandler):
 
   def post(self, restaurantid):
     user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    if not user:
+      return self.redirect("/")
     restaurant = Restaurant.get_by_id(int(restaurantid))
     item = Item(
       name = self.request.get("name"),
