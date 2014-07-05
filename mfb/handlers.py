@@ -178,6 +178,51 @@ class Feed(BaseHandler):
     
     render(self, "feed.html", values)
 
+#    ('/review/(.*)', main.ReviewPage), 
+class ReviewPage(BaseHandler):
+  def get(self, reviewid):
+    user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    if not user:
+      return self.redirect("/")
+    review = Review.get_by_id(int(reviewid))
+
+    try: 
+      prompt = review.prompt.name
+    except: 
+      prompt = None
+    reviewuser = User.get_by_id(int(review.userid))
+    
+    prompt = str(review.prompt.name)
+    
+    prompt = prompt.replace("{{restaurant}}", "<a style='display: inline;' href='/items/"+ str(review.item.restaurant.key().id()) +"'>"+review.item.restaurant.name+"</a>")
+    prompt = prompt.replace("{{dish}}", "<a style='display: inline;' href='/vote/"+str(review.item.key().id())+"'>"+review.item.name+"</a>")
+
+    if review.input:
+      prompt = prompt.replace("{{input}}", "<span style='display: inline; color:red;'>"+review.input+"</span>")
+      
+    if review.input2:
+      prompt = prompt.replace("{{input2}}", "<span type='text' name='input2' style='display: inline; color: red;'>"+review.input2+"</span>")
+
+    review = {
+      "username": reviewuser.auth_ids[0],
+      "userid": review.userid,
+      "useremail": reviewuser.email_address,
+      "reviewid": review.key().id(),
+      "item": review.item.name,
+      "description": review.description,
+      "itemid": review.item.key().id(),
+      "rating": review.rating,
+      "restaurant": review.item.restaurant.name,
+      "restaurantid": review.item.restaurant.key().id(),
+      "prompt": prompt,
+    }
+
+    values = {
+      "user": user,
+      "review": review,
+    }      
+    render(self, 'review.html', values)
+    
 
 #    ('/profile/(.*)/followers', main.Followers), 
 class Followers(BaseHandler):

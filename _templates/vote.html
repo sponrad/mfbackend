@@ -57,7 +57,7 @@ $(document).ready( function(){
    };
    
    $.ajax({
-     url: "http://mfbackend.appspot.com/json/getitemreviews",
+     url: "/json/getitemreviews",
      dataType: "json",
      data: dataToSend,
      type: "GET",
@@ -66,6 +66,7 @@ $(document).ready( function(){
        if (data.response == 1){
 	 for (var key in data.feed_items){
 	   var html = parsePrompt(data.feed_items[key]);
+	   html += "<a href='/review/"+data.feed_items[key].reviewid+"'>Link to review</a>";
 	   $("#fakeReview").after( html );
 	 }	
        }

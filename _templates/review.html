@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div class="container">
+  <h1 id="restaurantName">Review</h1>
+
+  <div class="new-panel">
+    <hr>
+    {% autoescape off %}
+    <h2>{{ review.prompt }}</h2>
+    {% endautoescape %}
+    <p>Other things to include:</p>
+    <p>Stuff about user, {{ review.username }}</p>
+    <p>Comments maybe</p>
+    
+  </div> 
+  
+</div>
+{% endblock body %}
