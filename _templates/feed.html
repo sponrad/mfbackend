@@ -10,7 +10,9 @@
       {% if review.rating == 100 %}+{% else %}
       {% if review.rating == 0 %}-{% else %}
       /{% endif %}{% endif %}
-      <a class='profilelink' href='/profile/{{ review.username }}'>{{ review.username }}</a><br>
+      <a class='profilelink' href='/profile/{{ review.username }}'>{{ review.username }}</a>
+      <a class='reviewlink' href="/review/{{ review.reviewid }}">link</a>
+      <br>
       {% autoescape off %}
       {{ review.prompt }}
       {% endautoescape %}
