@@ -73,21 +73,29 @@ $(document).ready( function(){
    });
 
    $("#voteButton").click( function(e){
-     $("#voteButton").attr('disabled', 'disabled').attr('value', 'Vote pending');
      e.preventDefault();
-     dataToSend = $("#voteForm").serialize();
-     $.ajax({
-       url: "/json/reviewitem",
-       dataType: "json",
-       data: dataToSend,
-       type: "POST",
-       success: function(data){
-	 //do something
-	 if (data.response == 1){
-	   window.location = '/items/{{ item.restaurant.key.id}}';
+     
+     if ($('#promptDiv input[type="text"]').val() == ""){
+       console.log("empty");
+       $("#voteButton").attr('value', 'Vote - type something above - and try again');
+     }
+     else{
+       $("#voteButton").attr('disabled', 'disabled').attr('value', 'Vote processing');
+       dataToSend = $("#voteForm").serialize();
+       $.ajax({
+	 url: "/json/reviewitem",
+	 dataType: "json",
+	 data: dataToSend,
+	 type: "POST",
+	 success: function(data){
+	   //do something
+	   if (data.response == 1){
+	     window.location = '/items/{{ item.restaurant.key.id}}';
+	   }
 	 }
-       }
-     });
+       });
+     }
+
    });
 
 });
