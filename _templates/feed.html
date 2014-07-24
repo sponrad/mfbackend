@@ -1,15 +1,6 @@
 {% extends "base.html" %}
 
 {% block body %}
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=1495491050668576&version=v2.0";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-
 <div class="container">
   <h1></h1>
   <div id="feedDiv" style="background: white;">
@@ -21,7 +12,7 @@
       /{% endif %}{% endif %}
       <a class='profilelink' href='/profile/{{ review.username }}'>{{ review.username }}</a>
       <a class='reviewlink' href="/review/{{ review.reviewid }}">link</a>
-      <div class="fb-share-button" data-href="http://www.menuflick.com/review/{{ review.key.id }}"></div>
+      <a href="javascript:fbShare('http://www.menuflick.com/review/{{ review.reviewid }}', 'Facebook Share', 'Facebook share popup', 'http://goo.gl/dS52U', 520, 350)">Share Facebook</a>
       <br>
       {% autoescape off %}
       {{ review.prompt }}
