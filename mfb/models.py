@@ -147,6 +147,7 @@ class Review(db.Model):
     input = db.StringProperty()
     input2 = db.StringProperty()
     prompt = db.ReferenceProperty(Prompt)
+    commentcount = db.IntegerProperty()
 
 class Chain(db.Model):
     name = db.StringProperty(required = True)
@@ -166,3 +167,10 @@ class Card(db.Model):
     submittedby = db.IntegerProperty() #userid that created/submitte
     date_created = db.DateTimeProperty(auto_now_add = True)
     date_edited = db.DateTimeProperty(auto_now = True)
+
+class Comment(db.Model):
+    date_created = db.DateTimeProperty(auto_now_add = True)
+    date_edited = db.DateTimeProperty(auto_now = True)
+    review = db.ReferenceProperty(Review)
+    userid = db.IntegerProperty()
+    content = db.TextProperty()

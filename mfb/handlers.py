@@ -205,6 +205,19 @@ class ReviewPage(BaseHandler):
     if review.input2:
       prompt = prompt.replace("{{input2}}", "<span type='text' name='input2' style='display: inline; color: red;'>"+review.input2+"</span>")
 
+    comments = Comment.all().filter("review =", review).order("date_edited").run()
+
+    commentslist = []
+
+    for comment in comments:
+      commentuser = User.get_by_id(int(comment.userid))
+      commentslist.append({
+        "userid" : comment.userid,
+        "username" : commentuser.auth_ids[0],
+        "content" : comment.content,
+        "date" : comment.date_edited,
+      })
+
     review = {
       "username": reviewuser.auth_ids[0],
       "userid": review.userid,
@@ -223,8 +236,33 @@ class ReviewPage(BaseHandler):
     values = {
       "user": user,
       "review": review,
+      "comments": commentslist
     }      
     render(self, 'review.html', values)
+
+  #post to /review (comment only so far)
+  def post(self, reviewid):
+    try:
+      user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    except:
+      user = None
+
+    review = Review.get_by_id(int(reviewid))
+    content = self.request.get("comment")
+
+    comment = Comment(
+      userid = user.key.id(),
+      review = review,
+      content = content,
+    )
+
+    try: review.commentcount += 1
+    except: review.commentcount = 1
+    review.put()
+
+    comment.put()
+
+    self.redirect("/review/"+ str(review.key().id()) )
     
 
 #    ('/profile/(.*)/followers', main.Followers), 

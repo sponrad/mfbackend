@@ -10,6 +10,17 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
+- kind: Comment
+  properties:
+  - name: review
+  - name: date_edited
+
+- kind: Comment
+  properties:
+  - name: review
+  - name: date_edited
+    direction: desc
+
 - kind: Menu
   properties:
   - name: restaurant

@@ -34,9 +34,37 @@
     {% endautoescape %}
     <p>{{ review.date }}</p>
     <a href="javascript:fbShare('http://www.menuflick.com/review/{{ review.reviewid }}', 'Facebook Share', 'Facebook share popup', 'http://goo.gl/dS52U', 520, 350)">Share Facebook</a>
-    <p>Comments</p>
+    <h3>What people are saying:</h3>
+
+    {% if comments|length > 0 %}
+    {% for comment in comments %}
+    <p>{{ comment.username}} - {{ comment.content }}</p>
+    {% endfor %}
+    {% else %}
+    <p>No comments so far</p>
+    {% endif %}
+
+    {% if user %}
+    <button id="showcommentdiv">Add a comment</button>
+    <div id="commentdiv">
+      <form action="" method="post">
+	<input type="text" name="comment" id="comment" placeholder="Add a comment"/>
+	<input type="submit" value="Comment" />
+      </form>
+    </div>
+    {% endif %}
     
   </div> 
   
 </div>
+<script>
+$(document).ready( function(){
+   $("#commentdiv").hide();
+   $("#showcommentdiv").click( function(event){
+     $(event.target).hide();
+     $("#commentdiv").show();
+     $("#comment").focus();
+   });
+});
+</script>
 {% endblock body %}
