@@ -169,6 +169,7 @@ class Feed(BaseHandler):
         "restaurantid": review.item.restaurant.key().id(),
         "prompt": prompt,
         "date": review.date_edited,
+        "commentcount": review.commentcount if review.commentcount > 0 else 0,
       }
       feed_items.append(review)
 

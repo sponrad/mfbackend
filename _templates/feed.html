@@ -13,11 +13,13 @@
       <a class='profilelink' href='/profile/{{ review.username }}'>{{ review.username }}</a>
       <a class='reviewlink' href="/review/{{ review.reviewid }}">link</a>
       <a href="javascript:fbShare('http://www.menuflick.com/review/{{ review.reviewid }}', 'Facebook Share', 'Facebook share popup', 'http://goo.gl/dS52U', 520, 350)">Share Facebook</a>
+      {{ review.commentcount }} comment{{ review.commentcount|pluralize }}
       <br>
       {% autoescape off %}
       {{ review.prompt }}
       {% endautoescape %}
-    </div><br> 
+    </div>
+    <br> 
     {% endfor %}
     {% if feed_items|length == 20 %}
     <a id="loadmore" href="">Load More</a>
