@@ -1,5 +1,28 @@
 {% extends "base.html" %}
 
+{% block head %}
+<!-- for Google -->
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+
+<meta name="author" content="" />
+<meta name="copyright" content="" />
+<meta name="application-name" content="" />
+
+<!-- for Facebook -->          
+<meta property="og:title" content="{{ review.restaurant }} {{ review.item }} - Menuflick" />
+<meta property="og:type" content="review" />
+<meta property="og:image" content="" />
+<meta property="og:url" content="" />
+<meta property="og:description" content="{{ review.prompt|striptags }}" />
+
+<!-- for Twitter -->          
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="" />
+<meta name="twitter:description" content="" />
+<meta name="twitter:image" content="" />
+{% endblock head %}
+
 {% block body %}
 <div id="fb-root"></div>
 <script>(function(d, s, id) {

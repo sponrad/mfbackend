@@ -181,9 +181,10 @@ class Feed(BaseHandler):
 #    ('/review/(.*)', main.ReviewPage), 
 class ReviewPage(BaseHandler):
   def get(self, reviewid):
-    user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
-    if not user:
-      return self.redirect("/")
+    try:
+      user = User.get_by_id(int(self.auth.get_user_by_session()['user_id']))
+    except:
+      user = None
     review = Review.get_by_id(int(reviewid))
 
     try: 
