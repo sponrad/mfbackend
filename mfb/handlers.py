@@ -168,6 +168,7 @@ class Feed(BaseHandler):
         "restaurant": review.item.restaurant.name,
         "restaurantid": review.item.restaurant.key().id(),
         "prompt": prompt,
+        "date": review.date_edited,
       }
       feed_items.append(review)
 
@@ -216,6 +217,7 @@ class ReviewPage(BaseHandler):
       "restaurant": review.item.restaurant.name,
       "restaurantid": review.item.restaurant.key().id(),
       "prompt": prompt,
+      "date": review.date_edited,
     }
 
     values = {

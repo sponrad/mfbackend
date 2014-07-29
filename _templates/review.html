@@ -24,15 +24,6 @@
 {% endblock head %}
 
 {% block body %}
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=1495491050668576&version=v2.0";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));</script>
-
 <div class="container">
   <h1 id="restaurantName">Review</h1>
 
@@ -41,9 +32,8 @@
     {% autoescape off %}
     <h2>{{ review.prompt }}</h2>
     {% endautoescape %}
-    <p>Other things to include:</p>
-    <p>Stuff about user, {{ review.username }}</p>
-    <div class="fb-share-button" data-href="http://www.menuflick.com/review/{{ review.reviewid }}"></div>
+    <p>{{ review.date }}</p>
+    <a href="javascript:fbShare('http://www.menuflick.com/review/{{ review.reviewid }}', 'Facebook Share', 'Facebook share popup', 'http://goo.gl/dS52U', 520, 350)">Share Facebook</a>
     <p>Comments</p>
     
   </div> 
